@@ -384,13 +384,87 @@ body.big .collist .chk{padding:11px 0}
   background:#1c2630;color:#fff;padding:11px 16px;border-radius:10px;font:500 14px/1.4 var(--font-ui);box-shadow:0 8px 28px rgba(20,30,40,.35);pointer-events:none}
 .toast[hidden]{display:none}
 body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15px}
+
+/* ===== 1.2.0: масштаб, перемещение, поиск, полки выше и ниже, фото ===== */
+.shelfnav{display:flex;align-items:stretch;gap:8px}
+.shbtn{
+  flex:1 1 0;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 10px;
+  font:500 14px var(--font-ui);color:var(--ink);background:var(--bg);border:1px solid var(--grid-2);border-radius:6px;cursor:pointer;
+}
+.shbtn:hover:not([disabled]){border-color:var(--line)}
+.shbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.shbtn[disabled]{opacity:.4;cursor:default}
+.shbtn .ar{font:600 16px var(--font-mono);flex:none}
+.shbtn .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.shnow{flex:1.1 1 0;min-width:0;display:grid;align-content:center;justify-items:center;text-align:center;line-height:1.25}
+.shnow b{font-weight:600;font-size:16px}
+.shnow span{font:400 12px var(--font-mono);color:var(--muted)}
+.pageslide{display:grid;gap:14px;will-change:transform,opacity}
+
+.viewbar{display:grid;gap:6px;padding:8px 0 2px;border-bottom:1px solid var(--rule)}
+.vrow{display:flex;align-items:center;gap:8px;min-width:0}
+.vrow .tlabel{flex:none;min-width:76px}
+.vrow input[type=range]{flex:1 1 auto;min-width:60px;height:44px;margin:0;accent-color:var(--ink);cursor:pointer}
+.vrow input[type=range][disabled]{opacity:.35;cursor:default}
+.vrow output{flex:none;min-width:5.6em;text-align:right;font:400 12.5px var(--font-mono);color:var(--ink);white-space:nowrap}
+.vb{
+  flex:none;min-width:44px;min-height:44px;padding:0 10px;font:500 17px var(--font-mono);color:var(--ink);background:var(--bg);
+  border:1px solid var(--grid-2);border-radius:6px;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;
+}
+.vb.wide{font:500 14px var(--font-ui);padding:0 14px}
+.vb:hover:not([disabled]){border-color:var(--line)}
+.vb:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.vb[disabled]{opacity:.38;cursor:default}
+.vb[hidden]{display:none}
+.srch input[type=search]{
+  flex:1 1 auto;min-width:0;min-height:44px;padding:0 12px;font:400 15px var(--font-ui);color:var(--ink);background:var(--bg);
+  border:1px solid var(--grid-2);border-radius:6px;
+}
+.srch input[type=search]:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.srch output{min-width:4.2em}
+.srlist{display:grid;gap:0;max-height:260px;overflow:auto;border:1px solid var(--rule);border-radius:6px;margin:2px 0 6px}
+.srlist[hidden]{display:none}
+.srit{
+  display:grid;gap:1px;text-align:left;padding:8px 12px;border:0;border-bottom:1px solid var(--grid);background:var(--bg);color:var(--ink);
+  font:400 14px var(--font-ui);cursor:pointer;min-height:48px;
+}
+.srit:last-of-type{border-bottom:0}
+.srit b{font:500 13px var(--font-mono);color:var(--muted)}
+.srit small{font:400 12px var(--font-mono);color:var(--muted)}
+.srit.on,.srit:hover{background:var(--fill)}
+.srit.on{box-shadow:inset 3px 0 0 #d9480f}
+.srlist .hint2{padding:6px 12px}
+
+#scene .fnd{fill:rgba(255,150,0,.14);stroke:#d9480f;stroke-width:2.2;pointer-events:none}
+#scene .fnd.cur{stroke-width:3.6;fill:rgba(255,150,0,.22);animation:fndp 1.1s ease-in-out infinite}
+@keyframes fndp{50%{stroke-opacity:.3}}
+@media (prefers-reduced-motion:reduce){#scene .fnd.cur{animation:none}}
+
+.cvadd{margin-top:6px}
+.dlg .acct .btn{flex:1 1 auto}
+body.big .shbtn{min-height:56px;font-size:15px}
+body.big .vb{min-width:50px;min-height:50px}
+body.big .vrow input[type=range]{height:50px}
+body.big .srch input[type=search]{min-height:50px;font-size:16px}
+@media (max-width:560px){
+  .vrow .tlabel{display:none}
+  .vrow.pan{display:grid;grid-template-columns:52px 52px 1fr 52px 52px;gap:6px 6px;align-items:center}
+  .vrow.pan #pHome{grid-area:1/1}.vrow.pan #pL{grid-area:1/2}.vrow.pan #pVal{grid-area:1/3;text-align:center;min-width:0}
+  .vrow.pan #pR{grid-area:1/4}.vrow.pan #pEnd{grid-area:1/5}.vrow.pan #pRange{grid-area:2/1/3/6;width:100%}
+  .vrow.zm{display:grid;grid-template-columns:52px 1fr auto;gap:6px 6px;align-items:center}
+  .vrow.zm #zOut{grid-area:1/1}.vrow.zm #zRange{grid-area:1/2;width:100%}.vrow.zm #zIn{grid-area:1/3;width:100%}
+  .vrow.zm #zVal{grid-area:2/1/3/3;text-align:left;min-width:0;font-size:13px}.vrow.zm #zFit{grid-area:2/3;width:100%}
+  .shbtn .tt{font-size:13px}
+  .shbtn{flex-direction:column;gap:0;justify-content:center;padding:4px 6px;line-height:1.2}
+  .vrow output{min-width:4.4em;font-size:12px}
+}
 </style>
 </head>
 <body>
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.1.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.2.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -405,14 +479,7 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
   </header>
 
   <div class="toolbar">
-    <span class="tlabel">Масштаб</span>
-    <div class="zoom" role="group" aria-label="Масштаб">
-      <button type="button" data-z="1" aria-pressed="true">×1</button>
-      <button type="button" data-z="2" aria-pressed="false">×2</button>
-      <button type="button" data-z="3" aria-pressed="false">×3</button>
-      <button type="button" data-z="4" aria-pressed="false">×4</button>
-    </div>
-    <span class="tnote">Полку можно прокручивать вбок</span>
+    <span class="tnote">Масштаб, перемещение и поиск — под полкой. Ctrl и колесо мыши: масштаб.</span>
     <span class="tsp"></span>
     <div class="xgroup">
       <button class="btn" id="auto" type="button">Расставить автоматически</button>
@@ -424,6 +491,13 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
 
   <div class="legend" id="legend" role="group" aria-label="Обозначения переплёта"></div>
 
+  <nav class="shelfnav" id="shelfnav" aria-label="Переход между полками">
+    <button type="button" class="shbtn" id="shUp"><span class="ar" aria-hidden="true">▲</span><span class="tt" id="shUpT"></span></button>
+    <div class="shnow" aria-live="polite"><b id="shNowT"></b><span id="shNowS"></span></div>
+    <button type="button" class="shbtn" id="shDown"><span class="ar" aria-hidden="true">▼</span><span class="tt" id="shDownT"></span></button>
+  </nav>
+
+  <div class="pageslide" id="pageSlide">
   <div class="stage haslog" id="stage">
   <div class="scroller" id="scroller">
     <svg id="scene" viewBox="0 0 1160 620" width="100%" role="img" aria-label="Полка и стопки книг, книги можно перетаскивать на полку.">
@@ -447,6 +521,7 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
       <text class="cap" x="90" y="402">Книги: перетащите на полку или нажмите на книгу, затем на место на полке. Описание — в карточке ниже.</text>
       <g id="piles"></g>
       <g id="stock"></g>
+      <g id="found"></g>
       <g id="float"></g>
       <g id="ghost"></g>
       <g id="hitlayer"></g>
@@ -455,11 +530,40 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
   <aside class="chlog" id="chlog" aria-label="Журнал полки"></aside>
   </div>
 
+  <section class="viewbar" aria-label="Перемещение, масштаб и поиск по полке">
+    <div class="vrow pan">
+      <span class="tlabel">Положение</span>
+      <button type="button" class="vb" id="pHome" aria-label="К началу полки">|‹</button>
+      <button type="button" class="vb" id="pL" aria-label="Сдвинуть полку влево">‹</button>
+      <input type="range" id="pRange" min="0" max="1000" step="1" value="0" aria-label="Положение по полке">
+      <button type="button" class="vb" id="pR" aria-label="Сдвинуть полку вправо">›</button>
+      <button type="button" class="vb" id="pEnd" aria-label="К концу полки">›|</button>
+      <output id="pVal" for="pRange"></output>
+    </div>
+    <div class="vrow zm">
+      <span class="tlabel">Масштаб</span>
+      <button type="button" class="vb" id="zOut" aria-label="Уменьшить">−</button>
+      <input type="range" id="zRange" min="0" max="1000" step="1" value="0" aria-label="Масштаб полки">
+      <button type="button" class="vb" id="zIn" aria-label="Увеличить">+</button>
+      <output id="zVal" for="zRange">×1</output>
+      <button type="button" class="vb wide" id="zFit" title="Вся полка по ширине экрана">Вписать</button>
+    </div>
+    <div class="vrow srch">
+      <label class="sr" for="srQ">Поиск по полке</label>
+      <input type="search" id="srQ" placeholder="Поиск: номер, название, автор…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+      <button type="button" class="vb" id="srPrev" aria-label="Предыдущая найденная книга" disabled hidden>‹</button>
+      <output id="srCnt" for="srQ" hidden></output>
+      <button type="button" class="vb" id="srNext" aria-label="Следующая найденная книга" disabled hidden>›</button>
+      <button type="button" class="vb" id="srClear" aria-label="Очистить поиск" hidden>✕</button>
+    </div>
+    <div class="srlist" id="srList" hidden></div>
+  </section>
+
   <div class="panel">
     <section class="card book" aria-live="polite">
       <h2>Книга</h2>
       <div class="cardrow">
-        <div class="coverbox"><img id="coverPhoto" alt="" hidden decoding="async"><svg id="cover" viewBox="0 0 140 210" role="img" aria-label="Обложка выбранной книги"></svg><p class="cvsrc" id="cvsrc" hidden></p></div>
+        <div class="coverbox"><img id="coverPhoto" alt="" hidden decoding="async"><svg id="cover" viewBox="0 0 140 210" role="img" aria-label="Обложка выбранной книги"></svg><p class="cvsrc" id="cvsrc" hidden></p><button type="button" class="link cvadd" id="cvAdd">Добавить фото…</button></div>
         <div class="bookinfo">
           <p class="bcode" id="bcode"></p>
           <p class="bname" id="bname"></p>
@@ -491,6 +595,7 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
   </div>
 
   <p class="foot" id="foot"></p>
+  </div>
 </main>
 
 <div class="dock" id="dock" hidden role="region" aria-label="Действия с книгой">
@@ -524,7 +629,9 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
     <div class="sec">
       <h3>Вид</h3>
       <label class="chk"><input type="checkbox" id="sCovers"><span>Показывать фото обложек (папка covers)</span></label>
+      <label class="chk"><input type="checkbox" id="sSpines"><span>Показывать фото корешков на книгах (папка spines)</span></label>
       <label class="chk"><input type="checkbox" id="sLog"><span>Журнал полки справа от полки</span></label>
+      <label class="fld"><span>Номера полок растут</span><select id="sShDir"><option value="down">вниз: 227 сверху, 229 снизу</option><option value="up">вверх: 229 сверху, 227 снизу</option></select></label>
       <label class="fld"><span>Крупный интерфейс</span><select id="sBig"><option value="auto">Автоматически: на телефоне</option><option value="on">Всегда</option><option value="off">Выключен</option></select></label>
       <label class="fld"><span>Шаг кнопок ‹ › на полке, мм</span><select id="sStep"><option value="5">5</option><option value="10">10</option><option value="25">25</option></select></label>
     </div>
@@ -556,6 +663,39 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
   </div>
 </dialog>
 
+<dialog id="dlgPh" aria-labelledby="phT">
+  <div class="dlg">
+    <h2 id="phT">Фото книг</h2>
+    <p class="dstat" id="phCnt"></p>
+    <div class="sec">
+      <h3>Папка с компьютера</h3>
+      <p class="hint2">Программа берёт фото из папки по номеру книги: <code>10065.jpg</code> это обложка, <code>10065_корешок.jpg</code> это корешок. Подойдёт и папка выгрузки Telegram Desktop.</p>
+      <div class="acct"><button class="btn primary" id="phDir" type="button">Подключить папку…</button><button class="btn" id="phFiles" type="button">Выбрать файлы…</button></div>
+      <p class="hint2" id="phDirNote"></p>
+      <div class="acct" id="phDirAct" hidden><button class="btn" id="phRescan" type="button">Прочитать папку заново</button><button class="btn" id="phForget" type="button">Отключить папку</button></div>
+      <button type="button" class="link" id="phName">Как называть файлы</button>
+      <input type="file" id="phDirIn" hidden webkitdirectory multiple>
+      <input type="file" id="phFilesIn" hidden multiple accept="image/*,.json,application/json">
+      <input type="file" id="phOne" hidden accept="image/*" multiple>
+    </div>
+    <div class="sec">
+      <h3>Открытый канал Telegram</h3>
+      <p class="hint2">Фото берутся по ссылкам из столбца «Telegram пост». Нужен свой бесплатный Worker (адрес-посредник): так Telegram разрешает забрать картинки. Или используйте выгрузку Telegram Desktop через папку выше.</p>
+      <label class="fld"><span>Адрес Worker</span><input type="url" id="phWk" placeholder="https://имя.ваш-логин.workers.dev" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <div class="acct"><button class="btn primary" id="phTg" type="button">Скачать недостающие фото</button><button class="btn" id="phTgAll" type="button">Скачать все заново</button></div>
+      <p class="dstat" id="phTgStat" aria-live="polite"></p>
+      <button type="button" class="link" id="phHow">Как подключить Telegram: подробно</button>
+    </div>
+    <p class="dstat" id="phStat" aria-live="polite"></p>
+    <div class="sec">
+      <h3>Память устройства</h3>
+      <p class="hint2">Фото сохраняются в браузере, поэтому показываются сразу и без интернета.</p>
+      <div class="acct"><button class="btn" id="phClear" type="button">Удалить мои фото с устройства</button></div>
+    </div>
+    <div class="actions"><button class="btn primary" id="phOk" type="button">Готово</button></div>
+  </div>
+</dialog>
+
 <dialog id="dlgInfo" aria-labelledby="infT">
   <div class="dlg">
     <h2 id="infT"></h2>
@@ -584,7 +724,7 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.1.0'};
+var APP={name:'Геометрия Полки',version:'1.2.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -607,8 +747,9 @@ var SEED={"sheet":"228 С 15.10","columns":[{"label":"Код книги","origin
 
 /* ===== Настройки (хранятся в браузере) ===== */
 var CFG_KEY='gp.settings.v1';
-var CFG={falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,
-  gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''}};
+function defaultCfg(){return {falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,spines:true,shDir:'down',zoom:0,phWorker:'',
+  gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''}};}
+var CFG=defaultCfg();
 function loadCfg(){
   try{
     var r=JSON.parse(localStorage.getItem(CFG_KEY)||'null');
@@ -1059,7 +1200,9 @@ function loadDataset(raw,opts){
     var r=roleOf(c.label);colRole.push(r);
     if(r&&roles[r]==null) roles[r]=i;
   });
-  DS={sheet:raw.sheet,columns:raw.columns,rows:raw.rows,roles:roles,colRole:colRole,trunc:!!raw.trunc,src:raw.src||'file',at:Date.now()};
+  DS={sheet:raw.sheet,columns:raw.columns,rows:raw.rows,roles:roles,colRole:colRole,trunc:!!raw.trunc,src:raw.src||'file',at:Date.now(),hash:raw.hash};
+  DS.shelf=shelfIdOf(DS);NAV.cur=DS.shelf;
+  if(raw.test) NAV.test[DS.shelf]=raw;else NAV.real[DS.shelf]=raw;
   buildUnits();
   undoStack=[];flashId=null;statusNote='';arm=null;pileSig='#';
   var hasLay=roles.where!=null&&roles.px!=null&&roles.orient!=null,res=null,saved=readSaved(DS.sheet);
@@ -1080,7 +1223,10 @@ function loadDataset(raw,opts){
   syncButtons();
   renderLog();
   updateSource();
+  updateShelfNav();
+  if(SR.q) searchRun(SR.q,false);else searchRender();
   if(el.scroller) el.scroller.scrollLeft=0;
+  syncViewbar();
   return res;
 }
 
@@ -1150,6 +1296,7 @@ function placedList(){
 function initEls(){
   ['scene','scroller','grid','books','ruler','stock','float','ghost','hitlayer','piles','plate','cover',
    'bcode','bname','bauthor','binfo','side','sVol','sSL','sFree','sStock','msg','undo','clear','file','menubar','dock','dockT','dockName','dockInfo','dkLL','dkL','dkOk','dkR','dkRR','dkLie','dkTake','dkCancel','coverPhoto','cvsrc','stage','chlog','mbItems','mbBurger','mbStatus','mbStx','srcnote','auto','gsync','dlgSet','dlgInfo','infT','infB','infOk','sFalls','sThin','sLean','sCovers','sLog','sBig','sStep','gMode','gUrl','gTabs','gGen','gOauth','gCid','gAcct','gIn','gOut','gAuto','gTest','gLoad','gStat','gHelp','setReset','setOk',
+   'found','pageSlide','shelfnav','shUp','shUpT','shDown','shDownT','shNowT','shNowS','pHome','pL','pRange','pR','pEnd','pVal','zOut','zRange','zIn','zVal','zFit','srQ','srPrev','srCnt','srNext','srClear','srList','cvAdd','sSpines','sShDir','dlgPh','phCnt','phDir','phFiles','phDirNote','phDirAct','phRescan','phForget','phName','phDirIn','phFilesIn','phOne','phWk','phTg','phTgAll','phTgStat','phHow','phStat','phClear','phOk',
    'sub','foot','legend','dlg','dFile','dSheet','dStat','dGen','dGenL','dCols','dAll','dNone','dCancel','dOk'
   ].forEach(function(id){el[id]=$(id);});
 }
@@ -1172,18 +1319,25 @@ function spineMarks(kind,L,t){
 
 function unitShape(u,o){
   o=o||{};
-  var L=u.h,t=u.t,x0=-L/2,y0=-t/2,c=PALETTE[u.color].fill;
-  var s='<rect x="'+x0+'" y="'+y0+'" width="'+L+'" height="'+t+'" fill="'+c+'" stroke="#fff" stroke-width=".8"/>'+spineMarks(u.bk,L,t);
-  var pad=u.bk==='hard'?CAP+3:6,AZ=Math.min(60,L*0.28);
-  var tx0=x0+pad+3,zoneW=(x0+L-pad-3-AZ-6)-tx0;
-  var lay=layoutSpine(u.title,zoneW,t),n=lay.lines.length,fs=lay.fs;
-  lay.lines.forEach(function(ln,i){
-    var by=(i-(n-1)/2)*fs*1.15+fs*0.35;
-    s+='<text class="sp" x="'+tx0.toFixed(1)+'" y="'+by.toFixed(2)+'" font-size="'+fs.toFixed(2)+'">'+esc(ln)+'</text>';
-  });
-  if(u.short){
-    var afs=Math.max(3,Math.min(8.5,AZ/(u.short.length*0.58),t*0.62));
-    s+='<text class="sp" x="'+(x0+L-pad-3).toFixed(1)+'" y="'+(afs*0.35).toFixed(2)+'" font-size="'+afs.toFixed(2)+'" text-anchor="end" fill-opacity=".88">'+esc(u.short)+'</text>';
+  var L=u.h,t=u.t,x0=-L/2,y0=-t/2,c=PALETTE[u.color].fill,lie=o.lie!==false;
+  var sp=CFG.spines!==false?imgUrl('s',u.code):'';
+  var s='<rect x="'+x0+'" y="'+y0+'" width="'+L+'" height="'+t+'" fill="'+c+'" stroke="#fff" stroke-width=".8"/>';
+  if(sp){
+    /* фото корешка: стоит книга или лежит, голова книги сверху или справа */
+    s+=spineSvg(sp,L,t,lie)+'<rect x="'+x0+'" y="'+y0+'" width="'+L+'" height="'+t+'" fill="none" stroke="rgba(20,30,40,.42)" stroke-width=".7"/>';
+  }else{
+    s+=spineMarks(u.bk,L,t);
+    var pad=u.bk==='hard'?CAP+3:6,AZ=Math.min(60,L*0.28);
+    var tx0=x0+pad+3,zoneW=(x0+L-pad-3-AZ-6)-tx0;
+    var lay=layoutSpine(u.title,zoneW,t),n=lay.lines.length,fs=lay.fs;
+    lay.lines.forEach(function(ln,i){
+      var by=(i-(n-1)/2)*fs*1.15+fs*0.35;
+      s+='<text class="sp" x="'+tx0.toFixed(1)+'" y="'+by.toFixed(2)+'" font-size="'+fs.toFixed(2)+'">'+esc(ln)+'</text>';
+    });
+    if(u.short){
+      var afs=Math.max(3,Math.min(8.5,AZ/(u.short.length*0.58),t*0.62));
+      s+='<text class="sp" x="'+(x0+L-pad-3).toFixed(1)+'" y="'+(afs*0.35).toFixed(2)+'" font-size="'+afs.toFixed(2)+'" text-anchor="end" fill-opacity=".88">'+esc(u.short)+'</text>';
+    }
   }
   if(o.flash) s+='<rect class="flash" x="'+x0+'" y="'+y0+'" width="'+L+'" height="'+t+'"/>';
   if(o.sel) s+='<rect class="selo" x="'+(x0-1.3)+'" y="'+(y0-1.3)+'" width="'+(L+2.6)+'" height="'+(t+2.6)+'"/>';
@@ -1265,7 +1419,7 @@ function renderAll(){
   UNITS.forEach(function(u){
     if(u.where!=='stock') return;
     var p=pos[u.id];
-    s+='<g transform="translate('+p.cx+' '+p.cy+')">'+unitShape(u,{sel:sel.id===u.id})+'</g>';
+    s+='<g transform="translate('+p.cx+' '+p.cy+')"'+dimA(u)+'>'+unitShape(u,{sel:sel.id===u.id,lie:true})+'</g>';
     hits.push({kind:'stock',prio:0,u:u,x0:p.cx-u.h/2,x1:p.cx+u.h/2,y0:p.cy-u.t/2,y1:p.cy+u.t/2,cx:p.cx,cy:p.cy});
   });
   el.stock.innerHTML=s;
@@ -1273,14 +1427,14 @@ function renderAll(){
   var placed=placedList(),st='',ly='';
   UNITS.forEach(function(u){
     if(u.where!=='shelf') return;
-    var o={sel:sel.id===u.id,flash:u.id===flashId},c;
+    var o={sel:sel.id===u.id,flash:u.id===flashId,lie:u.mode==='lie'},c;
     if(u.mode==='stand'){
       c=shelfCenter(u,u.x,'stand');
-      st+='<g transform="translate('+c.cx+' '+c.cy+') rotate(90)">'+unitShape(u,o)+'</g>';
+      st+='<g transform="translate('+c.cx+' '+c.cy+') rotate(90)"'+dimA(u)+'>'+unitShape(u,o)+'</g>';
       hits.push({kind:'shelf',prio:1,u:u,x0:c.cx-u.t/2,x1:c.cx+u.t/2,y0:FLOOR-u.h,y1:FLOOR,cx:c.cx,cy:c.cy});
     }else{
       c=shelfCenter(u,u.x,'lie',placed);
-      ly+='<g transform="translate('+c.cx+' '+c.cy+')">'+unitShape(u,o)+'</g>';
+      ly+='<g transform="translate('+c.cx+' '+c.cy+')"'+dimA(u)+'>'+unitShape(u,o)+'</g>';
       hits.push({kind:'shelf',prio:2,u:u,x0:c.cx-u.h/2,x1:c.cx+u.h/2,y0:c.cy-u.t/2,y1:c.cy+u.t/2,cx:c.cx,cy:c.cy});
     }
   });
@@ -1291,6 +1445,7 @@ function renderAll(){
     hs+='<rect x="'+(h.x0-pad)+'" y="'+(h.y0-pad)+'" width="'+(h.x1-h.x0+2*pad)+'" height="'+(h.y1-h.y0+2*pad)+'"/>';
   });
   el.hitlayer.innerHTML=hs;
+  drawFound();
   drawArm();
   updateDock();
 
@@ -1476,7 +1631,7 @@ function drawArm(){
   setGhost(g,u);
   var c=armCenter(g);
   el.float.setAttribute('transform','translate('+c.cx.toFixed(1)+' '+c.cy.toFixed(1)+')'+(arm.lie?'':' rotate(90)'));
-  el.float.innerHTML=unitShape(u,{});
+  el.float.innerHTML=unitShape(u,{lie:arm.lie});
   el.float.classList.add('armed');
   var pad=hitPad(),w=arm.lie?u.h:u.t,hgt=arm.lie?u.t:u.h,y0=arm.lie?c.cy-u.t/2:FLOOR-u.h;
   /* Прямоугольник под пальцем не пересоздаём: иначе браузер посреди свайпа решит, что это прокрутка, и отменит жест. */
@@ -1688,21 +1843,23 @@ function doAuto(){
 }
 function afterChange(){saveLayoutSoon();}
 
-/* ===== Фото обложек из папки covers/<код>.jpg ===== */
+/* ===== Фото обложки: из памяти устройства, без ожидания ===== */
 function setCoverPhoto(u){
-  var img=el.coverPhoto,src=u&&u.code?'covers/'+u.code+'.jpg':'';
+  var img=el.coverPhoto,url=(CFG.covers&&u&&u.code)?imgUrl('c',u.code):'';
   img.hidden=true;el.cover.style.display='';el.cvsrc.hidden=true;
-  if(!CFG.covers||!src) return;
-  img.dataset.for=src;
+  if(!url) return;
+  img.dataset.for=url;
   img.alt='Обложка: '+u.title;
-  img.onload=function(){
-    if(img.dataset.for!==src) return;
+  var org=ORGN[IMGORG.c[u.code]||'o']||'';
+  function show(){
+    if(img.dataset.for!==url) return;
     img.hidden=false;el.cover.style.display='none';el.cvsrc.hidden=false;
-    el.cvsrc.textContent='Фото обложки: oldbook.kz';
-  };
-  img.onerror=function(){if(img.dataset.for===src){img.hidden=true;el.cover.style.display='';el.cvsrc.hidden=true;}};
-  if(img.getAttribute('src')===src&&img.complete&&img.naturalWidth) img.onload();
-  else img.src=src;
+    el.cvsrc.textContent='Фото обложки: '+org+(IMG.s[u.code]?'. Корешок: '+(ORGN[IMGORG.s[u.code]||'o']||''):'');
+  }
+  img.onload=show;
+  img.onerror=function(){if(img.dataset.for===url){img.hidden=true;el.cover.style.display='';el.cvsrc.hidden=true;}};
+  if(img.getAttribute('src')===url&&img.complete&&img.naturalWidth) show();
+  else img.src=url;
 }
 
 /* ===== Перетаскивание ===== */
@@ -1811,6 +1968,7 @@ function loop(ts){
     if(over) wantLie=float.lie?float.cy<FLOOR-hh*0.71:float.cy<FLOOR-hh*0.84;
     float.lie=wantLie;
     float.target=wantLie?0:90;
+    setSpineRot(wantLie);
     setGhost(over?computeGhost(float):null,float.u);
   }else{
     var tw=float.tween;
@@ -1834,6 +1992,7 @@ function loop(ts){
 function tweenTo(cx,cy,angle,dur,done){
   float.mode='tween';
   float.tween={f:{cx:float.cx,cy:float.cy,a:float.angle},t:{cx:cx,cy:cy,a:angle},t0:0,dur:reduce?0:dur,done:done};
+  setSpineRot(angle===0);
   ensureLoop();
 }
 
@@ -1852,7 +2011,10 @@ function onDown(e){
   var p=toMM(e.clientX,e.clientY);
   if(arm&&inGhost(p)){startSwipe(e);return;}
   var h=pick(p);
-  if(!h) return;
+  if(!h){
+    if(e.pointerType==='mouse'&&el.scroller.scrollWidth>el.scroller.clientWidth+2) startPan(e);
+    return;
+  }
   var u=h.u;
   if(arm) disarm(true);
   sel={id:u.id};
@@ -1883,7 +2045,7 @@ function onDown(e){
   }
   float.startX=e.clientX;float.startY=e.clientY;float.t0=performance.now();
   u.where='float';
-  el.float.innerHTML=unitShape(u);
+  el.float.innerHTML=unitShape(u,{lie:float.target===0});
   drawFloat();
   try{el.scene.setPointerCapture(e.pointerId);}catch(_){}
   el.scene.style.cursor='grabbing';
@@ -1892,6 +2054,7 @@ function onDown(e){
 }
 
 function onMove(e){
+  if(panning){if(e.pointerId===panning.id) el.scroller.scrollLeft=panning.l-(e.clientX-panning.x);return;}
   if(swipe){if(e.pointerId===swipe.id) swipeMove(e);return;}
   if(float){
     if(e.pointerId!==activeId) return;
@@ -1904,6 +2067,7 @@ function onMove(e){
 }
 
 function onUp(e){
+  if(panning){if(e.pointerId===panning.id){panning=null;el.scene.style.cursor='default';try{el.scene.releasePointerCapture(e.pointerId);}catch(_){}}return;}
   if(swipe){if(e.pointerId===swipe.id) swipeEnd(e);return;}
   if(!float||float.mode!=='drag'||e.pointerId!==activeId) return;
   var cancel=e.type==='pointercancel';
@@ -1955,15 +2119,6 @@ function release(cancel){
   });
 }
 
-function setZoom(z){
-  var sc=el.scroller,ratio=sc.scrollWidth?(sc.scrollLeft+sc.clientWidth/2)/sc.scrollWidth:0.5;
-  el.scene.style.width=(z*100)+'%';
-  Array.prototype.forEach.call(document.querySelectorAll('.zoom button'),function(b){
-    b.setAttribute('aria-pressed',String(+b.getAttribute('data-z')===z));
-  });
-  sc.scrollLeft=ratio*sc.scrollWidth-sc.clientWidth/2;
-  if(!float&&DS) renderAll();
-}
 
 /* ======================================================================
    Excel: чтение и запись .xlsx (JSZip, без интернета)
@@ -2379,7 +2534,7 @@ async function exportXlsx(){
   var stamp=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
   var info=[
     ['Параметр','Значение'],
-    ['Проект',APP.name],['Версия',APP.version],['Дата выгрузки',stamp],['Лист-источник',DS.sheet],['Источник данных',DS.src==='google'?'Google Таблица':(DS.src==='excel'?'Файл Excel':'Демо-данные')],
+    ['Проект',APP.name],['Версия',APP.version],['Дата выгрузки',stamp],['Лист-источник',DS.sheet],['Источник данных',DS.src==='google'?'Google Таблица':(DS.src==='excel'?'Файл Excel':(DS.src==='test'?'Тестовая полка':'Демо-данные'))],
     ['Полка, мм (длина × высота × глубина)',SHELF.W+' × '+SHELF.H+' × '+SHELF.D],
     ['Книг на полке',on+' из '+UNITS.length],['Свободно на полу, мм',freeFloor(placedList())]
   ];
@@ -2432,8 +2587,8 @@ function showInfo(title,html){
 function aboutDlg(){
   showInfo('О программе',
     '<p><b>'+esc(APP.name)+'</b> '+esc(APP.version)+'</p>'+
-    '<p>Раскладка книг по полке 1000 × 260 × 240 мм. Книги берутся из вашей Google Таблицы или файла Excel; фото обложек лежат в папке <code>covers</code>.</p>'+
-    '<p class="hint2">Обложки: фото с oldbook.kz, уменьшенные для показа на экране.</p>');
+    '<p>Раскладка книг по полке 1000 × 260 × 240 мм. Книги берутся из вашей Google Таблицы или файла Excel; фото обложек лежат в папке <code>covers</code>, корешков в папке <code>spines</code>.</p>'+
+    '<p class="hint2">Фото: oldbook.kz и Telegram-канал OldBookKz, уменьшены для показа на экране. Свои фото можно подключить папкой с компьютера.</p>');
 }
 function helpUse(){
   showInfo('Как пользоваться',
@@ -2444,15 +2599,17 @@ function helpUse(){
     '<li><b>Клавиши.</b> ← → сдвиг, Shift+← → прыжок, Enter подтвердить, Esc отмена, L положить или поставить, Delete снять с полки, Ctrl+Z отменить.</li>'+
     '<li><b>Падают ли книги.</b> Мягкая и тонкая твёрдая книга (тоньше порога в настройках) стоит только вплотную к толстой твёрдой. Без опоры она упадёт, и программа не даст её так поставить.</li>'+
     '<li><b>Новая полка</b> расставляется автоматически слева направо. Что не влезло по длине, ложится сверху, остальное лежит пачкой под полкой.</li>'+
+    '<li><b>Масштаб и перемещение.</b> Под полкой: ползунок и кнопки масштаба, «Вписать», кнопки ‹ › и ползунок положения. Щипок двумя пальцами, Ctrl и колесо мыши меняют масштаб, мышью можно тащить пустое место. Клавиши: + − 0, стрелки, Home, End.</li>'+
+    '<li><b>Поиск.</b> Строка под полкой ищет по номеру, названию, автору и другим столбцам. Найденные книги подсвечиваются, остальные тускнеют. Enter или кнопки ‹ › переходят к следующей.</li>'+
+    '<li><b>Другие полки.</b> Кнопки ▲ и ▼ над полкой (или Alt и стрелки) листают к соседним полкам с анимацией. Сейчас 227 и 229 тестовые.</li>'+
+    '<li><b>Фото.</b> В меню «Фото» подключается папка с компьютера или выгрузка Telegram. Фото сохраняются на устройстве и показываются сразу.</li>'+
     '</ol>');
 }
 
 /* ===== Меню ===== */
 var MENUS=[],menuActs={};
 function setZoomMenu(z){return function(){setZoom(z);};}
-function zoomNow(){
-  var w=el.scene.style.width;return w?Math.round(parseFloat(w)/100):1;
-}
+function zNear(n){return Math.abs(Z-n)<0.03;}
 function buildMenuDefs(){
   MENUS=[
     {id:'app',label:'Геометрия Полки',ver:true,items:[
@@ -2476,14 +2633,29 @@ function buildMenuDefs(){
       {l:'Убрать всё в стопки',a:doClear,dis:function(){return !UNITS.some(onShelf);}}
     ]},
     {id:'view',label:'Вид',items:[
-      {l:'Масштаб ×1',a:setZoomMenu(1),chk:function(){return zoomNow()===1;}},
-      {l:'Масштаб ×2',a:setZoomMenu(2),chk:function(){return zoomNow()===2;}},
-      {l:'Масштаб ×3',a:setZoomMenu(3),chk:function(){return zoomNow()===3;}},
-      {l:'Масштаб ×4',a:setZoomMenu(4),chk:function(){return zoomNow()===4;}},
+      {l:'Вписать полку по ширине',k:'0',a:fitZoom},
+      {l:'Крупнее',k:'+',a:function(){zoomStep(1.25);}},
+      {l:'Мельче',k:'−',a:function(){zoomStep(0.8);}},
+      {l:'Масштаб ×2',a:setZoomMenu(2),chk:function(){return zNear(2);}},
+      {l:'Масштаб ×4',a:setZoomMenu(4),chk:function(){return zNear(4);}},
+      {sep:1},
+      {l:'Полка выше',k:'Alt+↑',a:function(){goShelf(-1);}},
+      {l:'Полка ниже',k:'Alt+↓',a:function(){goShelf(1);}},
+      {l:'Поиск по полке',k:'/',a:searchFocus},
       {sep:1},
       {l:'Фото обложек',a:function(){CFG.covers=!CFG.covers;saveCfg();renderInfo();},chk:function(){return CFG.covers;}},
+      {l:'Фото корешков',a:function(){CFG.spines=CFG.spines===false;saveCfg();renderAll();},chk:function(){return CFG.spines!==false;}},
       {l:'Журнал полки справа',a:function(){CFG.log=!CFG.log;saveCfg();applyLog();renderLog();},chk:function(){return CFG.log;}},
       {l:'Крупный интерфейс',a:function(){CFG.big=isBig()?'off':'on';saveCfg();applyBig();},chk:function(){return isBig();}}
+    ]},
+    {id:'photos',label:'Фото',items:[
+      {l:'Подключить папку с компьютера…',a:openPhotos},
+      {l:'Фото из Telegram…',a:openPhotos},
+      {l:'Добавить фото выбранной книге…',a:addPhotoSel},
+      {sep:1},
+      {l:'Прочитать папку заново',a:phScanDir,dis:function(){return !PH.dir;}},
+      {l:'Как подключить Telegram',a:helpTelegram},
+      {l:'Как называть фото в папке',a:helpPhotos}
     ]},
     {id:'help',label:'Справка',items:[
       {l:'Как пользоваться',a:helpUse},
@@ -2625,6 +2797,10 @@ function updateSource(){
     txt='Excel · '+DS.sheet;
     note='Источник: файл Excel, лист «'+DS.sheet+'».';
     btn=gsConfigured()?'<button type="button" data-act="refresh">Взять из Google Таблицы</button>':'<button type="button" data-act="settings">Подключить Google Таблицу</button>';
+  }else if(DS.src==='test'){
+    txt='Тест · полка '+DS.shelf;
+    note='Тестовая полка '+DS.shelf+': книги взяты из демо-данных, чтобы проверить переходы между полками. Свои данные по этой полке пришлите позже.';
+    btn='<button type="button" data-act="back">Вернуться к основной полке</button>';
   }else{
     txt='Демо-данные';
     note='Сейчас показаны демо-данные: лист «'+DS.sheet+'». Своя полка берётся из Google Таблицы.';
@@ -2634,6 +2810,7 @@ function updateSource(){
   el.mbStx.textContent=GS.busy?'Обновляю…':(GS.err?'Ошибка Google':txt);
   el.mbStatus.className='mb-status '+cls;
   el.mbStatus.title=GS.err?GS.err:note;
+  if(IMGSTAT.busy) note+=' Загружаю фото книг: '+IMGSTAT.done+' из '+IMGSTAT.total+'.';
   el.srcnote.innerHTML=esc(GS.err?('Google: '+GS.err):note)+' '+btn;
 }
 
@@ -2646,7 +2823,7 @@ function applyGMode(){
 function gStat(msg,err){el.gStat.textContent=msg||'';el.gStat.className='dstat'+(err?' err':'');}
 function fillSettings(){
   el.sFalls.checked=!!CFG.falls;el.sThin.value=CFG.thin;el.sLean.value=CFG.lean;
-  el.sCovers.checked=!!CFG.covers;el.sLog.checked=!!CFG.log;el.sBig.value=CFG.big;el.sStep.value=String(CFG.step);
+  el.sCovers.checked=!!CFG.covers;el.sSpines.checked=CFG.spines!==false;el.sShDir.value=CFG.shDir==='up'?'up':'down';el.sLog.checked=!!CFG.log;el.sBig.value=CFG.big;el.sStep.value=String(CFG.step);
   el.gUrl.value=CFG.gs.url;el.gTabs.value=CFG.gs.tabs;el.gGen.value=CFG.gs.gen;el.gCid.value=CFG.gs.cid;el.gAuto.value=String(CFG.gs.auto);
   applyGMode();updateAcct();gStat('');
   el.setReset.textContent='Сбросить настройки';el.setReset._arm=false;
@@ -2660,6 +2837,8 @@ function initSettings(){
   el.sThin.addEventListener('change',function(){var v=+el.sThin.value;CFG.thin=isFinite(v)?Math.max(0,Math.min(60,v)):15;el.sThin.value=CFG.thin;saveCfg();});
   el.sLean.addEventListener('change',function(){var v=Math.round(+el.sLean.value);CFG.lean=isFinite(v)?Math.max(1,Math.min(30,v)):8;el.sLean.value=CFG.lean;saveCfg();});
   el.sCovers.addEventListener('change',function(){CFG.covers=el.sCovers.checked;saveCfg();renderInfo();});
+  el.sSpines.addEventListener('change',function(){CFG.spines=el.sSpines.checked;saveCfg();renderAll();});
+  el.sShDir.addEventListener('change',function(){CFG.shDir=el.sShDir.value;saveCfg();updateShelfNav();});
   el.sLog.addEventListener('change',function(){CFG.log=el.sLog.checked;saveCfg();applyLog();renderLog();});
   el.sBig.addEventListener('change',function(){CFG.big=el.sBig.value;saveCfg();applyBig();});
   el.sStep.addEventListener('change',function(){CFG.step=+el.sStep.value||10;saveCfg();});
@@ -2684,14 +2863,15 @@ function initSettings(){
   el.setOk.addEventListener('click',function(){hideSet();});
   el.setReset.addEventListener('click',function(){
     if(!el.setReset._arm){el.setReset._arm=true;el.setReset.textContent='Нажмите ещё раз: сбросить';return;}
-    CFG={falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''}};
-    saveCfg();applyBig();applyLog();renderLog();renderInfo();fillSettings();gsTimer();updateSource();
+    CFG=defaultCfg();
+    saveCfg();applyBig();applyLog();renderLog();renderAll();renderInfo();fillSettings();gsTimer();updateSource();updateShelfNav();
   });
   el.infOk.addEventListener('click',function(){hideInfo();});
   el.srcnote.addEventListener('click',function(e){
     var a=e.target.getAttribute?e.target.getAttribute('data-act'):null;
     if(a==='refresh') gsRefresh({});
     else if(a==='settings') openSettings();
+    else if(a==='back') backToMain();
   });
   el.chlog.addEventListener('change',function(e){
     if(e.target&&e.target.id==='logSel'){logShelf=e.target.value;renderLog();}
@@ -2932,6 +3112,7 @@ async function gsBuild(tab){
 async function gsRefresh(o){
   o=o||{};
   if(GS.busy) return;
+  if(o.silent&&DS&&DS.src==='test') return;
   if(!gsConfigured()){
     if(!o.silent){openSettings();gStat('Сначала укажите ссылку на Google Таблицу.',true);}
     return;
@@ -2957,7 +3138,7 @@ async function gsRefresh(o){
     if(o.silent&&(float||arm)){return;}
     if(DS) saveLayout();
     var res=loadDataset(raw,{sync:true});
-    DS.hash=h;CFG.gs.last=raw.sheet;saveCfg();
+    DS.hash=h;raw.hash=h;CFG.gs.last=raw.sheet;saveCfg();
     var msg;
     if(res&&(res.added||res.removed||res.changed||res.moved||res.reput)){
       msg='Обновлено из Google: добавлено '+res.added+', убрано '+res.removed+', изменено '+res.changed+(res.reput?', переставлено '+res.reput:'')+(res.moved?', перенесено в стопку '+res.moved:'')+'.';
@@ -3056,6 +3237,906 @@ function helpGoogle(){
     '<p class="hint2">Кнопка «Обновить из Google Таблицы» (или Ctrl+R) берёт свежие данные и сравнивает с тем, что уже стоит на полке. Новая книга встаёт на свободное место, а если места нет, ложится пачкой под полкой. Убранные из таблицы книги исчезают с полки. Что именно добавлено, убрано и изменено, записывается в журнал справа от полки. Можно включить автообновление в настройках.</p></div>');
 }
 
+/* ===== Фото книг: обложки и корешки, быстрый показ и хранение на устройстве =====
+   Откуда берутся картинки:
+   1) «свои» (src u): из папки на компьютере, из выгрузки Telegram, добавленные вручную. Они главнее.
+   2) «из программы» (src b): папки covers/ и spines/ рядом с index.html. Список и версии зашиты в BUNDLE.
+   Всё хранится в IndexedDB браузера и держится в памяти готовыми адресами (blob:), поэтому при загрузке полки
+   картинки уже на месте. Сервис-воркер sw.js дополнительно кеширует файлы, и полка открывается даже без интернета. */
+var BUNDLE={"c":{"10065":["86164c27","t"],"10670":["397b3b50","o"],"10737":["f4c494e4","o"],"10838":["c784126e","o"],"10937":["aed55df8","o"],"10938":["8ba1c825","o"],"11036":["287f3c7c","o"],"11064":["2f7ac8ee","o"],"11068":["343908ac","o"],"11069":["030023f6","o"],"11070":["7a72697e","o"],"11139":["9717b0d8","o"],"11155":["3f9e1a79","o"],"11240":["a6e7c0f3","o"],"12034":["310f5632","o"],"12139":["a2a2e900","o"],"12641":["dec5c7a0","o"],"13527":["fd90600a","o"],"14113":["e26a2582","o"],"1993":["0b52f143","o"],"2644":["651ec371","t"],"2716":["61dbd679","o"],"4065":["2cd9e273","o"],"4167":["62709578","t"],"4909":["c5c6fce7","o"],"5958":["e6426ca9","o"],"6744":["487d1471","o"],"7527":["727f362c","o"],"8953":["18e0f88e","o"],"9073":["ae59dbd9","o"],"9233":["04abd7ec","o"],"9236":["7157ccfe","t"]},"s":{"10737":["078a02f8","o"],"10937":["aa9cca37","o"],"11064":["c05f0213","o"],"11070":["b432a96b","o"],"11139":["a2a40a3f","o"],"11155":["fdca5df6","o"],"11240":["a43cf47e","o"],"12034":["45d0e68a","o"],"12139":["fc0e0f1d","o"],"13527":["8a8f2853","o"],"14113":["86364a5a","o"],"1993":["2c609c8b","o"],"2716":["d4e45055","o"],"4909":["18d9cabd","o"],"5958":["cc1476cc","o"],"6744":["1e80fc18","o"],"7527":["b6b0dd78","o"],"8953":["2ae781d2","o"],"9073":["6c94d231","o"],"9233":["81082f50","o"]}};
+var IMG={c:{},s:{}},IMGSRC={c:{},s:{}},IMGORG={c:{},s:{}},IMGKEEP={};
+var ORGN={o:'oldbook.kz',t:'Telegram',d:'папка на компьютере',f:'добавлено вручную'};
+var IMGSTAT={total:0,done:0,busy:false},imgT=0,imgReady=false;
+var IDBN='gp-photos',IDBS='img',idbP=null;
+
+function idb(){
+  if(idbP) return idbP;
+  idbP=new Promise(function(res,rej){
+    if(!window.indexedDB){rej(new Error('IndexedDB недоступна'));return;}
+    var r;
+    try{r=indexedDB.open(IDBN,1);}catch(e){rej(e);return;}
+    r.onupgradeneeded=function(){if(!r.result.objectStoreNames.contains(IDBS)) r.result.createObjectStore(IDBS);};
+    r.onsuccess=function(){res(r.result);};
+    r.onerror=function(){rej(r.error);};
+    r.onblocked=function(){rej(new Error('база занята'));};
+  });
+  idbP.catch(function(){});
+  return idbP;
+}
+function idbRun(mode,fn){
+  return idb().then(function(d){
+    return new Promise(function(res,rej){
+      var t=d.transaction(IDBS,mode),s=t.objectStore(IDBS),out;
+      try{out=fn(s);}catch(e){rej(e);return;}
+      t.oncomplete=function(){res(out&&'result' in out?out.result:out);};
+      t.onerror=t.onabort=function(){rej(t.error||new Error('сбой записи'));};
+    });
+  });
+}
+function idbPut(k,v){return idbRun('readwrite',function(s){return s.put(v,k);});}
+function idbGet(k){return idbRun('readonly',function(s){return s.get(k);});}
+function idbDel(k){return idbRun('readwrite',function(s){return s.delete(k);});}
+function idbAll(){
+  return idb().then(function(d){
+    return new Promise(function(res,rej){
+      var out=[],t=d.transaction(IDBS,'readonly'),c=t.objectStore(IDBS).openCursor();
+      c.onsuccess=function(){var q=c.result;if(q){out.push([q.key,q.value]);q.continue();}else res(out);};
+      c.onerror=function(){rej(c.error);};
+    });
+  });
+}
+
+function imgUrl(kind,code){return code?(IMG[kind][code]||''):'';}
+function imgPrio(kind,code,src){return !(IMGSRC[kind][code]==='u'&&src!=='u');}
+/* Поставить картинку в память. Свои фото главнее встроенных. */
+function imgSet(kind,code,src,blobOrUrl,org){
+  if(!imgPrio(kind,code,src)) return false;
+  var old=IMG[kind][code],url;
+  if(typeof blobOrUrl==='string') url=blobOrUrl;
+  else{try{url=URL.createObjectURL(blobOrUrl);}catch(_){return false;}}
+  IMG[kind][code]=url;IMGSRC[kind][code]=src;IMGORG[kind][code]=org||'o';
+  if(old&&old!==url&&old.indexOf('blob:')===0){try{URL.revokeObjectURL(old);}catch(_){}delete IMGKEEP[old];}
+  var im=new Image();im.decoding='async';im.src=url;
+  if(im.decode) im.decode().catch(function(){});
+  IMGKEEP[url]=im;
+  return true;
+}
+function imgDrop(kind,code){
+  var old=IMG[kind][code];
+  delete IMG[kind][code];delete IMGSRC[kind][code];delete IMGORG[kind][code];
+  if(old&&old.indexOf('blob:')===0){try{URL.revokeObjectURL(old);}catch(_){}delete IMGKEEP[old];}
+}
+function imgKey(src,kind,code){return src+':'+kind+':'+code;}
+function imgCounts(){
+  var r={c:0,s:0,cu:0,su:0};
+  Object.keys(IMG.c).forEach(function(k){r.c++;if(IMGSRC.c[k]==='u') r.cu++;});
+  Object.keys(IMG.s).forEach(function(k){r.s++;if(IMGSRC.s[k]==='u') r.su++;});
+  return r;
+}
+function imgChanged(){
+  clearTimeout(imgT);
+  imgT=setTimeout(function(){
+    if(!DS) return;
+    updateSource();
+    if(!float) renderAll();
+    renderInfo();
+    if(typeof phRefresh==='function') phRefresh();
+  },110);
+}
+
+/* Сжать присланное фото: обложка до 640 пикселей в высоту, корешок до 900, JPEG. */
+async function imgShrink(blob,kind){
+  var max=kind==='s'?900:640;
+  try{
+    var bmp=await createImageBitmap(blob),w=bmp.width,h=bmp.height,k=Math.min(1,max/Math.max(w,h));
+    if(k>=1&&blob.size<260000&&/jpeg/.test(blob.type)){if(bmp.close) bmp.close();return {blob:blob,w:w,h:h};}
+    var cw=Math.max(1,Math.round(w*k)),ch=Math.max(1,Math.round(h*k)),cv=document.createElement('canvas');
+    cv.width=cw;cv.height=ch;
+    var cx=cv.getContext('2d');cx.fillStyle='#fff';cx.fillRect(0,0,cw,ch);cx.drawImage(bmp,0,0,cw,ch);
+    if(bmp.close) bmp.close();
+    var out=await new Promise(function(r){cv.toBlob(r,'image/jpeg',0.86);});
+    return out?{blob:out,w:cw,h:ch}:null;
+  }catch(_){
+    if(blob.size<1500000&&/^image\//.test(blob.type||'')){return {blob:blob,w:0,h:0};}
+    return null;
+  }
+}
+function guessKind(w,h){return (w>0&&h/w>3)?'s':'c';}
+
+/* Сохранить «своё» фото: в память, в IndexedDB. */
+async function imgSaveUser(kind,code,blob,org,sig){
+  imgSet(kind,code,'u',blob,org);
+  try{await idbPut(imgKey('u',kind,code),{blob:blob,org:org,sig:sig||'',t:Date.now()});}catch(_){}
+  imgChanged();
+}
+
+/* Из IndexedDB в память (быстро, без сети). */
+async function imgLoadStored(){
+  var rows=[];
+  try{rows=await idbAll();}catch(_){return 0;}
+  var n=0;
+  rows.forEach(function(r){
+    var m=/^([ub]):([cs]):(.+)$/.exec(r[0]);
+    if(!m||!r[1]||!r[1].blob) return;
+    var src=m[1],kind=m[2],code=m[3];
+    if(src==='b'){
+      var cur=BUNDLE[kind]&&BUNDLE[kind][code];
+      if(!cur||cur[0]!==r[1].v) return;
+    }
+    if(imgSet(kind,code,src,r[1].blob,r[1].org)) n++;
+  });
+  return n;
+}
+
+/* Встроенные картинки: недостающее или обновлённое догружается и сохраняется. */
+function bundleUrl(kind,code,v){return (kind==='c'?'covers/':'spines/')+code+'.jpg'+(v?'?v='+v:'');}
+async function imgSyncBundle(){
+  var todo=[],here={};
+  UNITS.forEach(function(u){if(u.code) here[u.code]=1;});
+  ['c','s'].forEach(function(kind){
+    Object.keys(BUNDLE[kind]||{}).forEach(function(code){
+      var e=BUNDLE[kind][code],have=IMG[kind][code];
+      if(IMGSRC[kind][code]==='u') return;
+      if(have&&IMGSRC[kind][code]==='b') return;
+      todo.push({kind:kind,code:code,v:e[0],org:e[1]||'o',pri:here[code]?0:1});
+    });
+  });
+  todo.sort(function(a,b){return a.pri-b.pri;});
+  IMGSTAT={total:todo.length,done:0,busy:todo.length>0};
+  var q=todo.slice(),workers=[];
+  async function one(t){
+    var url=bundleUrl(t.kind,t.code,t.v);
+    try{
+      var r=await fetch(url,{cache:'force-cache'});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      var b=await r.blob();
+      imgSet(t.kind,t.code,'b',b,t.org);
+      try{await idbPut(imgKey('b',t.kind,t.code),{blob:b,v:t.v,org:t.org,t:Date.now()});}catch(_){}
+    }catch(_){
+      /* открыто с диска (file://): fetch закрыт, картинку можно показать прямо по пути */
+      if(location.protocol==='file:') imgSet(t.kind,t.code,'b',bundleUrl(t.kind,t.code,''),t.org);
+    }
+    IMGSTAT.done++;
+    if(IMGSTAT.done%6===0||IMGSTAT.done===IMGSTAT.total) imgChanged();
+  }
+  for(var i=0;i<4;i++) workers.push((async function(){while(q.length) await one(q.shift());})());
+  await Promise.all(workers);
+  IMGSTAT.busy=false;
+  if(todo.length) imgChanged();
+}
+
+async function imgInit(){
+  var n=await imgLoadStored();
+  imgReady=true;
+  return n;
+}
+
+function setSpineRot(lie){
+  var i=el.float.querySelector('.spimg');
+  if(i) i.setAttribute('transform','rotate('+(lie?90:-90)+')');
+}
+function spineSvg(url,L,t,lie){
+  return '<image class="spimg" href="'+url+'" x="'+(-t/2).toFixed(2)+'" y="'+(-L/2).toFixed(2)+'" width="'+t+'" height="'+L+'" preserveAspectRatio="none" transform="rotate('+(lie?90:-90)+')"/>';
+}
+
+/* ===== Фото из папки на компьютере, из выгрузки Telegram и по ссылкам из таблицы ===== */
+var PH={dir:null,busy:false,last:''};
+var TG_WORKER_SRC="export default {\n  async fetch(req) {\n    const u = new URL(req.url);\n    const t = u.searchParams.get('u') || '';\n    const cors = {'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*'};\n    if (req.method === 'OPTIONS') return new Response(null, {headers: cors});\n    if (!/^https:\\/\\/(t\\.me|cdn[0-9]*\\.(telesco\\.pe|cdn-telegram\\.org))\\//.test(t)) {\n      return new Response('Только t.me и серверы картинок Telegram', {status: 403, headers: cors});\n    }\n    const r = await fetch(t, {headers: {'User-Agent': 'Mozilla/5.0'}, cf: {cacheTtl: 3600}});\n    const h = new Headers(r.headers);\n    Object.keys(cors).forEach(k => h.set(k, cors[k]));\n    return new Response(r.body, {status: r.status, headers: h});\n  }\n};\n";
+
+function phKnown(){
+  var k={};
+  UNITS.forEach(function(u){if(u.code) k[u.code]=1;});
+  SEED.rows.forEach(function(r){if(r[0]!=null) k[String(r[0])]=1;});
+  Object.keys(NAV.real).forEach(function(id){
+    var raw=NAV.real[id],ci=-1;
+    raw.columns.forEach(function(c,i){if(ci<0&&roleOf(c.label)==='code') ci=i;});
+    if(ci>=0) raw.rows.forEach(function(r){var v=r[ci];if(v!=null&&v!=='') k[typeof v==='number'?String(Math.round(v)):str(v)]=1;});
+  });
+  Object.keys(BUNDLE.c).concat(Object.keys(BUNDLE.s)).forEach(function(c){k[c]=1;});
+  return k;
+}
+function phCodeFromName(name,known){
+  var base=String(name).replace(/\.[^.]*$/,''),toks=base.split(/\D+/).filter(Boolean);
+  if(/^photo_\d+@/i.test(name)) return '';
+  for(var i=0;i<toks.length;i++){var t=toks[i].replace(/^0+(?=\d)/,'');if(t.length>=2&&t.length<=7&&known[t]) return t;}
+  return '';
+}
+function phKindFromPath(p){
+  p=String(p).toLowerCase();
+  if(/корешок|корешк|spine|spin(?![a-z])/.test(p)) return 's';
+  if(/обложк|cover|front|face|титул/.test(p)) return 'c';
+  return '';
+}
+
+/* Обход папки (File System Access API) */
+async function phWalk(handle,prefix,depth,out){
+  if(out.length>20000||depth>5) return;
+  for await (var pair of handle.entries()){
+    var name=pair[0],h=pair[1];
+    if(h.kind==='directory'){await phWalk(h,prefix+name+'/',depth+1,out);}
+    else out.push({name:name,rel:prefix+name,get:(function(hh){return function(){return hh.getFile();};})(h)});
+  }
+}
+function phItemsFromFileList(list){
+  var out=[];
+  Array.prototype.forEach.call(list,function(f){
+    var rel=f.webkitRelativePath||f.name;
+    if(f.webkitRelativePath) rel=rel.split('/').slice(1).join('/')||f.name;
+    out.push({name:f.name,rel:rel,get:function(){return Promise.resolve(f);}});
+  });
+  return out;
+}
+function relKey(p){return String(p||'').replace(/\\/g,'/').toLowerCase().split('/').slice(-2).join('/');}
+
+function tgText(t){
+  if(typeof t==='string') return t;
+  if(Array.isArray(t)) return t.map(function(x){return typeof x==='string'?x:(x&&x.text)||'';}).join('');
+  return '';
+}
+
+/* Одна картинка → хранилище. Возвращает 'c', 's' или ''. */
+async function phStore(item,code,kindHint,org,stats,force){
+  var file;
+  try{file=await item.get();}catch(_){stats.bad++;return '';}
+  if(!file||file.size>30*1048576){stats.bad++;return '';}
+  var sig=file.size+':'+(file.lastModified||0),prev=null;
+  if(!force){
+    try{
+      var a=await idbGet(imgKey('u','c',code)),b=await idbGet(imgKey('u','s',code));
+      if((a&&a.sig===sig&&a.org===org)||(b&&b.sig===sig&&b.org===org)){stats.same++;return '';}
+    }catch(_){}
+  }
+  var shr=await imgShrink(file,kindHint||'c');
+  if(!shr){stats.bad++;return '';}
+  var kind=kindHint||guessKind(shr.w,shr.h);
+  if(!kindHint&&shr.w>0&&shr.h/shr.w>3) kind='s';
+  await imgSaveUser(kind,code,shr.blob,org,sig);
+  stats[kind]++;
+  return kind;
+}
+
+/* Выгрузка Telegram Desktop: result.json + папка photos */
+async function phTelegramJson(jsonItem,items,known,stats){
+  var data;
+  try{data=JSON.parse(await (await jsonItem.get()).text());}catch(_){stats.bad++;return 0;}
+  var chats=[];
+  if(Array.isArray(data.messages)) chats.push(data.messages);
+  else if(data.chats&&data.chats.list) data.chats.list.forEach(function(c){if(Array.isArray(c.messages)) chats.push(c.messages);});
+  var byRel={},byName={};
+  items.forEach(function(it){byRel[relKey(it.rel)]=it;byName[String(it.name).toLowerCase()]=it;});
+  var n=0;
+  for(var ci=0;ci<chats.length;ci++){
+    var last={code:'',id:0,ts:0};
+    for(var mi=0;mi<chats[ci].length;mi++){
+      var m=chats[ci][mi];
+      if(!m||typeof m!=='object') continue;
+      var tx=tgText(m.text),cm=/№\s*(\d{2,7})/.exec(tx),code=cm?cm[1].replace(/^0+(?=\d)/,''):'';
+      var ts=+m.date_unixtime||0,id=+m.id||0;
+      if(code){last={code:code,id:id,ts:ts};}
+      var p=typeof m.photo==='string'&&m.photo.charAt(0)!=='('?m.photo:'';
+      if(!p) continue;
+      var useCode=code||((last.code&&id-last.id>0&&id-last.id<=10&&Math.abs(ts-last.ts)<=180)?last.code:'');
+      if(!useCode||!known[useCode]) continue;
+      var it=byRel[relKey(p)]||byName[String(p).replace(/\\/g,'/').split('/').pop().toLowerCase()];
+      if(!it){stats.miss++;continue;}
+      var extra=!code;
+      var have=IMGSRC.c[useCode]==='u'&&IMGORG.c[useCode]==='t';
+      if(extra&&have){
+        /* вторая фотография поста: берём её, только если это узкий корешок */
+        var f2;
+        try{f2=await it.get();}catch(_){continue;}
+        var sh2=await imgShrink(f2,'c');
+        if(sh2&&sh2.w>0&&sh2.h/sh2.w>3&&IMGSRC.s[useCode]!=='u'){await imgSaveUser('s',useCode,sh2.blob,'t',f2.size+':'+(f2.lastModified||0));stats.s++;n++;}
+        continue;
+      }
+      var r=await phStore(it,useCode,'','t',stats,false);
+      if(r) n++;
+    }
+  }
+  stats.tg+=n;
+  return n;
+}
+
+async function phImport(items,sourceOrg){
+  var stats={c:0,s:0,tg:0,same:0,bad:0,miss:0,skip:0,files:0};
+  PH.busy=true;phSay('Читаю файлы…');
+  var known=phKnown();
+  var jsons=items.filter(function(it){return /^result\.json$/i.test(it.name);});
+  var rest=items.filter(function(it){return !/^result\.json$/i.test(it.name)&&/\.(jpe?g|png|webp|gif|bmp|avif)$/i.test(it.name);});
+  try{
+    for(var j=0;j<jsons.length;j++) await phTelegramJson(jsons[j],items,known,stats);
+    var cnt=0;
+    for(var i=0;i<rest.length&&i<6000;i++){
+      var it=rest[i],code=phCodeFromName(it.name,known);
+      if(!code){if(!(jsons.length&&/^photo_\d+@/i.test(it.name))) stats.skip++;continue;}
+      var kind=phKindFromPath(it.rel);
+      await phStore(it,code,kind,sourceOrg,stats,false);
+      if(++cnt%12===0) phSay('Готово '+cnt+' из '+rest.length+'…');
+    }
+    stats.files=rest.length;
+  }catch(err){
+    PH.busy=false;
+    phSay('Не удалось прочитать: '+(err&&err.message?err.message:err),true);
+    return stats;
+  }
+  PH.busy=false;
+  var parts=[];
+  if(stats.c) parts.push('обложек '+stats.c);
+  if(stats.s) parts.push('корешков '+stats.s);
+  var msg=parts.length?'Добавлено: '+parts.join(', ')+'.':'Новых фото нет.';
+  if(stats.same) msg+=' Без изменений: '+stats.same+'.';
+  if(stats.skip) msg+=' Не опознано по коду: '+stats.skip+'.';
+  if(stats.miss) msg+=' В выгрузке нет файлов: '+stats.miss+'.';
+  if(stats.bad) msg+=' Не открылось: '+stats.bad+'.';
+  phSay(msg);
+  if(parts.length) note(msg,6000);
+  PH.last=msg;
+  phRefresh();
+  return stats;
+}
+
+/* Папка */
+async function phPickDir(){
+  if(window.showDirectoryPicker){
+    try{
+      var h=await window.showDirectoryPicker({id:'gp-photos',mode:'read'});
+      PH.dir=h;
+      try{await idbPut('m:dir',h);}catch(_){}
+      await phScanDir();
+    }catch(err){
+      if(err&&err.name==='AbortError') return;
+      phSay('Не удалось открыть папку: '+(err&&err.message?err.message:err),true);
+    }
+  }else{
+    el.phDirIn.click();
+  }
+}
+async function phScanDir(){
+  if(!PH.dir) return;
+  try{
+    var perm=await PH.dir.queryPermission({mode:'read'});
+    if(perm!=='granted') perm=await PH.dir.requestPermission({mode:'read'});
+    if(perm!=='granted'){phSay('Нет доступа к папке «'+PH.dir.name+'». Нажмите «Прочитать папку заново» и разрешите.',true);phRefresh();return;}
+    phSay('Читаю папку «'+PH.dir.name+'»…');
+    var out=[];
+    await phWalk(PH.dir,'',0,out);
+    await phImport(out,'d');
+  }catch(err){phSay('Папка недоступна: '+(err&&err.message?err.message:err),true);}
+  phRefresh();
+}
+async function phLoadDir(){
+  try{
+    var h=await idbGet('m:dir');
+    if(!h||!h.queryPermission) return;
+    PH.dir=h;
+    var perm=await h.queryPermission({mode:'read'});
+    if(perm==='granted') phScanDir();
+  }catch(_){}
+  phRefresh();
+}
+async function phForget(){
+  PH.dir=null;
+  try{await idbDel('m:dir');}catch(_){}
+  phSay('Папка отключена. Уже загруженные фото остались в памяти устройства.');
+  phRefresh();
+}
+async function phClearUser(){
+  try{
+    var rows=await idbAll();
+    for(var i=0;i<rows.length;i++){if(/^u:/.test(rows[i][0])) await idbDel(rows[i][0]);}
+  }catch(_){}
+  ['c','s'].forEach(function(k){Object.keys(IMG[k]).forEach(function(code){if(IMGSRC[k][code]==='u') imgDrop(k,code);});});
+  try{await imgSyncBundle();}catch(_){}
+  phSay('Свои фото удалены с устройства. Встроенные остались.');
+  imgChanged();
+}
+
+/* Фото для выбранной книги: «Добавить фото…» */
+function addPhotoSel(){
+  var u=byId(sel.id);
+  if(!u||!u.code){note('Выберите книгу с номером: фото привязываются к номеру.',4000);return;}
+  el.phOne.click();
+}
+async function phOneChosen(files){
+  var u=byId(sel.id);
+  if(!u||!u.code||!files||!files.length) return;
+  var stats={c:0,s:0,tg:0,same:0,bad:0,miss:0,skip:0};
+  var n=0;
+  for(var i=0;i<files.length&&i<2;i++){
+    var f=files[i],it={name:f.name,rel:f.name,get:function(ff){return function(){return Promise.resolve(ff);};}(f)};
+    var k=await phStore(it,u.code,phKindFromPath(f.name),'f',stats,true);
+    if(k) n++;
+  }
+  note(n?'Фото добавлено к книге №'+u.code+(stats.s&&!stats.c?' (корешок)':'')+'. Оно сохранено на этом устройстве.':'Не удалось прочитать фото.',5000);
+}
+
+/* Telegram по ссылкам из таблицы: нужен свой адрес-посредник (Cloudflare Worker), потому что t.me не отдаёт картинки другим сайтам. */
+function tgLinkOf(u){
+  var row=DS.rows[u.ri],i,v;
+  for(i=0;i<row.length;i++){
+    v=row[i];
+    if(typeof v==='string'){var m=/^https?:\/\/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/.exec(v.trim());if(m) return {ch:m[1],id:m[2]};}
+  }
+  return null;
+}
+function wkUrl(target){
+  var w=String(CFG.phWorker||'').trim().replace(/\/+$/,'');
+  return w+(w.indexOf('?')>=0?'&':'/?')+'u='+encodeURIComponent(target);
+}
+async function tgViaWorker(force){
+  if(!/^https:\/\//i.test(String(CFG.phWorker||'').trim())){
+    phTgSay('Сначала вставьте адрес Worker (см. инструкцию).',true);return;
+  }
+  if(!DS||!UNITS.length){phTgSay('Сначала загрузите полку.',true);return;}
+  var seen={},list=[];
+  UNITS.forEach(function(u){
+    if(!u.code||seen[u.code]) return;
+    seen[u.code]=1;
+    var have=IMG.c[u.code];
+    if(have&&!force) return;
+    var l=tgLinkOf(u);
+    if(l) list.push({u:u,l:l});
+  });
+  if(!list.length){phTgSay(force?'В таблице нет ссылок на посты Telegram.':'У всех книг с ссылкой на пост уже есть обложка.');return;}
+  PH.busy=true;
+  var ok=0,fail=0;
+  for(var i=0;i<list.length;i++){
+    var it=list[i];
+    phTgSay('Telegram: '+(i+1)+' из '+list.length+' (№'+it.u.code+')…');
+    try{
+      var r=await fetch(wkUrl('https://t.me/'+it.l.ch+'/'+it.l.id+'?embed=1&mode=tme'));
+      if(!r.ok) throw new Error('Worker ответил '+r.status);
+      var html=await r.text(),doc=new DOMParser().parseFromString(html,'text/html');
+      var wraps=Array.prototype.slice.call(doc.querySelectorAll('.tgme_widget_message_photo_wrap,.tgme_widget_message_grouped_wrap a'));
+      var urls=[];
+      wraps.forEach(function(a){
+        var s=(a.getAttribute('style')||''),m=/url\(['"]?([^'")]+)['"]?\)/.exec(s);
+        if(m&&urls.indexOf(m[1])<0) urls.push(m[1]);
+      });
+      if(!urls.length) throw new Error('в посте нет фото');
+      var got=0;
+      for(var k=0;k<urls.length&&k<2;k++){
+        var ir=await fetch(wkUrl(urls[k]));
+        if(!ir.ok) throw new Error('фото: '+ir.status);
+        var blob=await ir.blob(),sh=await imgShrink(blob,'c');
+        if(!sh) continue;
+        var kind=(sh.w>0&&sh.h/sh.w>3)?'s':(k===0?'c':'');
+        if(!kind) continue;
+        await imgSaveUser(kind,it.u.code,sh.blob,'t','tg:'+it.l.id);
+        got++;
+      }
+      if(got) ok++;else fail++;
+    }catch(err){
+      fail++;
+      if(i===0&&/Failed to fetch|NetworkError/i.test(String(err&&err.message))){
+        PH.busy=false;phTgSay('Не достучался до Worker. Проверьте адрес и что Worker запущен.',true);return;
+      }
+    }
+  }
+  PH.busy=false;
+  phTgSay('Готово: фото получено для '+ok+' из '+list.length+' книг'+(fail?', не получилось '+fail:'')+'.');
+  if(ok) note('Из Telegram получено фото: '+ok+'.',5000);
+  phRefresh();
+}
+
+/* ----- окно «Фото книг» ----- */
+function phSay(m,err){if(el.phStat){el.phStat.textContent=m||'';el.phStat.className='dstat'+(err?' err':'');}}
+function phTgSay(m,err){if(el.phTgStat){el.phTgStat.textContent=m||'';el.phTgStat.className='dstat'+(err?' err':'');}}
+function phRefresh(){
+  if(!el.dlgPh) return;
+  var c=imgCounts(),s='В памяти этого устройства: обложек '+c.c+(c.cu?' (своих '+c.cu+')':'')+', корешков '+c.s+(c.su?' (своих '+c.su+')':'')+'.';
+  if(IMGSTAT.busy) s+=' Загружаю встроенные: '+IMGSTAT.done+' из '+IMGSTAT.total+'.';
+  if(el.phCnt) el.phCnt.textContent=s;
+  if(el.phDirNote) el.phDirNote.textContent=PH.dir?('Подключена папка: «'+PH.dir.name+'»'):(window.showDirectoryPicker?'Папка не подключена.':'Папка не подключена. Этот браузер выбирает папку разово: фото сохраняются на устройство.');
+  if(el.phDirAct) el.phDirAct.hidden=!PH.dir;
+  if(el.phWk&&document.activeElement!==el.phWk) el.phWk.value=CFG.phWorker||'';
+}
+function openPhotos(){
+  phRefresh();
+  if(typeof el.dlgPh.showModal==='function'){if(!el.dlgPh.open) el.dlgPh.showModal();}else el.dlgPh.setAttribute('open','');
+}
+function hidePh(){if(typeof el.dlgPh.close==='function'&&el.dlgPh.open) el.dlgPh.close();else el.dlgPh.removeAttribute('open');}
+
+function helpTelegram(){
+  showInfo('Фото из Telegram: как подключить',
+    '<p class="hint2">Telegram не отдаёт картинки чужим сайтам напрямую, поэтому есть три надёжных способа. Начните с первого.</p>'+
+    '<div class="sec"><h3>1. Выгрузка Telegram Desktop, без посредников</h3>'+
+    '<ol class="how">'+
+    '<li>Установите Telegram Desktop на компьютер и откройте нужный канал.</li>'+
+    '<li>Нажмите на три точки в канале и выберите «Экспорт истории чата».</li>'+
+    '<li>Отметьте «Фотографии». Формат выберите «Машиночитаемый JSON». Укажите папку и нажмите «Экспортировать».</li>'+
+    '<li>Здесь откройте «Фото», нажмите «Подключить папку…» и выберите ту же папку. Фото сопоставятся по номеру в подписи («№10065. …»).</li>'+
+    '</ol></div>'+
+    '<div class="sec"><h3>2. Одно фото вручную, удобно на телефоне</h3>'+
+    '<ol class="how">'+
+    '<li>В карточке книги нажмите на ссылку «Telegram пост» и сохраните фото из канала.</li>'+
+    '<li>Вернитесь сюда, выберите книгу и нажмите «Добавить фото…». Широкое фото станет обложкой, узкая полоса станет корешком.</li>'+
+    '</ol></div>'+
+    '<div class="sec"><h3>3. Ссылки из таблицы, через свой Worker</h3>'+
+    '<ol class="how">'+
+    '<li>Зайдите на dash.cloudflare.com, раздел Workers &amp; Pages, нажмите Create, затем Hello World, Deploy.</li>'+
+    '<li>Нажмите Edit code, удалите весь код и вставьте код Worker (кнопка «Скопировать код Worker» ниже). Нажмите Deploy.</li>'+
+    '<li>Скопируйте адрес вида <code>https://имя.ваш-логин.workers.dev</code>.</li>'+
+    '<li>В окне «Фото книг» вставьте адрес в поле Worker и нажмите «Скачать недостающие фото». Программа откроет посты по столбцу «Telegram пост», достанет фото и сохранит их на устройстве.</li>'+
+    '</ol>'+
+    '<div class="actions" style="margin:0;padding:0;border:0;position:static;justify-content:flex-start"><button class="btn" id="tgCopy" type="button">Скопировать код Worker</button></div>'+
+    '<p class="hint2">Worker пропускает только t.me и серверы картинок Telegram. Он ваш и бесплатный в пределах обычных лимитов Cloudflare.</p></div>'+
+    '<p class="hint2">Для листов, которые вы пришлёте позже, фото можно подгрузить и через меня: я открою канал в браузере и добавлю обложки и корешки в папки <code>covers</code> и <code>spines</code>.</p>');
+  var b=$('tgCopy');
+  if(b) b.addEventListener('click',function(){
+    function done(){b.textContent='Скопировано';}
+    if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(TG_WORKER_SRC).then(done,function(){b.textContent='Не удалось: выделите и скопируйте из README';});
+    else b.textContent='Скопируйте из файла tools/telegram-worker.js';
+  });
+}
+function helpPhotos(){
+  showInfo('Как называть фото в папке',
+    '<ol class="how">'+
+    '<li><b>Обложка:</b> <code>10065.jpg</code> или <code>10065 обложка.jpg</code>.</li>'+
+    '<li><b>Корешок:</b> <code>10065_корешок.jpg</code> или <code>10065_spine.png</code>. Узкое высокое фото без подписи тоже считается корешком.</li>'+
+    '<li>Номер — это «Код книги» из таблицы. Вложенные папки читаются, расширения jpg, png, webp.</li>'+
+    '<li>Папка выгрузки Telegram Desktop (с файлом <code>result.json</code>) тоже подойдёт: номера берутся из подписей к постам.</li>'+
+    '<li>Фото сжимаются и сохраняются на этом устройстве, поэтому потом показываются сразу и без интернета.</li>'+
+    '</ol>');
+}
+
+function initPhotos(){
+  el.phDir.addEventListener('click',phPickDir);
+  el.phFiles.addEventListener('click',function(){el.phFilesIn.click();});
+  el.phDirIn.addEventListener('change',function(){
+    var l=el.phDirIn.files;
+    if(l&&l.length) phImport(phItemsFromFileList(l),'d');
+    el.phDirIn.value='';
+  });
+  el.phFilesIn.addEventListener('change',function(){
+    var l=el.phFilesIn.files;
+    if(l&&l.length) phImport(phItemsFromFileList(l),'d');
+    el.phFilesIn.value='';
+  });
+  el.phOne.addEventListener('change',function(){
+    var l=el.phOne.files;
+    if(l&&l.length) phOneChosen(Array.prototype.slice.call(l));
+    el.phOne.value='';
+  });
+  el.phRescan.addEventListener('click',phScanDir);
+  el.phForget.addEventListener('click',phForget);
+  el.phClear.addEventListener('click',function(){
+    if(!el.phClear._arm){el.phClear._arm=true;el.phClear.textContent='Нажмите ещё раз: удалить';setTimeout(function(){el.phClear._arm=false;el.phClear.textContent='Удалить мои фото с устройства';},4000);return;}
+    el.phClear._arm=false;el.phClear.textContent='Удалить мои фото с устройства';
+    phClearUser();
+  });
+  el.phWk.addEventListener('change',function(){CFG.phWorker=el.phWk.value.trim();saveCfg();});
+  el.phTg.addEventListener('click',function(){CFG.phWorker=el.phWk.value.trim();saveCfg();tgViaWorker(false);});
+  el.phTgAll.addEventListener('click',function(){CFG.phWorker=el.phWk.value.trim();saveCfg();tgViaWorker(true);});
+  el.phHow.addEventListener('click',function(){hidePh();setTimeout(helpTelegram,0);});
+  el.phName.addEventListener('click',function(){hidePh();setTimeout(helpPhotos,0);});
+  el.phOk.addEventListener('click',hidePh);
+  el.cvAdd.addEventListener('click',addPhotoSel);
+  /* перетащить файлы или папку прямо на окно */
+  document.addEventListener('dragover',function(e){if(e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0) e.preventDefault();});
+  document.addEventListener('drop',async function(e){
+    if(!e.dataTransfer||!e.dataTransfer.files||!e.dataTransfer.files.length) return;
+    var fl=e.dataTransfer.files,first=fl[0];
+    if(/\.xlsx?m?$/i.test(first.name)) return;
+    e.preventDefault();
+    var items=[];
+    try{
+      var its=e.dataTransfer.items?Array.prototype.slice.call(e.dataTransfer.items):[];
+      var handles=its.map(function(i){return i.getAsFileSystemHandle?i.getAsFileSystemHandle():null;});
+      var got=await Promise.all(handles);
+      for(var i=0;i<got.length;i++){
+        var h=got[i];
+        if(h&&h.kind==='directory') await phWalk(h,'',0,items);
+        else if(h&&h.kind==='file') items.push({name:h.name,rel:h.name,get:(function(hh){return function(){return hh.getFile();};})(h)});
+      }
+    }catch(_){}
+    if(!items.length) items=phItemsFromFileList(fl);
+    phImport(items,'d');
+  });
+}
+
+/* ===== Масштаб, перемещение по полке ===== */
+var ZMIN=1,ZMAX=8,Z=1,zSaveT=0,zRenderT=0;
+function zFromRange(v){return ZMIN*Math.pow(ZMAX/ZMIN,v/1000);}
+function zToRange(z){return Math.round(1000*Math.log(z/ZMIN)/Math.log(ZMAX/ZMIN));}
+function zoomNow(){return Z;}
+function zText(z){return '×'+(z<10?String(Math.round(z*10)/10):String(Math.round(z))).replace('.',',');}
+function autoZoom(){
+  var cw=el.scroller.clientWidth||320,need=isBig()?0.95:0.5;
+  return Math.max(1,Math.min(4,need*VW/cw));
+}
+function setZoom(z,ax,keep){
+  z=Math.max(ZMIN,Math.min(ZMAX,+z||1));
+  var sc=el.scroller,r=sc.getBoundingClientRect(),a=(ax==null?r.left+r.width/2:ax)-r.left;
+  var ratio=sc.scrollWidth?(sc.scrollLeft+a)/sc.scrollWidth:0.5;
+  Z=z;
+  el.scene.style.width=(z*100)+'%';
+  if(!keep) sc.scrollLeft=ratio*sc.scrollWidth-a;
+  syncViewbar();
+  clearTimeout(zRenderT);
+  zRenderT=setTimeout(function(){if(!float&&DS) renderAll();},90);
+  clearTimeout(zSaveT);
+  zSaveT=setTimeout(function(){CFG.zoom=Math.round(Z*1000)/1000;saveCfg();},500);
+}
+function syncViewbar(){
+  if(!el.zRange) return;
+  var sc=el.scroller,max=sc.scrollWidth-sc.clientWidth,s=scaleNow()||0.5,on=max>2;
+  el.zRange.value=zToRange(Z);
+  el.zVal.textContent=zText(Z);
+  el.zOut.disabled=Z<=ZMIN+0.001;
+  el.zIn.disabled=Z>=ZMAX-0.001;
+  Array.prototype.forEach.call(document.querySelectorAll('[data-z]'),function(b){b.setAttribute('aria-pressed',String(Math.abs(+b.getAttribute('data-z')-Z)<0.03));});
+  el.pRange.disabled=!on;
+  el.pHome.disabled=!on||sc.scrollLeft<=1;
+  el.pL.disabled=el.pHome.disabled;
+  el.pR.disabled=!on||sc.scrollLeft>=max-1;
+  el.pEnd.disabled=el.pR.disabled;
+  if(on&&document.activeElement!==el.pRange) el.pRange.value=Math.round(1000*sc.scrollLeft/max);
+  var lo=Math.max(0,Math.round(sc.scrollLeft/s-SX)),hi=Math.min(SHELF.W,Math.round((sc.scrollLeft+sc.clientWidth)/s-SX));
+  el.pVal.textContent=on?(lo+'–'+hi+' мм'):'вся полка';
+}
+function panTo(left,smooth){
+  var sc=el.scroller,max=Math.max(0,sc.scrollWidth-sc.clientWidth);
+  left=Math.max(0,Math.min(max,left));
+  if(smooth&&sc.scrollTo&&!reduce) sc.scrollTo({left:left,behavior:'smooth'});else sc.scrollLeft=left;
+}
+function panBy(f,smooth){panTo(el.scroller.scrollLeft+f*el.scroller.clientWidth,smooth);}
+function bindHold(b,dir){
+  var t1=0,t2=0;
+  function stop(){clearTimeout(t1);clearInterval(t2);t1=t2=0;}
+  b.addEventListener('pointerdown',function(e){
+    if((e.pointerType==='mouse'&&e.button!==0)||b.disabled) return;
+    stop();
+    panBy(dir*0.6,true);
+    t1=setTimeout(function(){t2=setInterval(function(){el.scroller.scrollLeft+=dir*el.scroller.clientWidth*0.07;},35);},420);
+  });
+  ['pointerup','pointercancel','pointerleave','blur'].forEach(function(ev){b.addEventListener(ev,stop);});
+  b.addEventListener('click',function(e){if(e.detail===0) panBy(dir*0.6,true);});
+  b.addEventListener('contextmenu',function(e){e.preventDefault();});
+}
+function zoomStep(f){setZoom(Z*f);}
+function fitZoom(){setZoom(1);panTo(0,false);}
+
+var panning=null,pinch=null;
+function startPan(e){
+  panning={id:e.pointerId,x:e.clientX,l:el.scroller.scrollLeft};
+  try{el.scene.setPointerCapture(e.pointerId);}catch(_){}
+  el.scene.style.cursor='grabbing';
+}
+function tdist(t){return Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY)||1;}
+function initView(){
+  el.zOut.addEventListener('click',function(){zoomStep(1/1.25);});
+  el.zIn.addEventListener('click',function(){zoomStep(1.25);});
+  el.zFit.addEventListener('click',fitZoom);
+  el.zRange.addEventListener('input',function(){setZoom(zFromRange(+el.zRange.value));});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-z]'),function(b){
+    b.addEventListener('click',function(){setZoom(+b.getAttribute('data-z'));});
+  });
+  bindHold(el.pL,-1);bindHold(el.pR,1);
+  el.pHome.addEventListener('click',function(){panTo(0,true);});
+  el.pEnd.addEventListener('click',function(){panTo(1e9,true);});
+  el.pRange.addEventListener('input',function(){
+    var sc=el.scroller;sc.scrollLeft=(+el.pRange.value/1000)*Math.max(0,sc.scrollWidth-sc.clientWidth);
+  });
+  var rafP=0;
+  el.scroller.addEventListener('scroll',function(){
+    if(rafP) return;
+    rafP=requestAnimationFrame(function(){rafP=0;syncViewbar();});
+  },{passive:true});
+  el.scroller.addEventListener('wheel',function(e){
+    if(!(e.ctrlKey||e.metaKey)) return;
+    e.preventDefault();
+    setZoom(Z*Math.exp(-e.deltaY*(e.deltaMode===1?0.05:0.0022)),e.clientX);
+  },{passive:false});
+  el.scroller.addEventListener('touchstart',function(e){
+    if(e.touches.length===2){
+      if(float&&float.mode==='drag') release(true);
+      pinch={d:tdist(e.touches),z:Z};
+    }
+  },{passive:true});
+  el.scroller.addEventListener('touchmove',function(e){
+    if(pinch&&e.touches.length===2){
+      e.preventDefault();
+      setZoom(pinch.z*tdist(e.touches)/pinch.d,(e.touches[0].clientX+e.touches[1].clientX)/2);
+    }
+  },{passive:false});
+  function endPinch(e){if(!e.touches||e.touches.length<2) pinch=null;}
+  el.scroller.addEventListener('touchend',endPinch,{passive:true});
+  el.scroller.addEventListener('touchcancel',endPinch,{passive:true});
+}
+
+/* ===== Поиск по полке ===== */
+var SR={q:'',ids:{},list:[],i:-1},srT=0;
+function normQ(s){return str(s).toLowerCase().replace(/ё/g,'е');}
+function unitHay(u){
+  if(u._hay) return u._hay;
+  var row=DS.rows[u.ri]||[];
+  u._hay=normQ([u.code,u.title,u.author].concat(row.filter(function(v){return v!=null&&typeof v!=='object';})).join(' '));
+  return u._hay;
+}
+function srActive(){return SR.list.length>0;}
+function dimA(u){return (SR.list.length&&!SR.ids[u.id])?' opacity=".28"':'';}
+function drawFound(){
+  if(!el.found) return;
+  if(!SR.list.length){el.found.innerHTML='';return;}
+  var s='',cur=SR.list[SR.i];
+  hits.forEach(function(h){
+    if(!SR.ids[h.u.id]) return;
+    var c=cur&&cur.id===h.u.id;
+    s+='<rect class="fnd'+(c?' cur':'')+'" x="'+(h.x0-3)+'" y="'+(h.y0-3)+'" width="'+(h.x1-h.x0+6)+'" height="'+(h.y1-h.y0+6)+'" rx="2"/>';
+  });
+  el.found.innerHTML=s;
+}
+function srWhere(u){return u.where==='shelf'?'на полке '+u.x+'–'+(u.x+(u.mode==='lie'?u.h:u.t))+' мм':'в стопке';}
+function searchRender(){
+  var n=SR.list.length;
+  var has=!!SR.q.trim();
+  el.srCnt.textContent=has?(n?(SR.i+1)+' из '+n:'нет'):'';
+  el.srPrev.disabled=el.srNext.disabled=n<2;
+  el.srPrev.hidden=el.srNext.hidden=el.srCnt.hidden=!has;
+  el.srClear.hidden=!SR.q;
+  if(!n){el.srList.hidden=true;el.srList.innerHTML='';return;}
+  el.srList.hidden=false;
+  el.srList.innerHTML=SR.list.slice(0,10).map(function(u,i){
+    return '<button type="button" class="srit'+(i===SR.i?' on':'')+'" data-i="'+i+'"><b>'+(u.code?'№'+esc(u.code)+' ':'')+'</b>'+esc(u.title)+'<small>'+esc(u.short||u.author||'')+' · '+esc(srWhere(u))+'</small></button>';
+  }).join('')+(n>10?'<p class="hint2">Показаны первые 10 из '+n+'. Листайте кнопками ‹ ›.</p>':'');
+}
+function searchRun(q,go){
+  SR.q=q;
+  var toks=normQ(q).split(/\s+/).filter(Boolean);
+  SR.list=(DS&&toks.length)?UNITS.filter(function(u){var h=unitHay(u);return toks.every(function(t){return h.indexOf(t)>=0;});}):[];
+  SR.ids={};SR.list.forEach(function(u){SR.ids[u.id]=1;});
+  SR.i=SR.list.length?0:-1;
+  searchRender();
+  if(go&&SR.i>=0) searchGo(0);else if(DS&&!float) renderAll();
+}
+function searchGo(i){
+  var n=SR.list.length;
+  if(!n) return;
+  SR.i=((i%n)+n)%n;
+  var u=SR.list[SR.i];
+  sel={id:u.id};flashId=u.id;
+  if(arm) disarm(true);
+  renderAll();
+  searchRender();
+  scrollToUnit(u);
+}
+function scrollToUnit(u){
+  var h=null;
+  hits.forEach(function(q){if(q.u===u) h=q;});
+  if(!h) return;
+  var s=scaleNow(),sc=el.scroller;
+  panTo(h.cx*s-sc.clientWidth/2,true);
+  var m=el.scene.getScreenCTM();
+  if(!m) return;
+  var pt=el.scene.createSVGPoint();pt.x=h.cx;pt.y=h.cy;
+  var q=pt.matrixTransform(m),mb=el.menubar?el.menubar.offsetHeight:0;
+  if(q.y<mb+30||q.y>window.innerHeight-170) window.scrollBy({top:q.y-window.innerHeight*0.4,behavior:reduce?'auto':'smooth'});
+}
+function searchFocus(){
+  el.srQ.focus();
+  if(el.srQ.scrollIntoView) el.srQ.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'});
+}
+function initSearch(){
+  el.srQ.addEventListener('input',function(){
+    clearTimeout(srT);
+    srT=setTimeout(function(){searchRun(el.srQ.value,true);},180);
+  });
+  el.srQ.addEventListener('keydown',function(e){
+    if(e.key==='Enter'){
+      e.preventDefault();clearTimeout(srT);
+      if(SR.q!==el.srQ.value) searchRun(el.srQ.value,true);
+      else searchGo(SR.i+(e.shiftKey?-1:1));
+    }else if(e.key==='Escape'){
+      el.srQ.value='';searchRun('',false);el.srQ.blur();
+    }
+  });
+  el.srNext.addEventListener('click',function(){searchGo(SR.i+1);});
+  el.srPrev.addEventListener('click',function(){searchGo(SR.i-1);});
+  el.srClear.addEventListener('click',function(){el.srQ.value='';searchRun('',false);el.srQ.focus();});
+  el.srList.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.srit'):null;
+    if(b) searchGo(+b.getAttribute('data-i'));
+  });
+}
+
+/* ===== Полки выше и ниже ===== */
+var NAV={cur:'',real:{},test:{}},navBusy=false;
+var TEST_IDS=['227','229'];
+function shelfIdOf(ds){
+  var best='',cnt=0,places={};
+  if(ds.roles.place!=null) ds.rows.forEach(function(r){
+    var p=str(r[ds.roles.place]);if(!p) return;
+    places[p]=(places[p]||0)+1;if(places[p]>cnt){cnt=places[p];best=p;}
+  });
+  if(/^\d{1,6}$/.test(best)) return best;
+  var m=/\d{2,6}/.exec(ds.sheet);
+  return m?m[0]:(best||ds.sheet);
+}
+function testRaw(id){
+  if(NAV.test[id]) return NAV.test[id];
+  var pi=-1,k=TEST_IDS.indexOf(id);
+  SEED.columns.forEach(function(c,i){if(pi<0&&roleOf(c.label)==='place') pi=i;});
+  if(k<0) k=Math.abs((+id)||0)%2;
+  var rows=[];
+  SEED.rows.forEach(function(r,i){if(i%2===k){var c=r.slice();if(pi>=0) c[pi]=+id;rows.push(c);}});
+  var raw={sheet:'Тест · '+id,columns:SEED.columns,rows:rows,src:'test',test:true};
+  NAV.test[id]=raw;
+  return raw;
+}
+function shelfOrder(){
+  var ids={};
+  TEST_IDS.concat(['228']).forEach(function(i){ids[i]=1;});
+  Object.keys(NAV.real).forEach(function(i){ids[i]=1;});
+  if(NAV.cur) ids[NAV.cur]=1;
+  var a=Object.keys(ids).sort(function(x,y){
+    var nx=+x,ny=+y;
+    if(isFinite(nx)&&isFinite(ny)) return nx-ny;
+    return String(x)<String(y)?-1:1;
+  });
+  if(CFG.shDir==='up') a.reverse();
+  return a;
+}
+function shelfNeighbors(){
+  var a=shelfOrder(),i=a.indexOf(NAV.cur);
+  return {up:i>0?a[i-1]:'',down:(i>=0&&i<a.length-1)?a[i+1]:''};
+}
+function updateShelfNav(){
+  if(!el.shNowT) return;
+  var nb=shelfNeighbors();
+  function lab(id){return id?('Полка '+id+(NAV.real[id]?'':' · тест')):'Выше нет полок';}
+  el.shUp.disabled=!nb.up;el.shDown.disabled=!nb.down;
+  el.shUpT.textContent=nb.up?lab(nb.up):'Выше нет полок';
+  el.shDownT.textContent=nb.down?lab(nb.down):'Ниже нет полок';
+  el.shNowT.textContent='Полка '+NAV.cur;
+  el.shNowS.textContent=(DS&&DS.src==='test')?'тестовые данные':(DS&&DS.src==='google'?'Google Таблица':(DS&&DS.src==='excel'?'файл Excel':'демо-данные'));
+}
+function slidePage(delta,swap,done){
+  var pg=el.pageSlide;
+  if(reduce||!pg.animate){swap();done();return;}
+  var dist=Math.min(window.innerHeight*0.45,360)*(delta>0?-1:1),fin=false;
+  function end(){if(fin) return;fin=true;done();}
+  var a=pg.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY('+dist+'px)',opacity:0}],{duration:200,easing:'cubic-bezier(.5,0,1,1)',fill:'forwards'});
+  a.onfinish=function(){
+    try{swap();}catch(err){a.cancel();end();throw err;}
+    var b=pg.animate([{transform:'translateY('+(-dist)+'px)',opacity:0},{transform:'translateY(0)',opacity:1}],{duration:340,easing:'cubic-bezier(0,0,.2,1)'});
+    a.cancel();
+    b.onfinish=end;b.oncancel=end;
+  };
+  a.oncancel=function(){};
+  setTimeout(end,1500);
+}
+function showShelf(id,delta){
+  if(navBusy||float||!DS||!id||id===NAV.cur) return;
+  if(arm) disarm(true);
+  saveLayout();
+  var raw=NAV.real[id]||testRaw(id);
+  navBusy=true;
+  toast((delta>0?'▼ ':(delta<0?'▲ ':''))+'Полка '+id+(NAV.real[id]?'':' · тест'),1700);
+  slidePage(delta,function(){
+    el.srQ.value='';SR={q:'',ids:{},list:[],i:-1};
+    loadDataset(raw,{sync:true,nav:true});
+    setZoom(Z,null,true);
+    el.scroller.scrollLeft=0;
+    searchRender();
+    syncViewbar();
+  },function(){navBusy=false;});
+}
+function backToMain(){
+  var ids=Object.keys(NAV.real),id=NAV.real['228']?'228':(ids[0]||'228'),o=shelfOrder();
+  showShelf(id,o.indexOf(id)>o.indexOf(NAV.cur)?1:-1);
+}
+function goShelf(d){
+  var nb=shelfNeighbors();
+  var id=d<0?nb.up:nb.down;
+  if(!id){note(d<0?'Выше нет полок.':'Ниже нет полок.',2500);return;}
+  showShelf(id,d);
+}
+function initShelfNav(){
+  el.shUp.addEventListener('click',function(){goShelf(-1);});
+  el.shDown.addEventListener('click',function(){goShelf(1);});
+}
+
 /* ===== Запуск ===== */
 function init(){
   initEls();
@@ -3074,9 +4155,10 @@ function init(){
   el.scene.addEventListener('touchmove',function(e){if((float||swipe)&&e.cancelable) e.preventDefault();},{passive:false});
   el.scene.addEventListener('contextmenu',function(e){e.preventDefault();});
 
-  Array.prototype.forEach.call(document.querySelectorAll('.zoom button'),function(b){
-    b.addEventListener('click',function(){setZoom(+b.getAttribute('data-z'));});
-  });
+  initPhotos();
+  initView();
+  initSearch();
+  initShelfNav();
 
   el.undo.addEventListener('click',doUndo);
   el.clear.addEventListener('click',doClear);
@@ -3107,7 +4189,19 @@ function init(){
     if(ctrl&&(k==='z'||k==='Z'||k==='я'||k==='Я')){e.preventDefault();doUndo();return;}
     if(ctrl&&k===','){e.preventDefault();openSettings();return;}
     if(ctrl&&(k==='r'||k==='R'||k==='к'||k==='К')&&gsConfigured()){e.preventDefault();gsRefresh({});return;}
+    if(e.altKey&&!ctrl&&(k==='ArrowUp'||k==='ArrowDown')){e.preventDefault();goShelf(k==='ArrowUp'?-1:1);return;}
+    if(ctrl&&(k==='k'||k==='K'||k==='л'||k==='Л')){e.preventDefault();searchFocus();return;}
     if(ctrl||e.altKey) return;
+    if(k==='/'){e.preventDefault();searchFocus();return;}
+    if(!arm){
+      if(k==='+'||k==='='){e.preventDefault();zoomStep(1.25);return;}
+      if(k==='-'||k==='_'||k==='−'){e.preventDefault();zoomStep(0.8);return;}
+      if(k==='0'){e.preventDefault();fitZoom();return;}
+      if(k==='ArrowLeft'){e.preventDefault();panBy(e.shiftKey?-0.9:-0.25,true);return;}
+      if(k==='ArrowRight'){e.preventDefault();panBy(e.shiftKey?0.9:0.25,true);return;}
+      if(k==='Home'){e.preventDefault();panTo(0,true);return;}
+      if(k==='End'){e.preventDefault();panTo(1e9,true);return;}
+    }
     if(arm){
       if(k==='ArrowLeft'){e.preventDefault();armStep(-1,e.shiftKey);}
       else if(k==='ArrowRight'){e.preventDefault();armStep(1,e.shiftKey);}
@@ -3151,20 +4245,30 @@ function init(){
     }).observe(el.scroller);
   }
 
-  loadDataset({
-    sheet:'Демо · '+SEED.sheet,
-    columns:SEED.columns,
-    rows:SEED.rows,
-    src:'demo'
-  });
-  var cw=el.scroller.clientWidth||320,z=1;
-  var bigUi=isBig();
-  [1,2,3,4].some(function(c){z=c;return cw*c/VW>=(bigUi?0.95:0.5);});
-  setZoom(z);
-  el.scroller.scrollLeft=0;
-  updateSource();
-  gsTimer();
-  if(gsConfigured()&&(CFG.gs.mode==='public'||tokenOk())) setTimeout(function(){gsRefresh({silent:true});},300);
+  /* Картинки из памяти устройства поднимаются до первого показа полки (не дольше 0,45 с), поэтому книги сразу со своими корешками. */
+  var ready=imgInit().catch(function(){return 0;});
+  var wait=new Promise(function(r){setTimeout(r,450);});
+  Promise.race([ready,wait]).then(function(){
+    loadDataset({
+      sheet:'Демо · '+SEED.sheet,
+      columns:SEED.columns,
+      rows:SEED.rows,
+      src:'demo'
+    });
+    setZoom(CFG.zoom>0?CFG.zoom:autoZoom(),null,true);
+    el.scroller.scrollLeft=0;
+    syncViewbar();
+    updateSource();
+    gsTimer();
+    if(gsConfigured()&&(CFG.gs.mode==='public'||tokenOk())) setTimeout(function(){gsRefresh({silent:true});},300);
+    return ready;
+  }).then(function(){
+    if(DS) imgChanged();
+    return imgSyncBundle();
+  }).catch(function(){}).then(function(){phLoadDir();});
+  if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+    window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+  }
 }
 init();
 
