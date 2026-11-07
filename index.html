@@ -29,17 +29,18 @@
   --font-mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{
   margin:0;
   background:var(--bg);
   color:var(--ink);
   font:15px/1.45 var(--font-ui);
-  padding-block:16px 28px;
+  padding-block:0 110px;
   padding-left:max(16px,env(safe-area-inset-left,0px));
   padding-right:max(16px,env(safe-area-inset-right,0px));
   -webkit-tap-highlight-color:transparent;
 }
-.app{max-width:1180px;margin:0 auto;display:grid;gap:14px}
+.app{max-width:1480px;margin:0 auto;display:grid;gap:14px;padding-top:6px}
 .head h1{margin:0;font-size:20px;line-height:1.2;font-weight:600;letter-spacing:-.01em;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
 .ver{font:400 12px var(--font-mono);color:var(--muted);border:1px solid var(--grid-2);border-radius:4px;padding:1px 6px}
 .head p{margin:4px 0 0;color:var(--muted);font-size:14px;max-width:70ch}
@@ -186,13 +187,220 @@ dialog::backdrop{background:rgba(20,30,40,.42)}
 .collist .chk span{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
 .collist small{font:400 12px var(--font-mono);color:var(--muted);white-space:nowrap}
 .dlg .actions{margin:0 -18px -18px;padding:10px 18px 18px;justify-content:flex-end;position:sticky;bottom:-18px;background:var(--bg);border-top:1px solid var(--rule)}
+
+/* ===== 1.1.0: строка меню, сцена с журналом, панель действий, крупный интерфейс ===== */
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.menubar{
+  position:sticky;top:0;z-index:40;display:flex;align-items:stretch;gap:2px;
+  margin:0 calc(-1 * max(16px,env(safe-area-inset-left,0px)));
+  padding:0 max(16px,env(safe-area-inset-left,0px));
+  min-height:36px;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line);
+  font:500 13px var(--font-ui);
+}
+.menubar::after{
+  content:"";position:absolute;left:0;right:0;bottom:-7px;height:6px;pointer-events:none;opacity:.55;
+  background:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 10px),
+             repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 50px);
+  background-size:100% 3px,100% 6px;background-repeat:no-repeat;background-position:0 0,0 0;
+}
+.mb-items{display:flex;align-items:stretch;gap:2px}
+.mb-menu{position:relative;display:flex}
+.mb-top{
+  font:inherit;color:var(--ink);background:none;border:0;border-radius:4px;margin:3px 0;padding:0 11px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:8px;white-space:nowrap;
+}
+.mb-top.app{font-weight:600}
+.mb-top .ver{border-color:currentColor;opacity:.75}
+.mb-top:hover,.mb-menu.open>.mb-top{background:var(--ink);color:#fff}
+.mb-top:focus-visible,.mi:focus-visible,.mb-burger:focus-visible,.mb-status:focus-visible{outline:2px solid var(--info);outline-offset:-2px}
+.mb-drop{
+  display:none;position:absolute;top:calc(100% - 2px);left:0;min-width:270px;z-index:50;
+  background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px;
+  box-shadow:0 10px 28px rgba(20,30,40,.2);
+}
+.mb-menu.open>.mb-drop{display:block}
+.mi{
+  display:flex;width:100%;align-items:center;gap:10px;padding:7px 10px;border:0;border-radius:4px;background:none;
+  color:var(--ink);font:400 14px var(--font-ui);text-align:left;cursor:pointer;
+}
+.mi .ck{width:14px;flex:none;font:600 13px var(--font-mono);text-align:center}
+.mi .lb{flex:1 1 auto}
+.mi .k{font:400 12px var(--font-mono);opacity:.6;white-space:nowrap}
+.mi:hover:not([disabled]),.mi.hot{background:var(--ink);color:#fff}
+.mi[disabled]{opacity:.4;cursor:default}
+.ms{border:0;border-top:1px solid var(--rule);margin:4px 2px}
+.mb-sp{flex:1 1 auto}
+.mb-status{
+  font:400 12px var(--font-mono);color:var(--muted);background:none;border:0;border-radius:4px;margin:3px 0;padding:0 8px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:7px;white-space:nowrap;
+}
+.mb-status:hover{background:var(--fill)}
+.mb-status i{width:8px;height:8px;border-radius:50%;background:var(--grid-2);flex:none}
+.mb-status.on i{background:var(--ok)}
+.mb-status.busy i{background:var(--warn)}
+.mb-status.err i{background:var(--bad)}
+.mb-burger{
+  display:none;align-items:center;justify-content:center;min-width:44px;font:500 22px var(--font-ui);color:var(--ink);
+  background:none;border:0;border-radius:4px;margin:3px 0;cursor:pointer;
+}
+.mb-brand{display:none;align-items:center;gap:8px;font-weight:600;white-space:nowrap;padding:0 4px}
+.head{padding-top:8px}
+.head p{margin:0}
+
+.stage{display:grid;grid-template-columns:minmax(0,1fr);align-items:stretch}
+.stage .scroller{min-width:0}
+.chlog{
+  min-width:0;padding:10px 12px 12px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  font-size:13px;display:flex;flex-direction:column;gap:8px;max-height:260px;
+}
+.chlog[hidden]{display:none}
+@media (min-width:1100px){
+  .stage.haslog{grid-template-columns:minmax(0,1fr) 250px}
+  .stage.haslog .chlog{border-left:1px solid var(--rule);max-height:none}
+}
+.chlog h2{margin:0;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);display:flex;justify-content:space-between;gap:8px}
+.chlog select{font:400 13px var(--font-ui);min-height:34px;color:var(--ink);background:var(--bg);border:1px solid var(--grid-2);border-radius:6px;width:100%}
+.chlog ol{margin:0;padding:0;list-style:none;display:grid;gap:0;align-content:start;overflow:auto;flex:1 1 auto;min-height:60px}
+.chlog li{display:grid;grid-template-columns:16px minmax(0,1fr);gap:6px;padding:6px 0;border-bottom:1px solid var(--grid);line-height:1.3}
+.chlog li:last-child{border-bottom:0}
+.chlog .sg{font:600 14px var(--font-mono);text-align:center}
+.chlog .add .sg{color:var(--ok)}
+.chlog .del .sg{color:var(--bad)}
+.chlog .chg .sg{color:var(--info)}
+.chlog .inf .sg{color:var(--muted)}
+.chlog .tt{overflow-wrap:anywhere}
+.chlog .nt{display:block;font-size:12px;color:var(--muted)}
+.chlog .dt0{font:500 11px var(--font-mono);color:var(--muted);letter-spacing:.04em;padding:8px 0 0;border:0;display:block}
+.chlog .empty{color:var(--muted);font-size:13px;padding:4px 0}
+.chlog .mini{font:500 12px var(--font-ui);color:var(--info);background:none;border:0;padding:4px 0;cursor:pointer;text-align:left}
+
+.coverbox{width:min(170px,34%);flex:none}
+#cover,#coverPhoto{width:100%;height:auto;display:block}
+#coverPhoto{border:1px solid var(--rule);border-radius:3px;background:var(--fill);box-shadow:0 2px 8px rgba(20,30,40,.18)}
+#coverPhoto[hidden]{display:none}
+.cvsrc{margin:6px 0 0;font:400 11px var(--font-mono);color:var(--muted)}
+
+#scene .armrect{fill:none;stroke:#10151a;stroke-width:1.2;stroke-dasharray:4 3}
+#float.armed{opacity:.92}
+#ghost text.gl{paint-order:stroke;stroke:#fff;stroke-width:4px}
+
+.dock{
+  position:fixed;left:0;right:0;bottom:0;z-index:35;display:grid;gap:8px;
+  padding:8px max(12px,env(safe-area-inset-left,0px)) calc(8px + env(safe-area-inset-bottom,0px));
+  background:var(--bg);border-top:1px solid var(--line);box-shadow:0 -8px 24px rgba(20,30,40,.14);
+}
+.dock[hidden]{display:none}
+.dock .dt{display:flex;justify-content:space-between;gap:10px;font:500 13px var(--font-ui);min-width:0}
+.dock .dt b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dock .dt span{color:var(--muted);font:400 12px var(--font-mono);white-space:nowrap}
+.dock .dt.bad span{color:var(--bad)}
+.dock .dt.ok span{color:var(--ok)}
+.dock .dr{display:flex;gap:6px}
+.dock .dr .btn{flex:1 1 0;min-width:0;padding:0 8px;font-size:16px;min-height:50px;font-weight:600}
+.dock .dr .btn.nav{flex:0 0 56px;font-size:20px;font-family:var(--font-mono)}
+.dock .dr .btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.dock .dr .btn.bad{color:var(--bad)}
+@media (min-width:761px){
+  .dock{left:50%;right:auto;bottom:14px;width:min(700px,calc(100vw - 32px));transform:translateX(-50%);border:1px solid var(--line);border-radius:10px}
+  .dock .dr .btn{min-height:44px;font-size:15px}
+}
+
+.srcnote{margin:0;font-size:13px;color:var(--muted)}
+.srcnote button{font:inherit;color:var(--info);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline}
+
+.dlg .sec{display:grid;gap:10px;padding:12px 0 4px;border-top:1px solid var(--rule)}
+.dlg .sec>h3{margin:0;font:600 12px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.dlg input[type=text],.dlg input[type=number],.dlg input[type=url],.dlg textarea{
+  font:400 15px var(--font-ui);min-height:44px;padding:0 10px;color:var(--ink);background:var(--bg);
+  border:1px solid var(--grid-2);border-radius:6px;width:100%;
+}
+.dlg input:focus-visible,.dlg select:focus-visible,.dlg textarea:focus-visible{outline:2px solid var(--ink);outline-offset:1px}
+.dlg .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dlg .hint2{margin:0;font-size:12.5px;color:var(--muted);line-height:1.4}
+.dlg .acct{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px}
+.dlg .acct .mono{overflow-wrap:anywhere}
+.dlg ol.how{margin:0;padding-left:20px;display:grid;gap:8px;font-size:14px}
+.dlg ol.how code,.dlg p code{font:400 12.5px var(--font-mono);background:var(--fill);border:1px solid var(--rule);border-radius:4px;padding:0 4px;overflow-wrap:anywhere}
+.dlg .tabs{display:flex;gap:0;border:1px solid var(--grid-2);border-radius:6px;overflow:hidden}
+.dlg .tabs button{flex:1;min-height:44px;font:500 14px var(--font-ui);background:var(--bg);color:var(--ink);border:0;border-right:1px solid var(--grid-2);cursor:pointer}
+.dlg .tabs button:last-child{border-right:0}
+.dlg .tabs button[aria-pressed="true"]{background:var(--ink);color:#fff}
+
+/* крупный интерфейс: телефон или включено в настройках */
+body.big .btn{min-height:50px;font-size:16px;padding:0 18px}
+body.big .zoom button{min-height:50px;min-width:54px;font-size:16px}
+body.big .fld select,body.big .dlg input[type=text],body.big .dlg input[type=number]{min-height:50px;font-size:16px}
+body.big .chk{font-size:15px}
+body.big .chk input{width:24px;height:24px}
+body.big .binfo dt{font-size:14px}
+body.big .binfo dd{font-size:15.5px}
+body.big .tnote{font-size:14px}
+body.big .collist .chk{padding:11px 0}
+@media (max-width:760px){
+  body{font-size:16px}
+  .app{gap:12px}
+  .menubar{min-height:46px}
+  .mb-burger{display:inline-flex}
+  .mb-brand{display:inline-flex}
+  .mb-brand .ver{font-size:11px}
+  .mb-items{
+    display:none;position:fixed;left:0;right:0;top:var(--mbh,46px);bottom:0;z-index:60;
+    flex-direction:column;gap:0;overflow:auto;background:var(--bg);padding:6px 14px calc(80px + env(safe-area-inset-bottom,0px));
+  }
+  .menubar.mobopen .mb-items{display:flex}
+  .mb-menu{position:static;display:block}
+  .mb-top{
+    pointer-events:none;display:block;margin:0;padding:16px 4px 4px;border-radius:0;background:none!important;
+    font:600 12px var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)!important;
+  }
+  .mb-top .ver{display:none}
+  .mb-drop{display:block;position:static;min-width:0;border:0;box-shadow:none;padding:0;border-top:1px solid var(--rule)}
+  .mi{min-height:52px;font-size:17px;padding:8px 6px;border-bottom:1px solid var(--grid);border-radius:0}
+  .mi .k{display:none}
+  .mi:hover:not([disabled]){background:var(--fill);color:var(--ink)}
+  .ms{display:none}
+  .mb-status{margin:0;min-height:44px}
+  .mb-status .stx{max-width:34vw;overflow:hidden;text-overflow:ellipsis}
+  .head p{font-size:14px}
+  .toolbar{gap:10px}
+  .tnote{display:none}
+  .zoom{width:100%}
+  .zoom button{flex:1;min-height:50px;font-size:16px}
+  .xgroup{width:100%}
+  .xgroup .btn{flex:1 1 0}
+  .legend{font-size:12.5px}
+  .panel{gap:20px}
+  .coverbox{width:150px}
+  .cardrow{flex-direction:column;gap:12px}
+  .actions .btn{flex:1 1 auto}
+  .dlg .row2{grid-template-columns:1fr}
+  dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px)}
+  .chlog{max-height:300px}
+}
+@media (pointer:coarse){
+  .btn{min-height:50px}
+}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:60;max-width:min(560px,calc(100vw - 28px));
+  background:#1c2630;color:#fff;padding:11px 16px;border-radius:10px;font:500 14px/1.4 var(--font-ui);box-shadow:0 8px 28px rgba(20,30,40,.35);pointer-events:none}
+.toast[hidden]{display:none}
+body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15px}
 </style>
 </head>
 <body>
 
+<nav class="menubar" id="menubar" aria-label="Главное меню">
+  <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.1.0</span></span>
+  <div class="mb-items" id="mbItems" role="menubar"></div>
+  <span class="mb-sp"></span>
+  <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
 <main class="app">
   <header class="head">
-    <h1>Геометрия Полки <span class="ver" id="ver">1.0.0</span></h1>
+    <h1 class="sr">Геометрия Полки</h1>
     <p id="sub"></p>
   </header>
 
@@ -201,19 +409,22 @@ dialog::backdrop{background:rgba(20,30,40,.42)}
     <div class="zoom" role="group" aria-label="Масштаб">
       <button type="button" data-z="1" aria-pressed="true">×1</button>
       <button type="button" data-z="2" aria-pressed="false">×2</button>
+      <button type="button" data-z="3" aria-pressed="false">×3</button>
       <button type="button" data-z="4" aria-pressed="false">×4</button>
     </div>
     <span class="tnote">Полку можно прокручивать вбок</span>
     <span class="tsp"></span>
     <div class="xgroup">
-      <button class="btn" id="imp" type="button">Загрузить из Excel</button>
-      <button class="btn" id="exp" type="button">Выгрузить в Excel</button>
+      <button class="btn" id="auto" type="button">Расставить автоматически</button>
+      <button class="btn" id="gsync" type="button">Обновить из Google Таблицы</button>
     </div>
     <input type="file" id="file" hidden accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
   </div>
+  <p class="srcnote" id="srcnote"></p>
 
   <div class="legend" id="legend" role="group" aria-label="Обозначения переплёта"></div>
 
+  <div class="stage haslog" id="stage">
   <div class="scroller" id="scroller">
     <svg id="scene" viewBox="0 0 1160 620" width="100%" role="img" aria-label="Полка и стопки книг, книги можно перетаскивать на полку.">
       <rect class="interior" x="90" y="70" width="1000" height="260"/>
@@ -233,7 +444,7 @@ dialog::backdrop{background:rgba(20,30,40,.42)}
 
       <text class="plate" id="plate" x="590" y="65"></text>
 
-      <text class="cap" x="90" y="402">Книги: возьмите любую и перетащите на полку. Нажмите на книгу — появится её описание.</text>
+      <text class="cap" x="90" y="402">Книги: перетащите на полку или нажмите на книгу, затем на место на полке. Описание — в карточке ниже.</text>
       <g id="piles"></g>
       <g id="stock"></g>
       <g id="float"></g>
@@ -241,12 +452,14 @@ dialog::backdrop{background:rgba(20,30,40,.42)}
       <g id="hitlayer"></g>
     </svg>
   </div>
+  <aside class="chlog" id="chlog" aria-label="Журнал полки"></aside>
+  </div>
 
   <div class="panel">
     <section class="card book" aria-live="polite">
       <h2>Книга</h2>
       <div class="cardrow">
-        <svg id="cover" viewBox="0 0 140 210" role="img" aria-label="Обложка выбранной книги"></svg>
+        <div class="coverbox"><img id="coverPhoto" alt="" hidden decoding="async"><svg id="cover" viewBox="0 0 140 210" role="img" aria-label="Обложка выбранной книги"></svg><p class="cvsrc" id="cvsrc" hidden></p></div>
         <div class="bookinfo">
           <p class="bcode" id="bcode"></p>
           <p class="bname" id="bname"></p>
@@ -280,6 +493,77 @@ dialog::backdrop{background:rgba(20,30,40,.42)}
   <p class="foot" id="foot"></p>
 </main>
 
+<div class="dock" id="dock" hidden role="region" aria-label="Действия с книгой">
+  <div class="dt" id="dockT"><b id="dockName"></b><span id="dockInfo"></span></div>
+  <div class="dr">
+    <button class="btn nav" id="dkLL" type="button" aria-label="К ближайшему месту слева">«</button>
+    <button class="btn nav" id="dkL" type="button" aria-label="Сдвинуть влево">‹</button>
+    <button class="btn ok" id="dkOk" type="button">Поставить</button>
+    <button class="btn nav" id="dkR" type="button" aria-label="Сдвинуть вправо">›</button>
+    <button class="btn nav" id="dkRR" type="button" aria-label="К ближайшему месту справа">»</button>
+  </div>
+  <div class="dr">
+    <button class="btn" id="dkLie" type="button">Положить</button>
+    <button class="btn" id="dkTake" type="button">Снять</button>
+    <button class="btn bad" id="dkCancel" type="button">Отмена</button>
+  </div>
+</div>
+
+<dialog id="dlgSet" aria-labelledby="setT">
+  <div class="dlg">
+    <h2 id="setT">Настройки</h2>
+    <div class="sec">
+      <h3>Устойчивость книг</h3>
+      <label class="chk"><input type="checkbox" id="sFalls"><span>Книги могут падать: мягкие и тонкие стоят только вплотную к книге-опоре</span></label>
+      <div class="row2">
+        <label class="fld"><span>Тонкая книга, мм</span><input type="number" id="sThin" min="0" max="60" step="1" inputmode="numeric"></label>
+        <label class="fld"><span>Опоре помогают, книг</span><input type="number" id="sLean" min="1" max="30" step="1" inputmode="numeric"></label>
+      </div>
+      <p class="hint2">Твёрдая книга толще указанной держится сама. Мягкая и тонкая твёрдая падают, если рядом нет такой опоры. Без переплёта в таблице считается по толщине.</p>
+    </div>
+    <div class="sec">
+      <h3>Вид</h3>
+      <label class="chk"><input type="checkbox" id="sCovers"><span>Показывать фото обложек (папка covers)</span></label>
+      <label class="chk"><input type="checkbox" id="sLog"><span>Журнал полки справа от полки</span></label>
+      <label class="fld"><span>Крупный интерфейс</span><select id="sBig"><option value="auto">Автоматически: на телефоне</option><option value="on">Всегда</option><option value="off">Выключен</option></select></label>
+      <label class="fld"><span>Шаг кнопок ‹ › на полке, мм</span><select id="sStep"><option value="5">5</option><option value="10">10</option><option value="25">25</option></select></label>
+    </div>
+    <div class="sec">
+      <h3>Google Таблица</h3>
+      <div class="tabs" id="gMode" role="group" aria-label="Способ подключения">
+        <button type="button" data-m="public" aria-pressed="true">Таблица по ссылке</button>
+        <button type="button" data-m="oauth" aria-pressed="false">Вход в Google</button>
+      </div>
+      <label class="fld"><span>Ссылка на таблицу или её ID</span><input type="text" id="gUrl" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <div class="row2">
+        <label class="fld"><span>Листы-полки (через запятую)</span><input type="text" id="gTabs" placeholder="228 С 15.10" autocomplete="off" spellcheck="false"></label>
+        <label class="fld"><span>Лист с общим списком</span><input type="text" id="gGen" placeholder="Генеральная" autocomplete="off" spellcheck="false"></label>
+      </div>
+      <div id="gOauth" class="sec" style="border:0;padding:0">
+        <label class="fld"><span>Client ID (OAuth, тип «Веб-приложение»)</span><input type="text" id="gCid" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+        <div class="acct"><span id="gAcct">Вход не выполнен</span></div>
+        <div class="acct"><button class="btn" id="gIn" type="button">Войти в Google</button><button class="btn" id="gOut" type="button">Выйти</button></div>
+      </div>
+      <label class="fld"><span>Автообновление</span><select id="gAuto"><option value="0">Только вручную</option><option value="2">Каждые 2 минуты</option><option value="5">Каждые 5 минут</option><option value="15">Каждые 15 минут</option><option value="60">Раз в час</option></select></label>
+      <div class="acct"><button class="btn" id="gTest" type="button">Проверить подключение</button><button class="btn primary" id="gLoad" type="button">Загрузить полку…</button></div>
+      <p class="dstat" id="gStat" aria-live="polite"></p>
+      <button type="button" class="link" id="gHelp">Как подключить Google Таблицу: подробно</button>
+    </div>
+    <div class="actions">
+      <button class="btn" id="setReset" type="button">Сбросить настройки</button>
+      <button class="btn primary" id="setOk" type="button">Готово</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlgInfo" aria-labelledby="infT">
+  <div class="dlg">
+    <h2 id="infT"></h2>
+    <div id="infB"></div>
+    <div class="actions"><button class="btn primary" id="infOk" type="button">Закрыть</button></div>
+  </div>
+</dialog>
+
 <dialog id="dlg" aria-labelledby="dlgT">
   <div class="dlg">
     <h2 id="dlgT">Загрузка из Excel</h2>
@@ -300,7 +584,7 @@ dialog::backdrop{background:rgba(20,30,40,.42)}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.0.0'};
+var APP={name:'Геометрия Полки',version:'1.1.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -319,6 +603,256 @@ var FLUSH_BONUS=6;     /* притяжение вплотную к соседн�
 var CAP=7;             /* торцы твёрдого переплёта, мм */
 
 var SEED={"sheet":"228 С 15.10","columns":[{"label":"Код книги","origin":"sheet"},{"label":"Автор","origin":"sheet"},{"label":"Название","origin":"sheet"},{"label":"Год","origin":"sheet"},{"label":"Цена","origin":"sheet"},{"label":"Место хр новое","origin":"sheet"},{"label":"Количество на складе","origin":"sheet"},{"label":"Формат","origin":"sheet"},{"label":"Высота (Длина)","origin":"sheet"},{"label":"Ширина","origin":"sheet"},{"label":"Корешок","origin":"sheet"},{"label":"Вес","origin":"sheet"},{"label":"Состояние","origin":"sheet"},{"label":"Состояние - примечание","origin":"sheet"},{"label":"Примечание","origin":"sheet"},{"label":"Кол-во страниц","origin":"general"},{"label":"Если нет формата НОВЫЙ ставить сюда","origin":"general"},{"label":"Бумага","origin":"general"},{"label":"Переплет","origin":"general"},{"label":"Формат размера","origin":"general"},{"label":"Формат в мм","origin":"general"},{"label":"Telegram пост","origin":"general"}],"rows":[[11070,"Қамбаров Қапан","Алтай аясында",1959,7000,228,1,null,205,135,12,166,"Хорошее","Замечания по обложке",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12030"],[11155,"Токмагамбетов Аскар","Әке мен бала",1961,4000,228,1,null,205,135,14,227,"Хорошее","Замечания по обложке, Отметки ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12116"],[10065,"Момыш-улы Баурджан","Психология войны",1990,2300,228,1,null,200,135,15,230,"Удовлетворительное","Замечания по обложке, Раскол форзаца, Раскол блока, Замечания по уголкам, Штамп на форзаце, Порваны страницы",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/10997"],[1993,"Тутыбаев К. Жолдыбаев О. Естаев Е.","Ислам",1988,3000,228,1,"70×90/32",165,107,15,164,"Хорошее","Замечания по обложке, Пятна на страницах",null,null,null,null,null,null,"Малый | 165×107 мм","https://t.me/oldbookkz/2251"],[11064,"Қайырбеков Ғафу","Дала қоңырауы",1957,3500,228,1,null,170,135,15,180,"Хорошее","Замечания по обложке",null,null,null,null,"Твердый переплет","Уменьшенный",null,"https://t.me/oldbookkz/12024"],[11068,"Молдагалиев Жубан","Жесір тағдыры",1961,7000,228,1,null,170,130,10,140,"Хорошее","Замечания по обложке, Надписи карандашом, Надписи ручкой, Замечания по корешку",null,null,null,null,"Твердый переплет","Уменьшенный",null,"https://t.me/oldbookkz/12028"],[12641,"Хасуй Ацуси","Техника напыления",1975,5000,228,2,null,221,148,16,420,"Очень хорошее","Замечания по обложке, Отметки ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/13631"],[4065,"Борн Макс","Моя жизнь и взгляды",1973,4000,228,1,null,200,127,10,175,"Очень хорошее","Замечания по суперобложке",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/4452"],[4909,"Борисов Трофим","Камчатские сказки",1950,6000,228,1,null,205,150,10,95,"Удовлетворительное","Замечания по обложке, Надписи ручкой, Надписи карандашом, Раскол блока, Замечания по форзацу, Пятна на страницах, Следы залития",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/5371"],[2716,"Алексин Анатолий","Hеобычайные поxождeния Сeвы Koтлoвa",1958,12000,228,1,"84×108/32",200,130,15,174,"Хорошее","Замечания по обложке, Замечания по уголкам, Замечания по корешку",null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/3061"],[9233,"Филлис Гэйлд","Исцеление кристаллами",2006,18200,228,1,"84×108/32",200,130,10,140,"Очень хорошее",null,null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/10099"],[14113,"Минц З.Г.","Ученые записки Тартуского государственного университета. Л. БЛОК И РЕВОЛЮЦИЯ 1905 года. Блоковский сборник 8",1988,10000,228,1,"70×90/16",215,170,17,444,"Очень хорошее",null,null,null,null,null,null,null,"Увеличенный | 215×170 мм","https://t.me/oldbookkz/15110"],[4167,"Моргенштерн Илья","Психографология",1994,3000,228,1,"84×108/32",200,130,25,412,"Хорошее","Скос блока",null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/4555"],[5958,"Турлугуров Тотай","Рассказы по истории Казахской ССР",1991,500,228,1,"70×90/16",215,170,5,78,"Очень хорошее",null,null,null,null,null,"Мягкий переплет","Увеличенный","Увеличенный | 215×170 мм","https://t.me/oldbookkz/6523"],[7527,"Цойгнер Герхард","Учение о цвете",1971,8000,228,1,null,220,172,18,545,"Хорошее","Замечания по обложке, Надписи ручкой, Штампы",null,null,null,null,"Твердый переплет","Увеличенный",null,"https://t.me/oldbookkz/8250"],[6744,"Бандас Лев","Производство и ремонт щипковых музыкальных инструментов",1983,15000,228,1,"60×90/16",215,145,25,349,"Удовлетворительное","Следы залития, Замечания по обложке, Пятна на страницах",null,null,null,null,"Твердый переплет","Стандартный","Стандартный | 215×145 мм","https://t.me/oldbookkz/7423"],[10670,"Көбеев Спандияр","Орындалған арман",1954,5000,228,1,null,208,135,10,204,"Хорошее","Замечания по обложке, Замечания по корешку, Надписи ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/11617"],[9236,"Кастанеда Карлос","Безмолвное знание",1996,3200,228,2,null,205,145,5,71,"Хорошее","Надписи карандашом, Замечания по титулу, Замечания по обложке",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/10102"],[11069,"Ковпак С. А.","Путивль-Карпат жорығы",1950,5000,228,1,null,205,135,12,192,"Хорошее","Замечания по обложке, Надписи карандашом, Скос блока",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12029"],[8953,"Бабақов Болат","Алтын алқа",1981,2000,228,1,"70×108/32",165,130,10,96,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Уменьшенный","Уменьшенный | 165×130 мм","https://t.me/oldbookkz/9801"],[9073,"Джунусов М. Утепов Ш","Нигмет Сыргабеков",1975,4000,228,1,"70×108/32",165,130,5,43,"Очень хорошее","Замечания по обложке, Отметки ручкой, Замечания по уголкам","С автографом",null,null,null,"Мягкий переплет","Уменьшенный","Уменьшенный | 165×130 мм","https://t.me/oldbookkz/9925"],[2646,"Аль-Фараби","Социально-этические трактаты",1973,6000,228,1,"70×90/32",165,107,25,310,"Очень хорошее","Замечания по суперобложке, Надписи ручкой, Пятна на страницах",null,null,null,null,"Твердый переплет","Уменьшенный","Малый | 165×107 мм",null],[2645,"Аль-Фараби","Математические трактаты",1972,6000,228,1,"70×90/32",165,107,20,267,"Очень хорошее","Замечания по суперобложке, Отметки ручкой",null,null,null,null,"Твердый пер. супероб","Уменьшенный","Малый | 165×107 мм",null],[2644,"Аль-Фараби","Философские трактаты",1970,8000,228,1,"70×90/32",165,107,30,367,"Очень хорошее","Замечания по суперобложке, Отметки ручкой",null,null,null,null,"Твердый пер. супероб","Уменьшенный","Малый | 165×107 мм","https://t.me/oldbookkz/2986"],[10737,"Клюн Иван","Мой путь в искусстве. Воспоминания. Статьи. Дневники",1999,49000,228,1,null,215,165,40,983,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/11686"],[10838,"Удальцова Надежда","Жизнь Русской Кубистки. Дневники, статьи, воспоминания",1994,25000,228,1,null,215,165,15,423,"Очень хорошее","Замечания по корешку, Замечания по уголкам",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11788"],[11036,"Харджиев Николай","Статьи об авангарде в 2-х томах",1997,48000,228,1,null,215,160,65,1500,"Очень хорошее","Замечания по обложке",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11994"],[10937,"Пунин Николай","О Татлине",1994,25000,228,1,null,215,165,10,278,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11890"],[11240,"Крученых Алексей","Наш выход. К истории русского футуризма",1996,25000,228,1,null,215,165,23,520,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/12204"],[11139,"Митурич Петр","Записки сурового реалиста эпохи авангарда. Дневники. Письма. Воспоминания. Статьи",1997,30000,228,1,null,215,165,25,668,"Хорошее","Замечания по корешку, Пятна на обложке, Замечания по обложке",null,null,null,null,"Твердый переплет","Увеличенный",null,"https://t.me/oldbookkz/12100"],[13527,"Егоров Б.Ф.","Труды по русской и славянской филологии. XV: Литературоведение",1970,7000,228,1,null,170,112,15,131,"Удовлетворительное","Замечания по обложке, Раскол блока, Замечания по корешку",null,176,null,null,null,null,null,"https://t.me/oldbookkz/14523"],[12034,"Лотман Ю.","Труды по знаковым системам. Выпуск III",1967,10000,228,1,null,215,142,20,445,"Хорошее","Замечания по суперобложке",null,null,null,null,"Твердый пер. супероб","Стандартный",null,"https://t.me/oldbookkz/13018"],[12139,"Лотман Ю.","Труды по знаковым системам. IV",1969,12000,228,1,null,215,142,20,522,"Хорошее","Отметки ручкой, Замечания по корешку",null,null,null,null,null,null,null,"https://t.me/oldbookkz/13123"],[10938,"Катаев В.Б.","Университетский пушкинский сборник",1999,2000,228,1,null,212,142,22,635,"Очень хорошее","Замечания по уголкам",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/11891"]]};
+
+
+/* ===== Настройки (хранятся в браузере) ===== */
+var CFG_KEY='gp.settings.v1';
+var CFG={falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,
+  gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''}};
+function loadCfg(){
+  try{
+    var r=JSON.parse(localStorage.getItem(CFG_KEY)||'null');
+    if(!r) return;
+    Object.keys(r).forEach(function(k){
+      if(k==='gs'&&r.gs){Object.keys(r.gs).forEach(function(g){CFG.gs[g]=r.gs[g];});}
+      else CFG[k]=r[k];
+    });
+  }catch(_){}
+}
+function saveCfg(){try{localStorage.setItem(CFG_KEY,JSON.stringify(CFG));}catch(_){}}
+var arm=null,pileSig='#',pileCount=0;
+
+/* ===== Устойчивость =====
+   Твёрдая книга толще порога стоит сама. Мягкая и тонкая твёрдая падают: они стоят только в серии книг без зазоров,
+   где с одного края (или с обоих) к ним вплотную примыкает устойчивая книга. Блок опирается на одну опору не больше CFG.lean книг. */
+function isStable(u){
+  if(!CFG.falls) return true;
+  if(u.bk==='soft') return false;
+  return u.t>=CFG.thin;
+}
+function standCheck(list){
+  if(!CFG.falls) return [];
+  var st=list.filter(function(p){return p.mode==='stand';}).sort(function(a,b){return a.x-b.x;});
+  var bad=[],i=0;
+  while(i<st.length){
+    var j=i;
+    while(j+1<st.length&&st[j+1].x-(st[j].x+st[j].w)<=1.01) j++;
+    var k=i;
+    while(k<=j){
+      if(isStable(st[k].u)){k++;continue;}
+      var m=k;
+      while(m+1<=j&&!isStable(st[m+1].u)) m++;
+      var left=k>i,right=m<j,n=m-k+1,q;
+      if(!left&&!right){for(q=k;q<=m;q++) bad.push(st[q].u);}
+      else if(!(left&&right)&&n>CFG.lean){
+        if(left){for(q=k+CFG.lean;q<=m;q++) bad.push(st[q].u);}
+        else{for(q=k;q<=m-CFG.lean;q++) bad.push(st[q].u);}
+      }
+      k=m+1;
+    }
+    i=j+1;
+  }
+  return bad;
+}
+function standOK(list){return standCheck(list).length===0;}
+
+/* Убрать то, что упало или повисло в воздухе: после снятия опоры соседи и лежачие книги уходят в стопку. */
+function settle(){
+  var out=[],again=true;
+  while(again){
+    again=false;
+    standCheck(placedList()).forEach(function(u){u.where='stock';out.push(u);again=true;});
+    placedList().forEach(function(p){
+      if(p.mode!=='lie'||p.u.where!=='shelf') return;
+      var info=lieInfo(p.x,p.w,placedList());
+      if(!info||!info.ok||info.rest+p.u.t>SHELF.H){p.u.where='stock';out.push(p.u);again=true;}
+    });
+  }
+  return out;
+}
+
+/* Расставить сохранённые позиции: сначала устойчивые стоящие, затем остальные стоящие, потом лежачие. */
+function placeItems(items){
+  var failed=[],f0=CFG.falls;
+  function pass(list,mode){
+    list.slice().sort(function(a,b){return a.x-b.x;}).forEach(function(a){
+      var placed=placedList();
+      var ok=mode==='stand'?canStand(placed,a.u,a.x):canLie(placed,a.u,a.x);
+      if(ok){a.u.where='shelf';a.u.x=a.x;a.u.mode=mode;}else failed.push(a.u);
+    });
+  }
+  CFG.falls=false;
+  var st=items.filter(function(a){return a.mode==='stand';});
+  pass(st,'stand');
+  CFG.falls=f0;
+  pass(items.filter(function(a){return a.mode==='lie';}),'lie');
+  return failed.concat(settle());
+}
+
+function firstSpot(placed,u,mode){
+  var w=mode==='lie'?u.h:u.t,max=SHELF.W-w;
+  var list=candidates(placed,mode,w,max).sort(function(a,b){return a.x-b.x;});
+  for(var i=0;i<list.length;i++){
+    var ok=mode==='stand'?canStand(placed,u,list[i].x):canLie(placed,u,list[i].x);
+    if(ok) return list[i].x;
+  }
+  return null;
+}
+
+/* Автоматическая расстановка: стоя, вплотную слева направо; мягкие и тонкие рядом с опорой;
+   что не влезло по длине, ложится сверху; остальное остаётся пачкой под полкой. */
+function autoArrange(){
+  UNITS.forEach(function(u){u.where='stock';u.x=0;u.mode='stand';});
+  var seq=[],deferred=[],lean=0,hasStable=false;
+  UNITS.forEach(function(u){
+    if(!fits(u)){deferred.push(u);return;}
+    if(isStable(u)){
+      seq.push(u);hasStable=true;lean=0;
+      while(deferred.length&&lean<CFG.lean&&fits(deferred[0])){seq.push(deferred.shift());lean++;}
+    }else if(hasStable&&lean<CFG.lean){seq.push(u);lean++;}
+    else deferred.push(u);
+  });
+  var pre=[];
+  while(deferred.length&&pre.length<CFG.lean&&fits(deferred[0])&&seq.length) pre.push(deferred.shift());
+  seq=pre.concat(seq);
+  var x=0,over=deferred.slice(),i;
+  for(i=0;i<seq.length;i++){
+    var u=seq[i];
+    if(x+u.t>SHELF.W){over=over.concat(seq.slice(i));break;}
+    u.where='shelf';u.mode='stand';u.x=x;x+=u.t;
+  }
+  over=over.concat(settle());
+  over.forEach(function(u){
+    var sp=firstSpot(placedList(),u,'lie');
+    if(sp!==null){u.where='shelf';u.mode='lie';u.x=sp;}
+    else u.where='stock';
+  });
+  settle();
+  pileSig='#';
+}
+
+/* Новая книга: если есть место, встаёт на полку, иначе пачкой под полку. */
+function placeNewUnit(u){
+  var placed=placedList(),sp=firstSpot(placed,u,'stand');
+  if(sp!==null){u.where='shelf';u.mode='stand';u.x=sp;return 'shelf';}
+  sp=firstSpot(placed,u,'lie');
+  if(sp!==null){u.where='shelf';u.mode='lie';u.x=sp;return 'top';}
+  u.where='stock';
+  return 'stock';
+}
+
+/* ===== Сохранение расстановки и журнал изменений по каждой полке ===== */
+function unitKey(u){return (u.code?u.code:'T:'+u.title.toLowerCase())+'#'+u.copyI;}
+function layoutKey(s){return 'gp.layout.'+s;}
+function logKey(s){return 'gp.log.'+s;}
+function readSaved(s){
+  try{var r=JSON.parse(localStorage.getItem(layoutKey(s))||'null');return r&&r.v===1?r:null;}catch(_){return null;}
+}
+var saveT=0;
+function saveLayoutSoon(){
+  clearTimeout(saveT);
+  saveT=setTimeout(saveLayout,250);
+}
+function saveLayout(){
+  if(!DS||!UNITS.length||float) return;
+  var o={v:1,ts:Date.now(),u:UNITS.map(function(u){return [unitKey(u),u.title,u.where==='shelf'?1:0,u.x,u.mode==='lie'?1:0,u.sig,u.code,u.copyI];})};
+  try{localStorage.setItem(layoutKey(DS.sheet),JSON.stringify(o));}catch(_){}
+}
+function getLog(s){try{return JSON.parse(localStorage.getItem(logKey(s))||'[]');}catch(_){return [];}}
+function putLog(s,L){try{localStorage.setItem(logKey(s),JSON.stringify(L.slice(0,300)));}catch(_){}}
+function addLog(entries){
+  if(!DS||!entries.length) return;
+  var L=getLog(DS.sheet),ts=Date.now();
+  entries.slice().reverse().forEach(function(e){e.ts=ts;L.unshift(e);});
+  putLog(DS.sheet,L);
+}
+function shelvesWithLog(){
+  var out=[];
+  try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);if(k&&k.indexOf('gp.log.')===0) out.push(k.slice(7));}}catch(_){}
+  if(DS&&out.indexOf(DS.sheet)<0) out.unshift(DS.sheet);
+  return out.sort();
+}
+var SIG_NAMES=['название','автор','высота','ширина','корешок','переплёт','экземпляров'];
+function sigDiff(a,b){
+  var A=String(a||'').split('|'),B=String(b||'').split('|'),d=[];
+  for(var i=0;i<SIG_NAMES.length;i++){
+    if(A[i]!==B[i]){
+      if(i<2) d.push(SIG_NAMES[i]);
+      else d.push(SIG_NAMES[i]+' '+(A[i]||'—')+' → '+(B[i]||'—'));
+    }
+  }
+  return d.join('; ');
+}
+function bookTitle(u){return u.title+(u.copyN>1?' · экз. '+u.copyI:'');}
+
+/* Сравнить новые данные с сохранённой расстановкой: известные книги остаются на местах,
+   новые встают на свободное место или ложатся пачкой под полку, исчезнувшие записываются в журнал. */
+function syncWithSaved(saved){
+  var prev={},seen={},added=[],items=[],changed=[],removed=[],log=[];
+  saved.u.forEach(function(a){prev[a[0]]=a;});
+  UNITS.forEach(function(u){
+    var k=unitKey(u),a=prev[k];seen[k]=1;
+    if(!a){added.push(u);return;}
+    if(a[5]!==u.sig) changed.push({u:u,d:sigDiff(a[5],u.sig)});
+    if(a[2]) items.push({u:u,x:a[3],mode:a[4]?'lie':'stand'});
+  });
+  saved.u.forEach(function(a){if(!seen[a[0]]) removed.push(a);});
+  var failed=placeItems(items);
+  removed.forEach(function(a){
+    log.push({type:'del',t:a[1]+((a[7]>1)?' · экз. '+a[7]:''),c:a[6]||'',n:a[2]?'убрана с полки':'убрана из стопки'});
+  });
+  added.forEach(function(u){
+    var r=placeNewUnit(u);
+    log.push({type:'add',t:bookTitle(u),c:u.code,n:r==='shelf'?'поставлена на полку':(r==='top'?'положена на полку сверху':'выложена пачкой под полку: нет места')});
+  });
+  changed.forEach(function(o){log.push({type:'chg',t:bookTitle(o.u),c:o.u.code,n:'изменено: '+o.d});});
+  var toPile=0,reput=0;
+  failed.forEach(function(u){
+    if(added.indexOf(u)>=0) return;
+    if(placeNewUnit(u)==='stock'){
+      toPile++;
+      log.push({type:'chg',t:bookTitle(u),c:u.code,n:'перенесена в стопку: на прежнем месте не держится'});
+    }else{
+      reput++;
+      log.push({type:'chg',t:bookTitle(u),c:u.code,n:'переставлена на другое место: на прежнем не держится'});
+    }
+  });
+  pileSig='#';
+  return {log:log,added:added.length,removed:removed.length,changed:changed.length,moved:toPile,reput:reput};
+}
+
+function onShelf(u){return u.where==='shelf';}
+function stockSig(){return UNITS.filter(function(u){return u.where==='stock';}).map(function(u){return u.id;}).join(',');}
+function replanIfNeeded(){
+  if(float||arm) return;
+  var sig=stockSig();
+  if(sig===pileSig) return;
+  pileSig=sig;planPiles();drawPileBase();
+}
+function lightestPile(){
+  var P=0,sums={};
+  UNITS.forEach(function(u){if(u.where==='stock'){sums[u.pile]=(sums[u.pile]||0)+u.t;P=Math.max(P,u.pile+1);}});
+  var best=0,bv=Infinity;
+  for(var i=0;i<Math.max(P,1);i++){var v=sums[i]||0;if(v<bv){bv=v;best=i;}}
+  return best;
+}
+function standWhy(placed,u,d){
+  var f0=CFG.falls;CFG.falls=false;
+  var x=findStand(placed,u,d);
+  CFG.falls=f0;
+  return x!==null?'упадёт: нужна опора рядом':'нет места';
+}
+function lockWhy(placed,idx){
+  var rest=placed.filter(function(p,i){return i!==idx;});
+  if(standOK(placed)&&!standOK(rest)) return 'Эта книга держит соседние: сначала уберите их.';
+  return 'Сначала снимите книгу, которая лежит сверху: она опирается на эти.';
+}
+function drawPileBase(){
+  var b='';
+  if(pileCount) ROWBASE.forEach(function(y){b+='<path class="base" d="M90 '+y+'H1090"/>';});
+  el.piles.innerHTML=b;
+  el.scene.setAttribute('viewBox','0 0 '+VW+' '+VH);
+}
 
 /* ===== Столбцы таблицы и их роли ===== */
 var ROLES=[
@@ -381,7 +915,7 @@ function canStand(placed,u,x){
     var info=lieInfo(p.x,p.w,placed);
     if(!info||u.h>info.rest+0.01) return false;
   }
-  return true;
+  return standOK(placed.concat([{x:x,w:w,mode:'stand',u:u}]));
 }
 
 function canLie(placed,u,x){
@@ -427,6 +961,7 @@ function findLie(placed,u,desired){
 /* Можно ли снять placed[idx]: лежачие книги не должны потерять опору или осесть ниже. */
 function canRemove(placed,idx){
   var rest=placed.filter(function(p,i){return i!==idx;});
+  if(standOK(placed)&&!standOK(rest)) return false;
   return rest.every(function(p){
     if(p.mode!=='lie') return true;
     var a=lieInfo(p.x,p.w,placed),b=lieInfo(p.x,p.w,rest);
@@ -517,23 +1052,36 @@ function shortAuthor(a){
   return w.replace(/[,;]+$/,'');
 }
 
-function loadDataset(raw){
+function loadDataset(raw,opts){
+  opts=opts||{};
   var roles={},colRole=[];
   raw.columns.forEach(function(c,i){
     var r=roleOf(c.label);colRole.push(r);
     if(r&&roles[r]==null) roles[r]=i;
   });
-  DS={sheet:raw.sheet,columns:raw.columns,rows:raw.rows,roles:roles,colRole:colRole,trunc:!!raw.trunc};
+  DS={sheet:raw.sheet,columns:raw.columns,rows:raw.rows,roles:roles,colRole:colRole,trunc:!!raw.trunc,src:raw.src||'file',at:Date.now()};
   buildUnits();
-  planPiles();
-  undoStack=[];flashId=null;statusNote='';
+  undoStack=[];flashId=null;statusNote='';arm=null;pileSig='#';
+  var hasLay=roles.where!=null&&roles.px!=null&&roles.orient!=null,res=null,saved=readSaved(DS.sheet);
+  if(hasLay&&!opts.sync&&!opts.fresh&&applyLayout()>0){
+    addLog([{type:'inf',t:'Загружена расстановка из файла',c:'',n:UNITS.filter(onShelf).length+' из '+UNITS.length+' на полке'}]);
+  }else if(saved&&!opts.fresh){
+    res=syncWithSaved(saved);
+    if(res.log.length) addLog(res.log);
+  }else{
+    autoArrange();
+    addLog([{type:'inf',t:'Новая полка расставлена автоматически',c:'',n:UNITS.filter(onShelf).length+' из '+UNITS.length+' на полке, остальные пачкой под полкой'}]);
+  }
   sel={id:UNITS.length?UNITS[0].id:0};
-  if(roles.where!=null&&roles.px!=null&&roles.orient!=null) applyLayout();
+  logShelf=null;
   buildStatic();
   updateHeader();
   renderAll();
   syncButtons();
+  renderLog();
+  updateSource();
   if(el.scroller) el.scroller.scrollLeft=0;
+  return res;
 }
 
 function buildUnits(){
@@ -555,29 +1103,32 @@ function buildUnits(){
         id:++id,ri:ri,code:code,title:title,author:author,short:shortAuthor(author),color:colorOf[key],
         h:h,w:w,t:t,defs:defs,bk:bindKind(g('binding')),
         copyN:n,copyI:c,copyText:R.copy!=null?str(g('copy')):'',
-        where:'stock',x:0,mode:'stand',pile:0
+        where:'stock',x:0,mode:'stand',pile:0,
+        sig:[title,author,h,w,t,bindKind(g('binding')),n].join('|')
       });
     }
   });
 }
 
-/* Стопки: в порядке листа, по толщине поровну. Больше четырёх стопок — следующим рядом. */
+/* Стопки: только книги, которые сейчас лежат под полкой. Одна пачка до 230 мм, потом следующая; по четыре в ряд. */
 function planPiles(){
-  var T=0;UNITS.forEach(function(u){T+=u.t;});
-  var P=Math.max(4,Math.ceil(T/PILE_MAX)),tg=(T/P)||1,cum=0,sums=[],i;
-  for(i=0;i<P;i++) sums.push(0);
-  UNITS.forEach(function(u){
+  var S=UNITS.filter(function(u){return u.where==='stock';}),T=0,i;
+  S.forEach(function(u){T+=u.t;});
+  var P=S.length?Math.max(1,Math.ceil(T/PILE_MAX)):0,tg=P?T/P:1,cum=0,sums=[];
+  for(i=0;i<Math.max(P,1);i++) sums.push(0);
+  S.forEach(function(u){
     var k=Math.min(P-1,Math.floor((cum+u.t/2)/tg));
     u.pile=k;sums[k]+=u.t;cum+=u.t;
   });
-  var rows=Math.ceil(P/4),top=ROWTOP0;
+  pileCount=P;
+  var rows=Math.max(1,Math.ceil(P/4)),top=ROWTOP0;
   ROWBASE=[];
   for(var r=0;r<rows;r++){
     var mx=0;
     for(var c=0;c<4;c++){var k2=r*4+c;if(k2<P) mx=Math.max(mx,sums[k2]);}
     ROWBASE.push(top+mx);top=top+mx+ROWGAP;
   }
-  VH=ROWBASE[rows-1]+36;
+  VH=P?ROWBASE[rows-1]+36:430;
 }
 
 function applyLayout(){
@@ -586,12 +1137,8 @@ function applyLayout(){
     var row=DS.rows[u.ri],where=str(row[R.where]).toLowerCase(),x=num(row[R.px]);
     if(/полк/.test(where)&&isFinite(x)) items.push({u:u,x:x,mode:/л[её]ж/i.test(str(row[R.orient]))?'lie':'stand'});
   });
-  ['stand','lie'].forEach(function(m){
-    items.filter(function(a){return a.mode===m;}).sort(function(a,b){return a.x-b.x;}).forEach(function(a){
-      var placed=placedList();
-      if(m==='stand'?canStand(placed,a.u,a.x):canLie(placed,a.u,a.x)){a.u.where='shelf';a.u.x=a.x;a.u.mode=m;}
-    });
-  });
+  placeItems(items);
+  return items.length;
 }
 
 function placedList(){
@@ -602,7 +1149,7 @@ function placedList(){
 
 function initEls(){
   ['scene','scroller','grid','books','ruler','stock','float','ghost','hitlayer','piles','plate','cover',
-   'bcode','bname','bauthor','binfo','side','sVol','sSL','sFree','sStock','msg','undo','clear','imp','exp','file',
+   'bcode','bname','bauthor','binfo','side','sVol','sSL','sFree','sStock','msg','undo','clear','file','menubar','dock','dockT','dockName','dockInfo','dkLL','dkL','dkOk','dkR','dkRR','dkLie','dkTake','dkCancel','coverPhoto','cvsrc','stage','chlog','mbItems','mbBurger','mbStatus','mbStx','srcnote','auto','gsync','dlgSet','dlgInfo','infT','infB','infOk','sFalls','sThin','sLean','sCovers','sLog','sBig','sStep','gMode','gUrl','gTabs','gGen','gOauth','gCid','gAcct','gIn','gOut','gAuto','gTest','gLoad','gStat','gHelp','setReset','setOk',
    'sub','foot','legend','dlg','dFile','dSheet','dStat','dGen','dGenL','dCols','dAll','dNone','dCancel','dOk'
   ].forEach(function(id){el[id]=$(id);});
 }
@@ -648,7 +1195,7 @@ function pileLayout(extraId){
   UNITS.filter(function(u){return u.where==='stock'||u.id===extraId;})
     .sort(function(a,b){return a.pile-b.pile||a.id-b.id;})
     .forEach(function(u){
-      var col=u.pile%4,row=Math.floor(u.pile/4);
+      var col=u.pile%4,row=Math.min(Math.floor(u.pile/4),ROWBASE.length-1);
       off[u.pile]=off[u.pile]||0;
       pos[u.id]={cx:COLX[col],cy:ROWBASE[row]-off[u.pile]-u.t/2};
       off[u.pile]+=u.t;
@@ -681,10 +1228,7 @@ function buildStatic(){
     if(v%100===0) lab+='<text class="tl r" x="'+(SX-24)+'" y="'+(FLOOR-v+4)+'">'+v+'</text>';
   }
   el.ruler.innerHTML='<path class="tk" d="'+d+'"/>'+lab;
-  var b='';
-  ROWBASE.forEach(function(y){b+='<path class="base" d="M90 '+y+'H1090"/>';});
-  el.piles.innerHTML=b;
-  el.scene.setAttribute('viewBox','0 0 '+VW+' '+VH);
+  drawPileBase();
 
   var places={},best='',cnt=0;
   if(DS.roles.place!=null) DS.rows.forEach(function(r){
@@ -716,6 +1260,7 @@ function hitPad(){return Math.max(2,Math.min(14,7/scaleNow()));}
 
 function renderAll(){
   hits=[];
+  replanIfNeeded();
   var pos=pileLayout(),s='';
   UNITS.forEach(function(u){
     if(u.where!=='stock') return;
@@ -746,6 +1291,8 @@ function renderAll(){
     hs+='<rect x="'+(h.x0-pad)+'" y="'+(h.y0-pad)+'" width="'+(h.x1-h.x0+2*pad)+'" height="'+(h.y1-h.y0+2*pad)+'"/>';
   });
   el.hitlayer.innerHTML=hs;
+  drawArm();
+  updateDock();
 
   renderInfo();
   renderSide();
@@ -816,6 +1363,7 @@ function fmtVal(role,v){
 }
 
 function whereText(u){
+  if(u.where==='arm') return 'в руке: выберите место на полке';
   if(u.where!=='shelf') return 'в стопке';
   var w=u.mode==='lie'?u.h:u.t;
   return 'на полке · '+(u.mode==='lie'?'лёжа':'стоя')+' · '+u.x+'–'+(u.x+w)+' мм';
@@ -824,10 +1372,11 @@ function whereText(u){
 function renderInfo(){
   var u=byId(sel.id);
   if(!u){
-    el.cover.innerHTML='';el.bcode.textContent='';el.bname.textContent='Нет книг';el.bauthor.textContent='';el.binfo.innerHTML='';
+    el.cover.innerHTML='';setCoverPhoto(null);el.bcode.textContent='';el.bname.textContent='Нет книг';el.bauthor.textContent='';el.binfo.innerHTML='';
     return;
   }
   renderCover(u);
+  setCoverPhoto(u);
   el.bcode.textContent=u.code?'Номер в каталоге: '+u.code:'';
   el.bname.textContent=u.title;
   el.bauthor.textContent=u.author||'Автор не указан';
@@ -892,6 +1441,270 @@ function updateStatus(){
   el.msg.textContent=m;
 }
 
+
+/* ===== Нажатие вместо перетаскивания: взять книгу, поставить тапом, сдвигать кнопками и свайпом =====
+   «В руке» (arm): книга снята со своего места и показана призраком на полке. Её можно:
+   нажать на место на полке (ставится сразу), сдвинуть кнопками ‹ › « » или свайпом по призраку,
+   положить/поставить, подтвердить («Поставить», «Готово») или отменить. */
+var swipe=null,suppressClick=0;
+
+function armMode(){return arm.lie?'lie':'stand';}
+function armTest(placed){
+  var u=arm.u,lie=arm.lie;
+  return function(x){return lie?canLie(placed,u,x):canStand(placed,u,x);};
+}
+function armGhost(){
+  var u=arm.u,placed=placedList(),mode=armMode(),w=mode==='lie'?u.h:u.t;
+  if(!fits(u)) return {ok:false,x:arm.x,mode:mode,w:w,why:'не помещается'};
+  var ok=armTest(placed)(arm.x),g={ok:ok,x:arm.x,mode:mode,w:w};
+  if(ok){if(mode==='lie'){var info=lieInfo(arm.x,u.h,placed);g.rest=info?info.rest:u.h;}}
+  else g.why=mode==='lie'?'нет опоры':standWhy(placed,u,arm.x);
+  return g;
+}
+function armCenter(g){
+  return shelfCenter(arm.u,arm.x,armMode(),placedList());
+}
+function drawArm(){
+  var hl=el.hitlayer.querySelector('#armhit');
+  if(hl&&!arm){hl.parentNode.removeChild(hl);hl=null;}
+  if(!arm){
+    if(!float){el.float.innerHTML='';el.float.removeAttribute('transform');el.float.classList.remove('armed');setGhost(null,null);}
+    return;
+  }
+  var u=arm.u,g=armGhost();
+  arm.g=g;
+  setGhost(g,u);
+  var c=armCenter(g);
+  el.float.setAttribute('transform','translate('+c.cx.toFixed(1)+' '+c.cy.toFixed(1)+')'+(arm.lie?'':' rotate(90)'));
+  el.float.innerHTML=unitShape(u,{});
+  el.float.classList.add('armed');
+  var pad=hitPad(),w=arm.lie?u.h:u.t,hgt=arm.lie?u.t:u.h,y0=arm.lie?c.cy-u.t/2:FLOOR-u.h;
+  /* Прямоугольник под пальцем не пересоздаём: иначе браузер посреди свайпа решит, что это прокрутка, и отменит жест. */
+  if(!hl){
+    hl=document.createElementNS('http://www.w3.org/2000/svg','rect');
+    hl.setAttribute('id','armhit');
+    el.hitlayer.appendChild(hl);
+  }
+  hl.setAttribute('x',SX+arm.x-pad);hl.setAttribute('y',y0-pad);
+  hl.setAttribute('width',w+2*pad);hl.setAttribute('height',hgt+2*pad);
+}
+function inGhost(p){
+  var g=arm.g||armGhost(),u=arm.u,pad=hitPad(),w=arm.lie?u.h:u.t;
+  var c=armCenter(g),y0=arm.lie?c.cy-u.t/2:FLOOR-u.h,y1=arm.lie?c.cy+u.t/2:FLOOR;
+  return p.x>=SX+arm.x-pad&&p.x<=SX+arm.x+w+pad&&p.y>=y0-pad&&p.y<=y1+pad;
+}
+function scrollToArm(){
+  if(!arm) return;
+  var sc=el.scroller,s=scaleNow(),u=arm.u,w=arm.lie?u.h:u.t,cx=(SX+arm.x+w/2)*s;
+  if(cx<sc.scrollLeft+60||cx>sc.scrollLeft+sc.clientWidth-60){
+    var left=Math.max(0,cx-sc.clientWidth/2);
+    if(sc.scrollTo) sc.scrollTo({left:left,behavior:reduce?'auto':'smooth'});else sc.scrollLeft=left;
+  }
+}
+function scrollShelfIntoView(){
+  var r=el.scroller.getBoundingClientRect(),mb=el.menubar?el.menubar.offsetHeight:0;
+  if(r.top<mb+4||r.top>mb+180) window.scrollBy({top:r.top-mb-8,behavior:reduce?'auto':'smooth'});
+}
+
+function showDock(){el.dock.hidden=false;updateDock();}
+function hideDock(){el.dock.hidden=true;}
+function updateDock(){
+  if(!arm){hideDock();return;}
+  var u=arm.u,g=arm.g||armGhost();
+  el.dockName.textContent=u.title;
+  el.dockInfo.textContent=g.ok?(g.x+'–'+(g.x+g.w)+' мм · '+(arm.lie?'лёжа':'стоя')):g.why;
+  el.dockT.className='dt '+(g.ok?'ok':'bad');
+  el.dkOk.textContent=arm.from==='shelf'?'Готово':'Поставить';
+  el.dkOk.disabled=!g.ok;
+  el.dkLie.textContent=arm.lie?'Поставить стоя':'Положить';
+  el.dkTake.hidden=arm.from!=='shelf';
+}
+
+function armBook(u){
+  var placed=placedList(),fromShelf=u.where==='shelf';
+  if(fromShelf){
+    var idx=placed.findIndex(function(q){return q.u===u;});
+    if(!canRemove(placed,idx)){statusNote=lockWhy(placed,idx);renderAll();return false;}
+  }
+  arm={u:u,from:fromShelf?'shelf':'stock',fx:u.x,fmode:u.mode,prev:snap(),lie:fromShelf&&u.mode==='lie',x:fromShelf?u.x:0,g:null};
+  u.where='arm';
+  if(!fromShelf){
+    var sp=firstSpot(placedList(),u,'stand');
+    if(sp!==null){arm.lie=false;arm.x=sp;}
+    else{
+      sp=firstSpot(placedList(),u,'lie');
+      if(sp!==null){arm.lie=true;arm.x=sp;}
+    }
+  }
+  statusNote='';
+  renderAll();
+  showDock();
+  scrollToArm();
+  if(!fromShelf) scrollShelfIntoView();
+  return true;
+}
+function disarm(restore){
+  if(!arm) return;
+  var a=arm,u=a.u;
+  arm=null;
+  if(restore){
+    if(a.from==='shelf'){u.where='shelf';u.x=a.fx;u.mode=a.fmode;}else u.where='stock';
+  }
+  el.float.innerHTML='';el.float.removeAttribute('transform');el.float.classList.remove('armed');
+  setGhost(null,null);hideDock();
+  renderAll();syncButtons();
+}
+function armCommit(keep){
+  if(!arm) return false;
+  var a=arm,u=a.u,g=armGhost();
+  if(!g.ok){updateDock();return false;}
+  u.where='shelf';u.x=a.x;u.mode=a.lie?'lie':'stand';
+  commit(a.prev);
+  flashId=u.id;
+  arm=null;
+  el.float.innerHTML='';el.float.removeAttribute('transform');el.float.classList.remove('armed');
+  setGhost(null,null);hideDock();
+  renderAll();syncButtons();
+  if(keep) armBook(u);
+  return true;
+}
+function armTake(){
+  if(!arm||arm.from!=='shelf') return;
+  var a=arm,u=a.u;
+  u.where='stock';u.pile=lightestPile();
+  commit(a.prev);
+  arm=null;
+  el.float.innerHTML='';el.float.removeAttribute('transform');el.float.classList.remove('armed');
+  setGhost(null,null);hideDock();
+  renderAll();syncButtons();
+}
+function tapBook(u){
+  suppressClick=performance.now()+450;
+  if(arm&&arm.u===u) return;
+  if(arm) disarm(true);
+  sel={id:u.id};
+  armBook(u);
+}
+
+function armMoveTo(x,tol){
+  var u=arm.u,mode=armMode(),w=mode==='lie'?u.h:u.t,max=SHELF.W-w,placed=placedList(),test=armTest(placed);
+  var nx=nearestFree(test,candidates(placed,mode,w,max),x,tol||30);
+  arm.x=nx!==null?nx:Math.max(0,Math.min(max,snap5(x)));
+  drawArm();updateDock();scrollToArm();
+}
+/* Шаг ‹ ›: ближайшее допустимое место примерно на шаг в этой стороне. Прыжок « »: до ближайшей книги или края. */
+function armStep(dir,jump){
+  if(!arm) return;
+  var u=arm.u,mode=armMode(),w=mode==='lie'?u.h:u.t,max=SHELF.W-w,placed=placedList(),test=armTest(placed);
+  var cur=arm.x,cand=candidates(placed,mode,w,max).filter(function(c){return dir>0?c.x>cur+0.5:c.x<cur-0.5;});
+  var best=null,i,c;
+  if(jump){
+    var flush=cand.filter(function(c){return c.b>0;}).sort(function(a,b){return Math.abs(a.x-cur)-Math.abs(b.x-cur);});
+    for(i=0;i<flush.length;i++){if(test(flush[i].x)){best=flush[i].x;break;}}
+    if(best===null){
+      var far=cand.slice().sort(function(a,b){return dir>0?b.x-a.x:a.x-b.x;});
+      for(i=0;i<far.length;i++){if(test(far[i].x)){best=far[i].x;break;}}
+    }
+  }else{
+    var target=cur+dir*CFG.step,list=cand.slice().sort(function(a,b){return Math.abs(a.x-target)-Math.abs(b.x-target);});
+    for(i=0;i<list.length;i++){
+      c=list[i];
+      if(test(c.x)){best=c.x;break;}
+    }
+  }
+  if(best===null){
+    if(!jump){arm.x=Math.max(0,Math.min(max,snap5(cur+dir*CFG.step)));drawArm();updateDock();}
+    return;
+  }
+  arm.x=best;
+  drawArm();updateDock();scrollToArm();
+}
+function armToggleLie(){
+  if(!arm) return;
+  arm.lie=!arm.lie;
+  var u=arm.u,mode=armMode(),w=mode==='lie'?u.h:u.t,max=SHELF.W-w,placed=placedList();
+  var nx=nearestFree(armTest(placed),candidates(placed,mode,w,max),Math.min(arm.x,max),SHELF.W);
+  arm.x=nx!==null?nx:Math.max(0,Math.min(max,arm.x));
+  drawArm();updateDock();scrollToArm();
+}
+/* Нажатие на пустое место полки: книга встаёт туда (выше вершин книг — ложится сверху). */
+function tapSpot(p){
+  var u=arm.u,wantLie=arm.lie||p.y<FLOOR-u.h*0.84;
+  arm.lie=wantLie;
+  var mode=armMode(),w=mode==='lie'?u.h:u.t,max=SHELF.W-w,placed=placedList(),d=p.x-SX-w/2;
+  var x=nearestFree(armTest(placed),candidates(placed,mode,w,max),d,mode==='lie'?80:60);
+  if(x!==null){arm.x=x;armCommit(true);return;}
+  arm.x=Math.max(0,Math.min(max,snap5(d)));
+  drawArm();updateDock();
+}
+
+function startSwipe(e){
+  e.preventDefault();
+  swipe={id:e.pointerId,sx:e.clientX,x0:arm.x,moved:false};
+  try{el.scene.setPointerCapture(e.pointerId);}catch(_){}
+}
+function swipeMove(e){
+  if(Math.abs(e.clientX-swipe.sx)>6) swipe.moved=true;
+  if(swipe.moved) armMoveTo(swipe.x0+(e.clientX-swipe.sx)/scaleNow(),1e9);
+}
+function swipeEnd(e){
+  var s=swipe;
+  swipe=null;
+  try{el.scene.releasePointerCapture(s.id);}catch(_){}
+  suppressClick=performance.now()+450;
+  if(!s.moved&&e.type!=='pointercancel'&&arm) armCommit(arm.from==='stock');
+}
+
+/* ===== Действия над расстановкой (меню, кнопки, клавиши) ===== */
+function doUndo(){
+  if(float) return;
+  if(arm) disarm(true);
+  if(!undoStack.length) return;
+  restore(undoStack.pop());
+  flashId=null;statusNote='';
+  renderAll();syncButtons();
+}
+function doClear(){
+  if(float) return;
+  if(arm) disarm(true);
+  var prev=snap();
+  UNITS.forEach(function(u){u.where='stock';});
+  commit(prev);
+  flashId=null;statusNote='';
+  addLog([{type:'inf',t:'Все книги убраны в стопки',c:'',n:''}]);
+  renderAll();syncButtons();renderLog();
+}
+function doAuto(){
+  if(float||!UNITS.length) return;
+  if(arm) disarm(true);
+  var prev=snap();
+  autoArrange();
+  commit(prev);
+  var n=UNITS.filter(onShelf).length;
+  addLog([{type:'inf',t:'Расставлено автоматически',c:'',n:n+' из '+UNITS.length+' на полке'}]);
+  flashId=null;statusNote='';
+  renderAll();syncButtons();renderLog();
+  note('Расставлено автоматически: на полке '+n+' из '+UNITS.length+'.');
+}
+function afterChange(){saveLayoutSoon();}
+
+/* ===== Фото обложек из папки covers/<код>.jpg ===== */
+function setCoverPhoto(u){
+  var img=el.coverPhoto,src=u&&u.code?'covers/'+u.code+'.jpg':'';
+  img.hidden=true;el.cover.style.display='';el.cvsrc.hidden=true;
+  if(!CFG.covers||!src) return;
+  img.dataset.for=src;
+  img.alt='Обложка: '+u.title;
+  img.onload=function(){
+    if(img.dataset.for!==src) return;
+    img.hidden=false;el.cover.style.display='none';el.cvsrc.hidden=false;
+    el.cvsrc.textContent='Фото обложки: oldbook.kz';
+  };
+  img.onerror=function(){if(img.dataset.for===src){img.hidden=true;el.cover.style.display='';el.cvsrc.hidden=true;}};
+  if(img.getAttribute('src')===src&&img.complete&&img.naturalWidth) img.onload();
+  else img.src=src;
+}
+
 /* ===== Перетаскивание ===== */
 var reduce=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 var undoStack=[],float=null,activeId=null,touch=false,cli={x:0,y:0},ptr={x:0,y:0},ghostKey='';
@@ -908,9 +1721,10 @@ function commit(prev){
 function syncButtons(){
   el.undo.disabled=!undoStack.length;
   el.clear.disabled=!UNITS.some(function(u){return u.where==='shelf';});
+  afterChange();
 }
 function note(m,ms){
-  statusNote=m;updateStatus();
+  statusNote=m;updateStatus();toast(m,Math.min(ms||5000,7000));
   clearTimeout(noteT);
   noteT=setTimeout(function(){statusNote='';updateStatus();},ms||5000);
 }
@@ -952,7 +1766,7 @@ function computeGhost(f){
   }
   d=f.cx-SX-u.t/2;x=findStand(placed,u,d);
   if(x!==null) return {ok:true,x:x,mode:'stand',w:u.t};
-  return {ok:false,x:Math.max(0,Math.min(SHELF.W-u.t,snap5(d))),mode:'stand',w:u.t,why:'нет места'};
+  return {ok:false,x:Math.max(0,Math.min(SHELF.W-u.t,snap5(d))),mode:'stand',w:u.t,why:standWhy(placed,u,d)};
 }
 
 function setGhost(g,u){
@@ -1033,11 +1847,14 @@ function endDrag(){
 }
 
 function onDown(e){
-  if(float) return;
+  if(float||swipe) return;
   if(e.pointerType==='mouse'&&e.button!==0) return;
-  var p=toMM(e.clientX,e.clientY),h=pick(p);
+  var p=toMM(e.clientX,e.clientY);
+  if(arm&&inGhost(p)){startSwipe(e);return;}
+  var h=pick(p);
   if(!h) return;
   var u=h.u;
+  if(arm) disarm(true);
   sel={id:u.id};
   statusNote='';
   flashId=null;
@@ -1045,7 +1862,7 @@ function onDown(e){
     var placed=placedList(),idx=placed.findIndex(function(q){return q.u===u;});
     if(!canRemove(placed,idx)){
       e.preventDefault();
-      statusNote='Сначала снимите книгу, которая лежит сверху: она опирается на эти.';
+      statusNote=lockWhy(placed,idx);
       renderAll();
       return;
     }
@@ -1064,6 +1881,7 @@ function onDown(e){
     float={u:u,source:'shelf',prev:prev,fromX:u.x,fromMode:u.mode,lie:lie,angle:lie?0:90,target:lie?0:90,cx:c.cx,cy:c.cy,
       ox:c.cx-p.x,oy:c.cy-p.y,tox:c.cx-p.x,toy:c.cy-p.y-lift,mode:'drag'};
   }
+  float.startX=e.clientX;float.startY=e.clientY;float.t0=performance.now();
   u.where='float';
   el.float.innerHTML=unitShape(u);
   drawFloat();
@@ -1074,6 +1892,7 @@ function onDown(e){
 }
 
 function onMove(e){
+  if(swipe){if(e.pointerId===swipe.id) swipeMove(e);return;}
   if(float){
     if(e.pointerId!==activeId) return;
     cli={x:e.clientX,y:e.clientY};
@@ -1085,6 +1904,7 @@ function onMove(e){
 }
 
 function onUp(e){
+  if(swipe){if(e.pointerId===swipe.id) swipeEnd(e);return;}
   if(!float||float.mode!=='drag'||e.pointerId!==activeId) return;
   var cancel=e.type==='pointercancel';
   if(!cancel) cli={x:e.clientX,y:e.clientY};
@@ -1097,6 +1917,13 @@ function release(cancel){
   f.cx=ptr.x+f.ox;f.cy=ptr.y+f.oy;
   var over=overShelf(f.cx,f.cy),g=over?computeGhost(f):null;
   try{el.scene.releasePointerCapture(activeId);}catch(_){}
+  if(!cancel&&Math.hypot(cli.x-f.startX,cli.y-f.startY)<10&&performance.now()-f.t0<600){
+    setGhost(null,null);
+    if(f.source==='shelf'){u.where='shelf';u.x=f.fromX;u.mode=f.fromMode;}else u.where='stock';
+    endDrag();
+    tapBook(u);
+    return;
+  }
 
   if(!cancel&&g&&g.ok){
     setGhost(g,u);
@@ -1119,6 +1946,7 @@ function release(cancel){
     });
     return;
   }
+  u.pile=lightestPile();
   var c2=pileLayout(u.id)[u.id];
   tweenTo(c2.cx,c2.cy,0,240,function(){
     u.where='stock';
@@ -1351,6 +2179,7 @@ function hideDlg(){
 async function openImport(file){
   if(typeof JSZip==='undefined'){note('Не загрузилась библиотека чтения Excel (vendor/jszip.min.js). Положите папку vendor рядом с index.html.',8000);return;}
   imp={file:file,wb:null,gsh:null,genHead:null,genList:null,parsed:null,off:{},token:0};
+  $('dlgT').textContent='Загрузка из Excel';
   el.dFile.textContent=file.name+' · '+fmtSize(file.size);
   el.dSheet.innerHTML='';el.dCols.innerHTML='';el.dOk.disabled=true;
   el.dGen.checked=true;el.dGen._touched=false;
@@ -1385,7 +2214,10 @@ async function parseSelected(){
   el.dOk.disabled=true;el.dCols.innerHTML='';
   setStat('Читаю лист «'+name+'»…');
   var res;
-  try{res=await readRows(I.wb,name,MAXSCAN);}
+  try{
+    if(I.wb.kind==='g'){var gr=await I.wb.fetchRows(name);res={rows:gr.slice(0,MAXSCAN),truncated:gr.length>MAXSCAN};}
+    else res=await readRows(I.wb,name,MAXSCAN);
+  }
   catch(err){if(imp===I&&tk===I.token) setStat('Не удалось прочитать лист: '+err.message,true);return;}
   if(imp!==I||tk!==I.token) return;
   var p=detectTable(res.rows,I.genHead);
@@ -1458,7 +2290,7 @@ async function doImport(){
       var ci=-1;P.headers.forEach(function(h,i){if(ci<0&&roleOf(h)==='code') ci=i;});
       var codes=new Set();
       rows.forEach(function(r){var c=num(r[ci]);if(isFinite(c)) codes.add(String(Math.round(c)));});
-      genMap=await scanGeneral(imp.wb,imp.gsh,codes);
+      genMap=imp.wb.kind==='g'?await imp.wb.fetchGeneral(codes):await scanGeneral(imp.wb,imp.gsh,codes);
       imp.ci=ci;
     }
   }catch(err){setStat('Не удалось прочитать «Генеральную»: '+err.message,true);el.dOk.disabled=false;return;}
@@ -1472,8 +2304,12 @@ async function doImport(){
   });
   var sheetName=el.dSheet.value,codeIdx=imp.ci;
   var missing=genMap?rows.filter(function(r){var c=num(r[codeIdx]);return !genMap.has(String(Math.round(c)));}).length:0;
+  var isG=imp.wb&&imp.wb.kind==='g',offSel=imp.off;
   hideDlg();
-  loadDataset({sheet:sheetName,columns:cols.map(function(c){return {label:c.label,origin:c.origin};}),rows:out,trunc:(P.total>MAXB||P.scanCut)});
+  if(DS) saveLayout();
+  var rawCols=cols.map(function(c){return {label:c.label,origin:c.origin};});
+  loadDataset({sheet:sheetName,columns:rawCols,rows:out,trunc:(P.total>MAXB||P.scanCut),src:isG?'google':'excel'});
+  if(isG){DS.hash=JSON.stringify([rawCols,out]);CFG.gs.last=sheetName;CFG.gs.off=offSel;saveCfg();updateSource();}
   note('Загружено: лист «'+sheetName+'», '+out.length+' '+plural(out.length,'запись','записи','записей')+', на экране '+UNITS.length+' '+plural(UNITS.length,'книга','книги','книг')+'.'+(missing?' В «Генеральной» не нашлись коды у '+missing+' шт.':''),8000);
   imp=null;
 }
@@ -1543,19 +2379,22 @@ async function exportXlsx(){
   var stamp=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
   var info=[
     ['Параметр','Значение'],
-    ['Проект',APP.name],['Версия',APP.version],['Дата выгрузки',stamp],['Лист-источник',DS.sheet],
+    ['Проект',APP.name],['Версия',APP.version],['Дата выгрузки',stamp],['Лист-источник',DS.sheet],['Источник данных',DS.src==='google'?'Google Таблица':(DS.src==='excel'?'Файл Excel':'Демо-данные')],
     ['Полка, мм (длина × высота × глубина)',SHELF.W+' × '+SHELF.H+' × '+SHELF.D],
     ['Книг на полке',on+' из '+UNITS.length],['Свободно на полу, мм',freeFloor(placedList())]
   ];
   var zip=new JSZip(),NS='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"',RN='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
   var HD='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
-  zip.file('[Content_Types].xml',HD+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>');
+  zip.file('[Content_Types].xml',HD+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/></Types>');
   zip.file('_rels/.rels',HD+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+RN+'/officeDocument" Target="xl/workbook.xml"/></Relationships>');
-  zip.file('xl/workbook.xml',HD+'<workbook '+NS+' xmlns:r="'+RN+'"><sheets><sheet name="Полка" sheetId="1" r:id="rId1"/><sheet name="Сведения" sheetId="2" r:id="rId2"/></sheets></workbook>');
-  zip.file('xl/_rels/workbook.xml.rels',HD+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+RN+'/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="'+RN+'/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="'+RN+'/styles" Target="styles.xml"/></Relationships>');
+  zip.file('xl/workbook.xml',HD+'<workbook '+NS+' xmlns:r="'+RN+'"><sheets><sheet name="Полка" sheetId="1" r:id="rId1"/><sheet name="Сведения" sheetId="2" r:id="rId2"/><sheet name="Журнал" sheetId="3" r:id="rId4"/></sheets></workbook>');
+  zip.file('xl/_rels/workbook.xml.rels',HD+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+RN+'/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="'+RN+'/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="'+RN+'/styles" Target="styles.xml"/><Relationship Id="rId4" Type="'+RN+'/worksheet" Target="worksheets/sheet3.xml"/></Relationships>');
   zip.file('xl/styles.xml',HD+'<styleSheet '+NS+'><fonts count="2"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font></fonts><fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FFE3E8ED"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left/><right/><top/><bottom style="thin"><color rgb="FF34404B"/></bottom><diagonal/></border></borders><cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="2"><xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/><xf numFmtId="0" fontId="1" fillId="2" borderId="1" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment vertical="center" wrapText="1"/></xf></cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>');
   zip.file('xl/worksheets/sheet1.xml',sheetXmlOut(table,widthsOf(table),true,true));
   zip.file('xl/worksheets/sheet2.xml',sheetXmlOut(info,[38,34],false,false));
+  var TN={add:'Добавлено',del:'Убрано',chg:'Изменено',inf:'Сведения'},logT=[['Дата','Время','Что произошло','Код книги','Книга','Подробности']];
+  getLog(DS.sheet).forEach(function(e){logT.push([new Date(e.ts).toLocaleDateString('ru-RU'),fmtTime(e.ts),TN[e.type]||e.type,e.c?(isFinite(+e.c)?+e.c:e.c):null,e.t||null,e.n||null]);});
+  zip.file('xl/worksheets/sheet3.xml',sheetXmlOut(logT,[12,8,16,12,52,56],true,false));
   var blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',compression:'DEFLATE'});
   var fname='Geometriya-Polki_'+translit(DS.sheet)+'.xlsx';
   var url=URL.createObjectURL(blob),a=document.createElement('a');
@@ -1565,45 +2404,724 @@ async function exportXlsx(){
   note('Выгружено в файл «'+fname+'»: '+UNITS.length+' '+plural(UNITS.length,'строка','строки','строк')+', на полке '+on+'.',8000);
 }
 
+
+/* ===== Крупный интерфейс (телефон) ===== */
+function isBig(){
+  if(CFG.big==='on') return true;
+  if(CFG.big==='off') return false;
+  return !!(window.matchMedia&&(window.matchMedia('(pointer: coarse)').matches||window.matchMedia('(max-width: 760px)').matches));
+}
+function applyBig(){document.body.classList.toggle('big',isBig());}
+
+/* ===== Короткие сообщения ===== */
+var toastT=0;
+function toast(m,ms){
+  var t=$('toast');
+  if(!t) return;
+  t.textContent=m;t.hidden=false;
+  clearTimeout(toastT);
+  toastT=setTimeout(function(){t.hidden=true;},ms||4200);
+}
+
+/* ===== Окно со справкой ===== */
+function showInfo(title,html){
+  el.infT.textContent=title;
+  el.infB.innerHTML=html;
+  if(typeof el.dlgInfo.showModal==='function'){if(!el.dlgInfo.open) el.dlgInfo.showModal();}else el.dlgInfo.setAttribute('open','');
+}
+function aboutDlg(){
+  showInfo('О программе',
+    '<p><b>'+esc(APP.name)+'</b> '+esc(APP.version)+'</p>'+
+    '<p>Раскладка книг по полке 1000 × 260 × 240 мм. Книги берутся из вашей Google Таблицы или файла Excel; фото обложек лежат в папке <code>covers</code>.</p>'+
+    '<p class="hint2">Обложки: фото с oldbook.kz, уменьшенные для показа на экране.</p>');
+}
+function helpUse(){
+  showInfo('Как пользоваться',
+    '<ol class="how">'+
+    '<li><b>Перетаскивание.</b> Возьмите книгу мышью или пальцем и отпустите над полкой. Выше вершин книг она ляжет сверху.</li>'+
+    '<li><b>Нажатие.</b> Нажмите на книгу в стопке или на полке: внизу появится панель. Нажмите на место на полке, и книга встанет туда.</li>'+
+    '<li><b>Кнопки и свайп.</b> Кнопки ‹ › сдвигают книгу на шаг, « » прыгают до ближайшей книги или края. Можно провести пальцем по полупрозрачной книге вправо или влево. «Поставить» или «Готово» подтверждает, «Отмена» возвращает назад.</li>'+
+    '<li><b>Клавиши.</b> ← → сдвиг, Shift+← → прыжок, Enter подтвердить, Esc отмена, L положить или поставить, Delete снять с полки, Ctrl+Z отменить.</li>'+
+    '<li><b>Падают ли книги.</b> Мягкая и тонкая твёрдая книга (тоньше порога в настройках) стоит только вплотную к толстой твёрдой. Без опоры она упадёт, и программа не даст её так поставить.</li>'+
+    '<li><b>Новая полка</b> расставляется автоматически слева направо. Что не влезло по длине, ложится сверху, остальное лежит пачкой под полкой.</li>'+
+    '</ol>');
+}
+
+/* ===== Меню ===== */
+var MENUS=[],menuActs={};
+function setZoomMenu(z){return function(){setZoom(z);};}
+function zoomNow(){
+  var w=el.scene.style.width;return w?Math.round(parseFloat(w)/100):1;
+}
+function buildMenuDefs(){
+  MENUS=[
+    {id:'app',label:'Геометрия Полки',ver:true,items:[
+      {l:'О программе',a:aboutDlg},
+      {sep:1},
+      {l:'Настройки…',k:'Ctrl+,',a:openSettings},
+      {l:'Журнал изменений полки',a:function(){CFG.log=true;saveCfg();applyLog();renderLog();if(el.chlog.scrollIntoView) el.chlog.scrollIntoView({block:'nearest'});}}
+    ]},
+    {id:'file',label:'Файл',items:[
+      {l:'Загрузить лист из Excel…',a:function(){el.file.click();}},
+      {l:'Выгрузить лист в Excel',a:doExport},
+      {sep:1},
+      {l:'Загрузить лист из Google Таблицы…',a:openGoogleImport},
+      {l:'Обновить из Google Таблицы',k:'Ctrl+R',a:function(){gsRefresh({});}},
+      {sep:1},
+      {l:'Настройки…',a:openSettings}
+    ]},
+    {id:'edit',label:'Правка',items:[
+      {l:'Отменить',k:'Ctrl+Z',a:doUndo,dis:function(){return !undoStack.length;}},
+      {l:'Расставить автоматически',a:doAuto},
+      {l:'Убрать всё в стопки',a:doClear,dis:function(){return !UNITS.some(onShelf);}}
+    ]},
+    {id:'view',label:'Вид',items:[
+      {l:'Масштаб ×1',a:setZoomMenu(1),chk:function(){return zoomNow()===1;}},
+      {l:'Масштаб ×2',a:setZoomMenu(2),chk:function(){return zoomNow()===2;}},
+      {l:'Масштаб ×3',a:setZoomMenu(3),chk:function(){return zoomNow()===3;}},
+      {l:'Масштаб ×4',a:setZoomMenu(4),chk:function(){return zoomNow()===4;}},
+      {sep:1},
+      {l:'Фото обложек',a:function(){CFG.covers=!CFG.covers;saveCfg();renderInfo();},chk:function(){return CFG.covers;}},
+      {l:'Журнал полки справа',a:function(){CFG.log=!CFG.log;saveCfg();applyLog();renderLog();},chk:function(){return CFG.log;}},
+      {l:'Крупный интерфейс',a:function(){CFG.big=isBig()?'off':'on';saveCfg();applyBig();},chk:function(){return isBig();}}
+    ]},
+    {id:'help',label:'Справка',items:[
+      {l:'Как пользоваться',a:helpUse},
+      {l:'Как подключить Google Таблицу',a:helpGoogle}
+    ]}
+  ];
+}
+function buildMenus(){
+  buildMenuDefs();
+  menuActs={};
+  var h='';
+  MENUS.forEach(function(m){
+    h+='<div class="mb-menu" data-menu="'+m.id+'"><button type="button" class="mb-top'+(m.ver?' app':'')+'" role="menuitem" aria-haspopup="true" aria-expanded="false">'+esc(m.label)+(m.ver?' <span class="ver">'+esc(APP.version)+'</span>':'')+'</button><div class="mb-drop" role="menu" aria-label="'+esc(m.label)+'">';
+    m.items.forEach(function(it,i){
+      if(it.sep){h+='<hr class="ms">';return;}
+      menuActs[m.id+':'+i]=it;
+      h+='<button type="button" class="mi" role="'+(it.chk?'menuitemcheckbox':'menuitem')+'" data-k="'+m.id+':'+i+'"><span class="ck"></span><span class="lb">'+esc(it.l)+'</span>'+(it.k?'<span class="k">'+esc(it.k)+'</span>':'')+'</button>';
+    });
+    h+='</div></div>';
+  });
+  el.mbItems.innerHTML=h;
+}
+function refreshMenuStates(){
+  Array.prototype.forEach.call(el.mbItems.querySelectorAll('.mi'),function(b){
+    var it=menuActs[b.getAttribute('data-k')];
+    if(!it) return;
+    var on=it.chk?!!it.chk():false;
+    b.querySelector('.ck').textContent=on?'✓':'';
+    if(it.chk) b.setAttribute('aria-checked',String(on));
+    b.disabled=!!(it.dis&&it.dis());
+  });
+}
+function openMenu(m,focusFirst){
+  closeMenus();
+  if(!m) return;
+  refreshMenuStates();
+  m.classList.add('open');
+  m.querySelector('.mb-top').setAttribute('aria-expanded','true');
+  if(focusFirst){var f=m.querySelector('.mi:not([disabled])');if(f) f.focus();}
+}
+function closeMenus(){
+  Array.prototype.forEach.call(el.mbItems.querySelectorAll('.mb-menu.open'),function(m){
+    m.classList.remove('open');m.querySelector('.mb-top').setAttribute('aria-expanded','false');
+  });
+}
+function menuIsOpen(){return !!el.mbItems.querySelector('.mb-menu.open');}
+function setMobileMenu(on){
+  el.menubar.classList.toggle('mobopen',on);
+  el.mbBurger.setAttribute('aria-expanded',String(on));
+  el.mbBurger.textContent=on?'×':'≡';
+  if(on){refreshMenuStates();el.menubar.style.setProperty('--mbh',el.menubar.offsetHeight+'px');}
+}
+function initMenus(){
+  buildMenus();
+  el.mbItems.addEventListener('click',function(e){
+    var it=e.target.closest?e.target.closest('.mi'):null,top=e.target.closest?e.target.closest('.mb-top'):null;
+    if(it){
+      var def=menuActs[it.getAttribute('data-k')];
+      closeMenus();setMobileMenu(false);
+      if(def&&!it.disabled) setTimeout(def.a,0);
+      return;
+    }
+    if(top){
+      var m=top.parentNode;
+      if(m.classList.contains('open')) closeMenus();else openMenu(m,false);
+    }
+  });
+  el.mbItems.addEventListener('mouseover',function(e){
+    var top=e.target.closest?e.target.closest('.mb-top'):null;
+    if(top&&menuIsOpen()&&!top.parentNode.classList.contains('open')) openMenu(top.parentNode,false);
+  });
+  document.addEventListener('click',function(e){
+    if(!el.menubar.contains(e.target)){closeMenus();setMobileMenu(false);}
+  });
+  el.mbBurger.addEventListener('click',function(){setMobileMenu(!el.menubar.classList.contains('mobopen'));});
+  el.mbStatus.addEventListener('click',function(){closeMenus();setMobileMenu(false);openSettings();});
+  el.mbItems.addEventListener('keydown',function(e){
+    var m=e.target.closest?e.target.closest('.mb-menu'):null;
+    if(!m) return;
+    var menus=Array.prototype.slice.call(el.mbItems.querySelectorAll('.mb-menu')),idx=menus.indexOf(m),k=e.key;
+    var items=Array.prototype.slice.call(m.querySelectorAll('.mi:not([disabled])')),cur=items.indexOf(document.activeElement);
+    if(k==='ArrowRight'||k==='ArrowLeft'){
+      e.preventDefault();
+      var nm=menus[(idx+(k==='ArrowRight'?1:menus.length-1))%menus.length];
+      openMenu(nm,m.classList.contains('open'));
+      if(!m.classList.contains('open')) nm.querySelector('.mb-top').focus();
+    }else if(k==='ArrowDown'||k==='ArrowUp'){
+      e.preventDefault();
+      if(!m.classList.contains('open')){openMenu(m,true);return;}
+      if(!items.length) return;
+      var n=cur<0?(k==='ArrowDown'?0:items.length-1):(cur+(k==='ArrowDown'?1:items.length-1))%items.length;
+      items[n].focus();
+    }else if(k==='Escape'){
+      closeMenus();m.querySelector('.mb-top').focus();
+    }
+  });
+}
+
+/* ===== Журнал полки справа ===== */
+var logShelf=null;
+function applyLog(){
+  el.chlog.hidden=!CFG.log;
+  el.stage.classList.toggle('haslog',!!CFG.log);
+}
+function fmtDay(ts){return new Date(ts).toLocaleDateString('ru-RU',{day:'numeric',month:'long'});}
+function fmtTime(ts){return new Date(ts).toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'});}
+function renderLog(){
+  if(!DS||!CFG.log) return;
+  var shelves=shelvesWithLog(),cur=(logShelf&&shelves.indexOf(logShelf)>=0)?logShelf:DS.sheet,L=getLog(cur),h='';
+  h+='<h2><span>Журнал полки</span></h2>';
+  if(shelves.length>1){
+    h+='<select id="logSel" aria-label="Полка">'+shelves.map(function(n){return '<option value="'+esc(n)+'"'+(n===cur?' selected':'')+'>'+esc(n)+'</option>';}).join('')+'</select>';
+  }else h+='<div class="tnote">'+esc(cur)+'</div>';
+  if(!L.length) h+='<p class="empty">Пока пусто. Здесь появятся добавленные, убранные и изменённые книги после каждого обновления из таблицы.</p>';
+  else{
+    h+='<ol>';
+    var day='';
+    L.slice(0,120).forEach(function(e){
+      var d=fmtDay(e.ts);
+      if(d!==day){day=d;h+='<li class="dt0">'+esc(d)+'</li>';}
+      var sg=e.type==='add'?'+':(e.type==='del'?'−':(e.type==='chg'?'~':'·'));
+      h+='<li class="'+esc(e.type)+'"><span class="sg">'+sg+'</span><span class="tt">'+esc(e.t||'')+(e.c?' <span class="mono">№'+esc(e.c)+'</span>':'')+'<span class="nt">'+esc(e.n||'')+(e.n?' · ':'')+fmtTime(e.ts)+'</span></span></li>';
+    });
+    h+='</ol><button type="button" class="mini" id="logClear">Очистить журнал</button>';
+  }
+  el.chlog.innerHTML=h;
+}
+
+/* ===== Источник данных ===== */
+function updateSource(){
+  if(!DS) return;
+  var hm=fmtTime(DS.at),cls='',txt,note,btn='';
+  if(DS.src==='google'){
+    cls=GS.err?'err':(GS.busy?'busy':'on');
+    txt='Google · '+DS.sheet;
+    note='Источник: Google Таблица, лист «'+DS.sheet+'». Данные получены в '+hm+'.';
+    btn='<button type="button" data-act="refresh">Обновить сейчас</button>';
+  }else if(DS.src==='excel'){
+    txt='Excel · '+DS.sheet;
+    note='Источник: файл Excel, лист «'+DS.sheet+'».';
+    btn=gsConfigured()?'<button type="button" data-act="refresh">Взять из Google Таблицы</button>':'<button type="button" data-act="settings">Подключить Google Таблицу</button>';
+  }else{
+    txt='Демо-данные';
+    note='Сейчас показаны демо-данные: лист «'+DS.sheet+'». Своя полка берётся из Google Таблицы.';
+    btn=gsConfigured()?'<button type="button" data-act="refresh">Взять из Google Таблицы</button>':'<button type="button" data-act="settings">Подключить Google Таблицу</button>';
+  }
+  if(GS.err) cls='err';
+  el.mbStx.textContent=GS.busy?'Обновляю…':(GS.err?'Ошибка Google':txt);
+  el.mbStatus.className='mb-status '+cls;
+  el.mbStatus.title=GS.err?GS.err:note;
+  el.srcnote.innerHTML=esc(GS.err?('Google: '+GS.err):note)+' '+btn;
+}
+
+/* ===== Настройки ===== */
+function applyGMode(){
+  Array.prototype.forEach.call(el.gMode.querySelectorAll('button'),function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-m')===CFG.gs.mode));});
+  el.gOauth.hidden=CFG.gs.mode!=='oauth';
+  if(CFG.gs.mode==='oauth') loadGis().catch(function(){});
+}
+function gStat(msg,err){el.gStat.textContent=msg||'';el.gStat.className='dstat'+(err?' err':'');}
+function fillSettings(){
+  el.sFalls.checked=!!CFG.falls;el.sThin.value=CFG.thin;el.sLean.value=CFG.lean;
+  el.sCovers.checked=!!CFG.covers;el.sLog.checked=!!CFG.log;el.sBig.value=CFG.big;el.sStep.value=String(CFG.step);
+  el.gUrl.value=CFG.gs.url;el.gTabs.value=CFG.gs.tabs;el.gGen.value=CFG.gs.gen;el.gCid.value=CFG.gs.cid;el.gAuto.value=String(CFG.gs.auto);
+  applyGMode();updateAcct();gStat('');
+  el.setReset.textContent='Сбросить настройки';el.setReset._arm=false;
+}
+function openSettings(){
+  fillSettings();
+  if(typeof el.dlgSet.showModal==='function'){if(!el.dlgSet.open) el.dlgSet.showModal();}else el.dlgSet.setAttribute('open','');
+}
+function initSettings(){
+  el.sFalls.addEventListener('change',function(){CFG.falls=el.sFalls.checked;saveCfg();});
+  el.sThin.addEventListener('change',function(){var v=+el.sThin.value;CFG.thin=isFinite(v)?Math.max(0,Math.min(60,v)):15;el.sThin.value=CFG.thin;saveCfg();});
+  el.sLean.addEventListener('change',function(){var v=Math.round(+el.sLean.value);CFG.lean=isFinite(v)?Math.max(1,Math.min(30,v)):8;el.sLean.value=CFG.lean;saveCfg();});
+  el.sCovers.addEventListener('change',function(){CFG.covers=el.sCovers.checked;saveCfg();renderInfo();});
+  el.sLog.addEventListener('change',function(){CFG.log=el.sLog.checked;saveCfg();applyLog();renderLog();});
+  el.sBig.addEventListener('change',function(){CFG.big=el.sBig.value;saveCfg();applyBig();});
+  el.sStep.addEventListener('change',function(){CFG.step=+el.sStep.value||10;saveCfg();});
+  el.gUrl.addEventListener('change',function(){CFG.gs.url=el.gUrl.value.trim();saveCfg();updateSource();});
+  el.gTabs.addEventListener('change',function(){CFG.gs.tabs=el.gTabs.value.trim();saveCfg();});
+  el.gGen.addEventListener('change',function(){CFG.gs.gen=el.gGen.value.trim();saveCfg();});
+  el.gCid.addEventListener('change',function(){CFG.gs.cid=el.gCid.value.trim();saveCfg();});
+  el.gAuto.addEventListener('change',function(){CFG.gs.auto=+el.gAuto.value||0;saveCfg();gsTimer();});
+  el.gMode.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('button'):null;
+    if(!b) return;
+    CFG.gs.mode=b.getAttribute('data-m');saveCfg();applyGMode();gStat('');
+  });
+  el.gIn.addEventListener('click',function(){
+    gStat('Открываю окно входа Google…');
+    gsSignIn().then(function(){updateAcct();gStat('Вход выполнен.');updateSource();}).catch(function(err){gStat('Не удалось войти: '+(err&&err.message?err.message:err),true);});
+  });
+  el.gOut.addEventListener('click',function(){gsSignOut();updateAcct();gStat('Вы вышли из аккаунта.');updateSource();});
+  el.gTest.addEventListener('click',function(){gsTest();});
+  el.gLoad.addEventListener('click',function(){hideSet();setTimeout(openGoogleImport,0);});
+  el.gHelp.addEventListener('click',function(){helpGoogle();});
+  el.setOk.addEventListener('click',function(){hideSet();});
+  el.setReset.addEventListener('click',function(){
+    if(!el.setReset._arm){el.setReset._arm=true;el.setReset.textContent='Нажмите ещё раз: сбросить';return;}
+    CFG={falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''}};
+    saveCfg();applyBig();applyLog();renderLog();renderInfo();fillSettings();gsTimer();updateSource();
+  });
+  el.infOk.addEventListener('click',function(){hideInfo();});
+  el.srcnote.addEventListener('click',function(e){
+    var a=e.target.getAttribute?e.target.getAttribute('data-act'):null;
+    if(a==='refresh') gsRefresh({});
+    else if(a==='settings') openSettings();
+  });
+  el.chlog.addEventListener('change',function(e){
+    if(e.target&&e.target.id==='logSel'){logShelf=e.target.value;renderLog();}
+  });
+  el.chlog.addEventListener('click',function(e){
+    if(e.target&&e.target.id==='logClear'&&DS){putLog(logShelf&&logShelf!==DS.sheet?logShelf:DS.sheet,[]);renderLog();}
+  });
+}
+function hideSet(){if(typeof el.dlgSet.close==='function'&&el.dlgSet.open) el.dlgSet.close();else el.dlgSet.removeAttribute('open');}
+function hideInfo(){if(typeof el.dlgInfo.close==='function'&&el.dlgInfo.open) el.dlgInfo.close();else el.dlgInfo.removeAttribute('open');}
+function doExport(){
+  exportXlsx().catch(function(err){note('Не удалось выгрузить: '+(err&&err.message?err.message:err),8000);});
+}
+
+
+/* ======================================================================
+   Google Таблица: по ссылке (без входа) или через вход в аккаунт Google (только чтение)
+   ====================================================================== */
+var GS={token:'',exp:0,email:'',busy:false,err:'',timer:0};
+function loadGsSession(){
+  try{
+    var r=JSON.parse(sessionStorage.getItem('gp.gtoken')||'null');
+    if(r&&r.exp>Date.now()){GS.token=r.t;GS.exp=r.exp;GS.email=r.email||'';}
+  }catch(_){}
+  if(!GS.email) GS.email=CFG.gs.email||'';
+}
+function saveGsSession(){try{sessionStorage.setItem('gp.gtoken',JSON.stringify({t:GS.token,exp:GS.exp,email:GS.email}));}catch(_){}}
+function parseSheetId(v){
+  v=String(v||'').trim();
+  var m=/\/spreadsheets\/d\/([a-zA-Z0-9_-]{15,})/.exec(v);
+  if(m) return m[1];
+  return /^[a-zA-Z0-9_-]{25,}$/.test(v)?v:'';
+}
+function gsConfigured(){return !!parseSheetId(CFG.gs.url);}
+function gsTabs(){return String(CFG.gs.tabs||'').split(/[,;\n]/).map(function(x){return x.trim();}).filter(Boolean);}
+function tokenOk(){return !!GS.token&&GS.exp>Date.now();}
+function updateAcct(){
+  var oauth=CFG.gs.mode==='oauth';
+  el.gAcct.textContent=oauth?(tokenOk()?'Вход выполнен: '+(GS.email||'аккаунт Google'):(GS.email?'Нужен новый вход: '+GS.email:'Вход не выполнен')):'Вход не нужен: таблица открыта по ссылке';
+  el.gIn.hidden=!oauth;
+  el.gOut.hidden=!oauth||!tokenOk();
+}
+
+/* ----- вход через Google Identity Services ----- */
+var gisP=null;
+function loadGis(){
+  if(window.google&&window.google.accounts&&window.google.accounts.oauth2) return Promise.resolve();
+  if(gisP) return gisP;
+  gisP=new Promise(function(res,rej){
+    var s=document.createElement('script');
+    s.src='https://accounts.google.com/gsi/client';s.async=true;
+    s.onload=function(){res();};
+    s.onerror=function(){gisP=null;rej(new Error('не загрузилась библиотека входа Google: нет интернета?'));};
+    document.head.appendChild(s);
+  });
+  return gisP;
+}
+function gsSignIn(){
+  var cid=String(CFG.gs.cid||'').trim();
+  if(!cid) return Promise.reject(new Error('укажите Client ID'));
+  if(location.protocol==='file:') return Promise.reject(new Error('вход работает только на сайте (https://…), а не из файла'));
+  return loadGis().then(function(){return new Promise(function(res,rej){
+    var tc=window.google.accounts.oauth2.initTokenClient({
+      client_id:cid,
+      scope:'https://www.googleapis.com/auth/spreadsheets.readonly https://www.googleapis.com/auth/userinfo.email',
+      callback:function(r){
+        if(r.error){rej(new Error(r.error_description||r.error));return;}
+        GS.token=r.access_token;
+        GS.exp=Date.now()+Math.max(60,(+r.expires_in||3600)-60)*1000;
+        GS.err='';
+        fetch('https://www.googleapis.com/oauth2/v3/userinfo',{headers:{Authorization:'Bearer '+GS.token}})
+          .then(function(x){return x.json();})
+          .then(function(j){GS.email=j.email||GS.email;CFG.gs.email=GS.email;saveCfg();})
+          .catch(function(){})
+          .then(function(){saveGsSession();res();});
+      },
+      error_callback:function(e){rej(new Error(e&&e.type==='popup_closed'?'окно входа закрыто':((e&&e.type)||'вход отменён')));}
+    });
+    tc.requestAccessToken({prompt:GS.email?'':'select_account'});
+  });});
+}
+function gsSignOut(){
+  var t=GS.token;
+  GS.token='';GS.exp=0;saveGsSession();
+  try{if(t&&window.google&&window.google.accounts&&window.google.accounts.oauth2) window.google.accounts.oauth2.revoke(t,function(){});}catch(_){}
+}
+function ensureToken(){return tokenOk()?Promise.resolve():gsSignIn();}
+
+/* ----- чтение данных ----- */
+var SHEETS='https://sheets.googleapis.com/v4/spreadsheets/';
+function qName(name){return "'"+String(name).replace(/'/g,"''")+"'";}
+function cleanRows(rows){return rows.filter(function(r){return r.some(function(v){return v!==null&&v!==undefined&&v!=='';});});}
+function normRows(vals){return (vals||[]).map(function(r){return r.map(function(v){return (v===''||v===undefined)?null:v;});});}
+function apiGet(url){
+  return fetch(url,{headers:{Authorization:'Bearer '+GS.token}}).then(function(r){
+    if(r.status===401){GS.token='';GS.exp=0;saveGsSession();throw new Error('срок входа истёк: войдите снова');}
+    if(r.status===403) throw new Error('у этого аккаунта нет доступа к таблице (403) или не включён Google Sheets API');
+    if(r.status===404) throw new Error('таблица или лист не найдены (404)');
+    if(!r.ok) throw new Error('Google ответил '+r.status);
+    return r.json();
+  });
+}
+function gvizTable(id,sheet,tq,hdr){
+  var u='https://docs.google.com/spreadsheets/d/'+id+'/gviz/tq?tqx=out:json&headers='+(hdr?1:0)+(sheet?'&sheet='+encodeURIComponent(sheet):'')+(tq?'&tq='+encodeURIComponent(tq):'');
+  return fetch(u,{credentials:'omit'}).then(function(r){
+    if(!r.ok) throw new Error('Google ответил '+r.status+(r.status===404?': таблица не найдена':''));
+    return r.text();
+  }).then(function(tx){
+    var m=/setResponse\(([\s\S]*)\);?\s*$/.exec(tx);
+    if(!m) throw new Error('таблица закрыта: включите доступ «Все, у кого есть ссылка» или войдите через Google');
+    var j=JSON.parse(m[1]);
+    if(j.status==='error'){var e=j.errors&&j.errors[0];throw new Error(e?(e.detailed_message||e.message||e.reason):'ошибка запроса к таблице');}
+    return j.table;
+  });
+}
+function gvizRows(t){
+  return (t.rows||[]).map(function(r){
+    return (r.c||[]).map(function(c){
+      if(!c||c.v===null||c.v===undefined) return null;
+      if(typeof c.v==='string'&&/^Date\(/.test(c.v)) return c.f||c.v;
+      return c.v;
+    });
+  });
+}
+/* Google отдаёт столбец одного типа: надпись «Код книги» в столбце чисел приходит пустой.
+   Поэтому подписи столбцов берём вторым запросом и дописываем в строку заголовка. */
+function gvizLabels(id,sheet){
+  return gvizTable(id,sheet,'select * limit 0',true).then(function(t){return (t.cols||[]).map(function(c){return c.label||'';});});
+}
+function fixHeaderRow(rows,labels){
+  for(var r=0;r<Math.min(8,rows.length);r++){
+    var row=rows[r],hit=0,i;
+    for(i=0;i<labels.length;i++){if(typeof row[i]==='string'&&labels[i]&&normLabel(row[i])===normLabel(labels[i])) hit++;}
+    if(hit>=2){
+      for(i=0;i<labels.length;i++){if(row[i]==null&&labels[i]) row[i]=labels[i];}
+      return;
+    }
+  }
+}
+function gvizRowsFixed(id,name,tq){
+  return Promise.all([gvizTable(id,name,tq),gvizLabels(id,name).catch(function(){return null;})]).then(function(a){
+    var rows=cleanRows(gvizRows(a[0]));
+    if(a[1]) fixHeaderRow(rows,a[1]);
+    return rows;
+  });
+}
+function codeKey(c){return typeof c==='number'?String(Math.round(c)):(/^\d+$/.test(String(c||'').trim())?String(+c):'');}
+var GSAPI={
+  listTabs:function(){
+    var id=parseSheetId(CFG.gs.url);
+    return ensureToken().then(function(){return apiGet(SHEETS+id+'?fields=sheets.properties.title');}).then(function(j){
+      return (j.sheets||[]).map(function(s){return s.properties.title;});
+    });
+  },
+  tabRows:function(name){
+    var id=parseSheetId(CFG.gs.url);
+    if(CFG.gs.mode==='oauth'){
+      return ensureToken().then(function(){return apiGet(SHEETS+id+'/values/'+encodeURIComponent(qName(name))+'?valueRenderOption=UNFORMATTED_VALUE&majorDimension=ROWS');})
+        .then(function(j){return cleanRows(normRows(j.values));});
+    }
+    return gvizRowsFixed(id,name);
+  },
+  head:function(name){
+    var id=parseSheetId(CFG.gs.url);
+    if(CFG.gs.mode==='oauth'){
+      return ensureToken().then(function(){return apiGet(SHEETS+id+'/values/'+encodeURIComponent(qName(name)+'!A1:AZ6')+'?valueRenderOption=UNFORMATTED_VALUE');})
+        .then(function(j){return cleanRows(normRows(j.values));});
+    }
+    return gvizRowsFixed(id,name,'select * limit 6');
+  },
+  general:function(name,codes){
+    var id=parseSheetId(CFG.gs.url),list=Array.from(codes);
+    if(!list.length) return Promise.resolve(new Map());
+    if(CFG.gs.mode==='oauth'){
+      return ensureToken().then(function(){return apiGet(SHEETS+id+'/values/'+encodeURIComponent(qName(name)+'!A:A')+'?valueRenderOption=UNFORMATTED_VALUE');}).then(function(j){
+        var rowOf={},keys=[];
+        (j.values||[]).forEach(function(r,i){
+          var k=codeKey(r[0]);
+          if(k&&codes.has(k)&&!rowOf[k]){rowOf[k]=i+1;keys.push(k);}
+        });
+        if(!keys.length) return new Map();
+        var qs=keys.map(function(k){return 'ranges='+encodeURIComponent(qName(name)+'!A'+rowOf[k]+':AZ'+rowOf[k]);}).join('&');
+        return apiGet(SHEETS+id+'/values:batchGet?valueRenderOption=UNFORMATTED_VALUE&'+qs).then(function(b){
+          var map=new Map();
+          (b.valueRanges||[]).forEach(function(vr,i){map.set(keys[i],normRows(vr.values)[0]||[]);});
+          return map;
+        });
+      });
+    }
+    var where=list.map(function(k){return 'A='+k;}).join(' or ');
+    return gvizTable(id,name,'select * where '+where).then(function(t){
+      var map=new Map();
+      gvizRows(t).forEach(function(r){var k=codeKey(r[0]);if(k&&!map.has(k)) map.set(k,r);});
+      return map;
+    });
+  }
+};
+
+/* Лист-полка целиком, без окна: столбцы как при прошлой загрузке (по умолчанию все). */
+async function gsBuild(tab){
+  var gname=String(CFG.gs.gen||'').trim(),genHead=null,genList=null,rows=await GSAPI.tabRows(tab);
+  if(gname&&gname!==tab){
+    try{
+      var gt=detectTable(await GSAPI.head(gname),null);
+      if(gt.headers){genHead=[];genList=[];gt.headers.forEach(function(h,i){genHead[gt.srcIdx[i]]=h;genList.push({label:h,src:gt.srcIdx[i]});});}
+    }catch(_){genHead=null;genList=null;}
+  }
+  var P=detectTable(rows,genHead);
+  if(P.error) throw new Error(P.error);
+  var n=Math.min(P.rows.length,MAXB),R=P.rows.slice(0,n),cols=[],off=CFG.gs.off||{};
+  P.headers.forEach(function(h,i){cols.push({label:h,origin:'sheet',src:i});});
+  var ci=-1;
+  P.headers.forEach(function(h,i){if(ci<0&&roleOf(h)==='code') ci=i;});
+  var gmap=null,missing=0;
+  if(genList&&ci>=0){
+    var have={};P.headers.forEach(function(h){have[h.toLowerCase()]=1;});
+    var extra=genList.filter(function(x){return !have[x.label.toLowerCase()];});
+    if(extra.length){
+      extra.forEach(function(x){cols.push({label:x.label,origin:'general',src:x.src});});
+      var codes=new Set();
+      R.forEach(function(r){var k=codeKey(r[ci]);if(k) codes.add(k);});
+      gmap=await GSAPI.general(gname,codes);
+    }
+  }
+  cols=cols.filter(function(c){return !off[c.origin+':'+c.label];});
+  var out=R.map(function(r){
+    var g=null;
+    if(gmap){var k=codeKey(r[ci]);g=k?gmap.get(k):null;if(!g) missing++;}
+    return cols.map(function(c){
+      if(c.origin==='sheet') return r[c.src]==null?null:r[c.src];
+      var v=g?g[c.src]:null;
+      return v==null?null:(typeof v==='string'?(v.trim()||null):v);
+    });
+  });
+  return {sheet:tab,columns:cols.map(function(c){return {label:c.label,origin:c.origin};}),rows:out,trunc:(P.total>MAXB),src:'google',missing:missing};
+}
+
+async function gsRefresh(o){
+  o=o||{};
+  if(GS.busy) return;
+  if(!gsConfigured()){
+    if(!o.silent){openSettings();gStat('Сначала укажите ссылку на Google Таблицу.',true);}
+    return;
+  }
+  var tabs=gsTabs(),tab=(DS&&DS.src==='google')?DS.sheet:(CFG.gs.last||tabs[0]||'');
+  GS.busy=true;GS.err='';updateSource();
+  try{
+    if(CFG.gs.mode==='oauth'&&!tokenOk()){
+      if(o.silent) throw new Error('нужен вход в Google');
+      await ensureToken();updateAcct();
+    }
+    if(!tab&&CFG.gs.mode==='oauth'){
+      var names=await GSAPI.listTabs(),g=String(CFG.gs.gen||'').trim();
+      tab=names.filter(function(x){return x!==g;})[0]||'';
+    }
+    if(!tab) throw new Error('укажите лист-полку в настройках (название вкладки внизу таблицы)');
+    var raw=await gsBuild(tab),h=JSON.stringify([raw.columns,raw.rows]);
+    if(DS&&DS.src==='google'&&DS.sheet===raw.sheet&&DS.hash===h){
+      DS.at=Date.now();
+      if(!o.silent) toast('Google Таблица: изменений нет.');
+      return;
+    }
+    if(o.silent&&(float||arm)){return;}
+    if(DS) saveLayout();
+    var res=loadDataset(raw,{sync:true});
+    DS.hash=h;CFG.gs.last=raw.sheet;saveCfg();
+    var msg;
+    if(res&&(res.added||res.removed||res.changed||res.moved||res.reput)){
+      msg='Обновлено из Google: добавлено '+res.added+', убрано '+res.removed+', изменено '+res.changed+(res.reput?', переставлено '+res.reput:'')+(res.moved?', перенесено в стопку '+res.moved:'')+'.';
+    }else if(res) msg='Google Таблица: полка «'+raw.sheet+'» без изменений.';
+    else msg='Загружена полка «'+raw.sheet+'»: '+raw.rows.length+' '+plural(raw.rows.length,'запись','записи','записей')+', на полке '+UNITS.filter(onShelf).length+'.';
+    if(raw.missing) msg+=' В общем списке не найдено кодов: '+raw.missing+'.';
+    note(msg,7000);
+  }catch(err){
+    GS.err=(err&&err.message)?err.message:String(err);
+    if(!o.silent) toast('Google: '+GS.err,7000);
+  }finally{
+    GS.busy=false;updateSource();
+  }
+}
+function gsTimer(){
+  clearInterval(GS.timer);GS.timer=0;
+  var m=+CFG.gs.auto||0;
+  if(!m) return;
+  GS.timer=setInterval(function(){
+    if(document.hidden||float||arm||GS.busy||!gsConfigured()) return;
+    if(CFG.gs.mode==='oauth'&&!tokenOk()) return;
+    gsRefresh({silent:true});
+  },m*60000);
+}
+function gsTest(){
+  var id=parseSheetId(CFG.gs.url);
+  if(!id){gStat('Вставьте ссылку на Google Таблицу.',true);return;}
+  gStat('Проверяю подключение…');
+  var tabs=gsTabs(),p;
+  if(CFG.gs.mode==='oauth'){
+    p=GSAPI.listTabs().then(function(names){return 'Подключено. Листы в таблице: '+names.slice(0,14).join(', ')+(names.length>14?'…':'')+'.';});
+  }else{
+    p=GSAPI.tabRows(tabs[0]||'').then(function(rows){return 'Подключено: прочитано строк '+rows.length+(tabs[0]?' на листе «'+tabs[0]+'»':' на первом листе')+'.';});
+  }
+  p.then(function(m){gStat(m);updateAcct();}).catch(function(err){gStat('Не получилось: '+(err&&err.message?err.message:err),true);updateAcct();});
+}
+
+/* Окно «Загрузить лист из Google Таблицы»: тот же выбор листа и столбцов, что и для Excel. */
+async function openGoogleImport(){
+  if(!gsConfigured()){openSettings();gStat('Сначала укажите ссылку на Google Таблицу.',true);return;}
+  imp={file:null,kind:'g',wb:null,gsh:null,genHead:null,genList:null,parsed:null,off:{},token:0};
+  $('dlgT').textContent='Загрузка из Google Таблицы';
+  el.dFile.textContent='Google Таблица · '+parseSheetId(CFG.gs.url).slice(0,14)+'…';
+  el.dSheet.innerHTML='';el.dCols.innerHTML='';el.dOk.disabled=true;
+  el.dGen.checked=true;el.dGen._touched=false;
+  setStat('Подключаюсь к Google…');
+  showDlg();
+  var I=imp,names;
+  try{
+    names=gsTabs();
+    if(CFG.gs.mode==='oauth') names=await GSAPI.listTabs();
+    if(!names.length) throw new Error('укажите листы-полки в настройках: названия вкладок через запятую');
+    var gname=String(CFG.gs.gen||'').trim(),cache={};
+    I.wb={kind:'g',sheets:names.map(function(n){return {name:n};}),
+      fetchRows:function(n){return cache[n]||(cache[n]=GSAPI.tabRows(n));},
+      fetchGeneral:function(codes){return GSAPI.general(gname,codes);}};
+    I.gsh=gname?{name:gname}:null;
+    if(I.gsh){
+      try{
+        var gt=detectTable(await GSAPI.head(gname),null);
+        if(gt.headers){I.genHead=[];I.genList=[];gt.headers.forEach(function(h,i){I.genHead[gt.srcIdx[i]]=h;I.genList.push({label:h,src:gt.srcIdx[i]});});}
+      }catch(_){I.gsh=null;}
+    }
+  }catch(err){
+    setStat('Не удалось прочитать Google Таблицу: '+(err&&err.message?err.message:err),true);
+    return;
+  }
+  if(imp!==I) return;
+  el.dSheet.innerHTML=names.map(function(n){return '<option value="'+esc(n)+'">'+esc(n)+'</option>';}).join('');
+  el.dSheet.value=(DS&&names.indexOf(DS.sheet)>=0)?DS.sheet:names[0];
+  await parseSelected();
+}
+
+/* ----- Подробная справка ----- */
+function helpGoogle(){
+  showInfo('Как подключить Google Таблицу',
+    '<div class="sec" style="border:0;padding-top:0"><h3>Какая нужна таблица</h3>'+
+    '<p class="hint2">Таблица такая же, как ваш Excel: лист «Генеральная» со всеми книгами и листы-полки (например «228 С 15.10»), в каждой строке книга. Столбцы: код книги, автор, название, год, цена, место хранения, количество, высота, ширина, корешок, вес, состояние, переплёт и другие. Заголовка на листе-полке может не быть: тогда столбцы читаются как в «Генеральной».</p></div>'+
+    '<div class="sec"><h3>Способ 1. Таблица по ссылке (проще всего)</h3><ol class="how">'+
+    '<li>Откройте свою таблицу в Google Таблицах. Нажмите справа вверху <b>«Настройки доступа»</b>.</li>'+
+    '<li>В разделе «Общий доступ» выберите <b>«Все, у кого есть ссылка»</b>, роль <b>«Читатель»</b>, нажмите «Готово». Скопируйте ссылку. Любой, у кого есть ссылка, сможет только читать таблицу, включая цены и состояние книг. Если так нельзя, используйте способ 2.</li>'+
+    '<li>В программе: меню <b>«Геометрия Полки» → Настройки…</b>, раздел «Google Таблица», вкладка <b>«Таблица по ссылке»</b>.</li>'+
+    '<li>Вставьте ссылку в поле «Ссылка на таблицу».</li>'+
+    '<li>В поле «Листы-полки» впишите названия вкладок точно так, как они подписаны внизу таблицы, например <code>228 С 15.10</code>. Несколько листов пишите через запятую. В поле «Лист с общим списком» должно стоять <code>Генеральная</code>: оттуда берутся переплёт и остальные столбцы по коду книги. Если общего листа нет, очистите поле.</li>'+
+    '<li>Нажмите <b>«Проверить подключение»</b>. Должно появиться «Подключено: прочитано строк …».</li>'+
+    '<li>Нажмите <b>«Загрузить полку…»</b>: выберите лист и столбцы, затем «Загрузить». Книги расставятся автоматически.</li></ol></div>'+
+    '<div class="sec"><h3>Способ 2. Вход в аккаунт Google (таблица остаётся закрытой)</h3><ol class="how">'+
+    '<li>Откройте <code>console.cloud.google.com</code> под тем же аккаунтом, где лежит таблица. Вверху нажмите выбор проекта → «Создать проект», назовите его «Геометрия Полки».</li>'+
+    '<li>Меню «API и сервисы» → «Библиотека». Найдите <b>Google Sheets API</b> и нажмите «Включить».</li>'+
+    '<li>«API и сервисы» → «Экран согласия OAuth» (или «Google Auth Platform»). Тип пользователей <b>«Внешний»</b>, название любое, свой адрес почты. В разделе «Тестовые пользователи» добавьте <b>свой адрес Gmail</b>. Статус «Тестирование» можно не менять. Добавьте доступы (scopes) <code>…/auth/spreadsheets.readonly</code> и <code>…/auth/userinfo.email</code>.</li>'+
+    '<li>«Учётные данные» → «Создать учётные данные» → <b>«Идентификатор клиента OAuth»</b>. Тип приложения <b>«Веб-приложение»</b>. В «Разрешённые источники JavaScript» добавьте адрес сайта <code>https://drakkkkon.github.io</code> (без слеша в конце и без /geometriya-polki). Адрес перенаправления не нужен. Нажмите «Создать» и скопируйте <b>Client ID</b>.</li>'+
+    '<li>В программе: Настройки → Google Таблица → вкладка <b>«Вход в Google»</b>. Вставьте Client ID и ссылку на таблицу.</li>'+
+    '<li>Нажмите <b>«Войти в Google»</b>, выберите аккаунт. Google предупредит, что приложение не проверено: нажмите «Дополнительно» → «Перейти на сайт». Разрешите «Просмотр таблиц». В настройках появится «Вход выполнен: ваш адрес».</li>'+
+    '<li>Нажмите «Загрузить полку…»: листы подтянутся автоматически. Вход действует около часа, потом нажмите «Войти в Google» снова. Программа только читает таблицу и ничего в ней не меняет. Вход работает только на сайте по https, не из файла на компьютере.</li></ol></div>'+
+    '<div class="sec"><h3>Как обновляются данные</h3>'+
+    '<p class="hint2">Кнопка «Обновить из Google Таблицы» (или Ctrl+R) берёт свежие данные и сравнивает с тем, что уже стоит на полке. Новая книга встаёт на свободное место, а если места нет, ложится пачкой под полкой. Убранные из таблицы книги исчезают с полки. Что именно добавлено, убрано и изменено, записывается в журнал справа от полки. Можно включить автообновление в настройках.</p></div>');
+}
+
 /* ===== Запуск ===== */
 function init(){
   initEls();
+  loadCfg();
+  loadGsSession();
+  applyBig();
+  applyLog();
+  initMenus();
+  initSettings();
   renderLegend();
 
   el.scene.addEventListener('pointerdown',onDown);
   el.scene.addEventListener('pointermove',onMove);
   el.scene.addEventListener('pointerup',onUp);
   el.scene.addEventListener('pointercancel',onUp);
-  el.scene.addEventListener('touchmove',function(e){if(float&&e.cancelable) e.preventDefault();},{passive:false});
+  el.scene.addEventListener('touchmove',function(e){if((float||swipe)&&e.cancelable) e.preventDefault();},{passive:false});
   el.scene.addEventListener('contextmenu',function(e){e.preventDefault();});
 
   Array.prototype.forEach.call(document.querySelectorAll('.zoom button'),function(b){
     b.addEventListener('click',function(){setZoom(+b.getAttribute('data-z'));});
   });
 
-  el.undo.addEventListener('click',function(){
-    if(float||!undoStack.length) return;
-    restore(undoStack.pop());
-    flashId=null;statusNote='';
-    renderAll();syncButtons();
-  });
-  el.clear.addEventListener('click',function(){
-    if(float) return;
-    var prev=snap();
-    UNITS.forEach(function(u){u.where='stock';});
-    commit(prev);
-    flashId=null;statusNote='';
-    renderAll();syncButtons();
+  el.undo.addEventListener('click',doUndo);
+  el.clear.addEventListener('click',doClear);
+  el.auto.addEventListener('click',doAuto);
+  el.gsync.addEventListener('click',function(){if(gsConfigured()) gsRefresh({});else openSettings();});
+
+  el.dkL.addEventListener('click',function(){armStep(-1,false);});
+  el.dkR.addEventListener('click',function(){armStep(1,false);});
+  el.dkLL.addEventListener('click',function(){armStep(-1,true);});
+  el.dkRR.addEventListener('click',function(){armStep(1,true);});
+  el.dkOk.addEventListener('click',function(){armCommit(false);});
+  el.dkLie.addEventListener('click',armToggleLie);
+  el.dkTake.addEventListener('click',armTake);
+  el.dkCancel.addEventListener('click',function(){disarm(true);});
+  el.scene.addEventListener('click',function(e){
+    if(!arm||float||swipe||performance.now()<suppressClick) return;
+    var p=toMM(e.clientX,e.clientY);
+    if(overShelf(p.x,p.y)) tapSpot(p);
   });
 
-  el.imp.addEventListener('click',function(){el.file.click();});
+
+  document.addEventListener('keydown',function(e){
+    if(e.defaultPrevented) return;
+    var k=e.key,ctrl=e.ctrlKey||e.metaKey,tg=e.target,tag=tg&&tg.tagName?tg.tagName.toLowerCase():'';
+    if(document.querySelector('dialog[open]')) return;
+    if(menuIsOpen()&&k==='Escape'){closeMenus();return;}
+    if(tag==='input'||tag==='select'||tag==='textarea') return;
+    if(ctrl&&(k==='z'||k==='Z'||k==='я'||k==='Я')){e.preventDefault();doUndo();return;}
+    if(ctrl&&k===','){e.preventDefault();openSettings();return;}
+    if(ctrl&&(k==='r'||k==='R'||k==='к'||k==='К')&&gsConfigured()){e.preventDefault();gsRefresh({});return;}
+    if(ctrl||e.altKey) return;
+    if(arm){
+      if(k==='ArrowLeft'){e.preventDefault();armStep(-1,e.shiftKey);}
+      else if(k==='ArrowRight'){e.preventDefault();armStep(1,e.shiftKey);}
+      else if(k==='Enter'){e.preventDefault();armCommit(false);}
+      else if(k==='Escape'){e.preventDefault();disarm(true);}
+      else if(k==='l'||k==='L'||k==='д'||k==='Д'){e.preventDefault();armToggleLie();}
+      else if(k==='Delete'||k==='Backspace'){e.preventDefault();armTake();}
+    }
+  });
+
   el.file.addEventListener('change',function(){
     var f=el.file.files&&el.file.files[0];
     el.file.value='';
     if(f) openImport(f);
-  });
-  el.exp.addEventListener('click',function(){
-    exportXlsx().catch(function(err){note('Не удалось выгрузить: '+(err&&err.message?err.message:err),8000);});
   });
 
   el.dSheet.addEventListener('change',function(){el.dGen._touched=false;parseSelected();});
@@ -1634,13 +3152,19 @@ function init(){
   }
 
   loadDataset({
-    sheet:SEED.sheet,
+    sheet:'Демо · '+SEED.sheet,
     columns:SEED.columns,
-    rows:SEED.rows
+    rows:SEED.rows,
+    src:'demo'
   });
   var cw=el.scroller.clientWidth||320,z=1;
-  [1,2,4].some(function(c){z=c;return cw*c/VW>=0.5;});
+  var bigUi=isBig();
+  [1,2,3,4].some(function(c){z=c;return cw*c/VW>=(bigUi?0.95:0.5);});
   setZoom(z);
+  el.scroller.scrollLeft=0;
+  updateSource();
+  gsTimer();
+  if(gsConfigured()&&(CFG.gs.mode==='public'||tokenOk())) setTimeout(function(){gsRefresh({silent:true});},300);
 }
 init();
 

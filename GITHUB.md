@@ -5,16 +5,16 @@
 
 ## Вариант 1. Через сайт, без программ (проще всего, лучше с компьютера)
 
-1. Распакуйте `geometriya_polki_v1_0_0.zip` в любую папку.
+1. Распакуйте `geometriya_polki_v1_1_0.zip` в любую папку.
 2. Зайдите на https://github.com и войдите в аккаунт.
 3. Нажмите **+** в правом верхнем углу, затем **New repository**.
 4. Repository name: `geometriya-polki`. Доступ **Public** (для бесплатных Pages репозиторий должен быть публичным).
    Галочки README, .gitignore, license не ставьте. Нажмите **Create repository**.
 5. На открывшейся странице нажмите ссылку **uploading an existing file**.
-6. Перетащите в окно браузера всё содержимое распакованной папки: `index.html`, `README.txt`, `GITHUB.md`
-   и папку `vendor` целиком. Папка перетаскивается вместе с файлом внутри, проверьте, что в списке есть
-   `vendor/jszip.min.js`.
-7. Внизу в поле Commit напишите `Геометрия Полки 1.0.0` и нажмите **Commit changes**.
+6. Перетащите в окно браузера всё содержимое распакованной папки: `index.html`, `README.txt`, `GITHUB.md`,
+   `GOOGLE_SHEETS.md` и папки `vendor` и `covers` целиком. Проверьте, что в списке есть `vendor/jszip.min.js`
+   и файлы `covers/*.jpg` (28 штук, около 0,5 МБ).
+7. Внизу в поле Commit напишите `Геометрия Полки 1.1.0` и нажмите **Commit changes**.
 8. Откройте **Settings**, слева **Pages**. В блоке *Build and deployment*: Source **Deploy from a branch**,
    Branch **main**, папка **/ (root)**, нажмите **Save**.
 9. Через 1–2 минуты вверху страницы Pages появится адрес сайта:
@@ -31,7 +31,7 @@
 cd путь/к/распакованной/папке
 git init
 git add .
-git commit -m "Геометрия Полки 1.0.0"
+git commit -m "Геометрия Полки 1.1.0"
 git branch -M main
 git remote add origin https://github.com/Drakkkkon/geometriya-polki.git
 git push -u origin main
@@ -46,7 +46,7 @@ git push -u origin main
 - Через git: замените файлы и выполните
   ```
   git add .
-  git commit -m "Геометрия Полки 1.0.1"
+  git commit -m "Геометрия Полки 1.1.1"
   git push
   ```
 
@@ -55,5 +55,8 @@ git push -u origin main
 - Сайт показывает 404: проверьте, что `index.html` лежит в корне репозитория, а не в подпапке, и что в
   Pages выбран branch `main`, папка `/ (root)`.
 - Кнопки Excel пишут про библиотеку: на GitHub нет папки `vendor`, загрузите её (шаг 6).
+- Нет фото обложек: на GitHub нет папки `covers` или имена файлов не `<номер>.jpg`.
+- Вход в Google не работает: в Google Cloud в «Разрешённых источниках JavaScript» должен быть `https://drakkkkon.github.io`
+  (подробно в `GOOGLE_SHEETS.md`).
 - Старая версия после обновления: обновите страницу с очисткой кэша (Ctrl+F5, на телефоне откройте в
   приватной вкладке).
