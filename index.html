@@ -81,8 +81,6 @@ body{
 .dim path{stroke:var(--line);stroke-width:.9;fill:none}
 .dim .arr{fill:var(--line);stroke:none}
 .dim text{font:400 15px var(--font-mono);fill:var(--ink)}
-.plate{font:400 14.5px var(--font-ui);fill:var(--ink);text-anchor:middle;letter-spacing:.02em}
-.plate b{font-weight:600}
 .base{stroke:var(--line);stroke-width:1;fill:none}
 .cap{font:400 13px var(--font-mono);fill:var(--muted)}
 
@@ -310,7 +308,7 @@ dialog::backdrop{background:rgba(20,30,40,.42)}
 
 .dlg .sec{display:grid;gap:10px;padding:12px 0 4px;border-top:1px solid var(--rule)}
 .dlg .sec>h3{margin:0;font:600 12px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.dlg input[type=text],.dlg input[type=number],.dlg input[type=url],.dlg textarea{
+.dlg input[type=text],.dlg input[type=number],.dlg input[type=url],.dlg input[type=password],.dlg textarea{
   font:400 15px var(--font-ui);min-height:44px;padding:0 10px;color:var(--ink);background:var(--bg);
   border:1px solid var(--grid-2);border-radius:6px;width:100%;
 }
@@ -386,20 +384,6 @@ body.big .collist .chk{padding:11px 0}
 body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15px}
 
 /* ===== 1.2.0: масштаб, перемещение, поиск, полки выше и ниже, фото ===== */
-.shelfnav{display:flex;align-items:stretch;gap:8px}
-.shbtn{
-  flex:1 1 0;min-width:0;min-height:48px;display:flex;align-items:center;justify-content:center;gap:10px;padding:0 10px;
-  font:500 14px var(--font-ui);color:var(--ink);background:var(--bg);border:1px solid var(--grid-2);border-radius:6px;cursor:pointer;
-}
-.shbtn:hover:not([disabled]){border-color:var(--line)}
-.shbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.shbtn[disabled]{opacity:.4;cursor:default}
-.shbtn .ar{font:600 16px var(--font-mono);flex:none}
-.shbtn .tt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.shnow{flex:1.1 1 0;min-width:0;display:grid;align-content:center;justify-items:center;text-align:center;line-height:1.25}
-.shnow b{font-weight:600;font-size:16px}
-.shnow span{font:400 12px var(--font-mono);color:var(--muted)}
-.pageslide{display:grid;gap:14px;will-change:transform,opacity}
 
 .viewbar{display:grid;gap:6px;padding:8px 0 2px;border-bottom:1px solid var(--rule)}
 .vrow{display:flex;align-items:center;gap:8px;min-width:0}
@@ -442,7 +426,6 @@ body.big .toast{bottom:calc(96px + env(safe-area-inset-bottom,0px));font-size:15
 
 .cvadd{margin-top:6px}
 .dlg .acct .btn{flex:1 1 auto}
-body.big .shbtn{min-height:56px;font-size:15px}
 body.big .vb{min-width:50px;min-height:50px}
 body.big .vrow input[type=range]{height:50px}
 body.big .srch input[type=search]{min-height:50px;font-size:16px}
@@ -454,9 +437,112 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
   .vrow.zm{display:grid;grid-template-columns:52px 1fr auto;gap:6px 6px;align-items:center}
   .vrow.zm #zOut{grid-area:1/1}.vrow.zm #zRange{grid-area:1/2;width:100%}.vrow.zm #zIn{grid-area:1/3;width:100%}
   .vrow.zm #zVal{grid-area:2/1/3/3;text-align:left;min-width:0;font-size:13px}.vrow.zm #zFit{grid-area:2/3;width:100%}
-  .shbtn .tt{font-size:13px}
-  .shbtn{flex-direction:column;gap:0;justify-content:center;padding:4px 6px;line-height:1.2}
   .vrow output{min-width:4.4em;font-size:12px}
+}
+
+/* ===== 1.3.0: соседние полки сверху и снизу, табличка на раме, стеллажи, фото из Google Диска ===== */
+.pageslide{display:grid;gap:14px}
+.shelfcol{min-width:0;overflow:hidden;position:relative}
+.shelfin{display:grid;grid-template-columns:minmax(0,1fr);gap:0;will-change:transform,opacity}
+.nb{
+  --nbh:84px;position:relative;overflow:hidden;cursor:pointer;background:var(--bg);
+  user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;
+}
+body.big .nb{--nbh:96px}
+.nb[hidden]{display:none}
+.nbs{height:var(--nbh);overflow:hidden;pointer-events:none;display:flex;flex-direction:column}
+.nbup .nbs{justify-content:flex-end}
+.nbdown .nbs{justify-content:flex-start}
+.nbs svg{display:block;flex:none;height:auto;max-width:none}
+.nb::after{content:"";position:absolute;left:0;right:0;height:46px;pointer-events:none;z-index:1}
+.nbup::after{top:0;background:linear-gradient(#fff,rgba(255,255,255,0))}
+.nbdown::after{bottom:0;background:linear-gradient(rgba(255,255,255,0),#fff)}
+.nbup{border-top:1px solid var(--rule)}
+.nbdown{border-bottom:1px solid var(--rule)}
+.nbarrow{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2;
+  display:flex;align-items:center;justify-content:center;width:68px;height:42px;padding:0;
+  border:1px solid var(--line);border-radius:21px;background:rgba(255,255,255,.97);color:var(--ink);cursor:pointer;
+  box-shadow:0 2px 10px rgba(20,30,40,.2);transition:background .15s,color .15s,box-shadow .15s;
+}
+.nbarrow svg{display:block;width:26px;height:26px}
+.nb:hover .nbarrow,.nbarrow:focus-visible{background:var(--ink);color:#fff;box-shadow:0 4px 14px rgba(20,30,40,.3)}
+.nbarrow:focus-visible{outline:2px solid var(--info);outline-offset:3px}
+.nbup:hover .nbarrow svg{animation:nudgeU .8s ease-in-out infinite}
+.nbdown:hover .nbarrow svg{animation:nudgeD .8s ease-in-out infinite}
+@keyframes nudgeU{50%{transform:translateY(-3px)}}
+@keyframes nudgeD{50%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.nbup:hover .nbarrow svg,.nbdown:hover .nbarrow svg{animation:none}}
+body.big .nbarrow{width:76px;height:50px;border-radius:25px}
+.nb .frame{stroke-width:1.2}
+.nb-int{fill:var(--fill)}
+
+.racknav{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 2px 2px}
+.rkbtn{
+  flex:none;width:46px;height:32px;padding:0;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--grid-2);border-radius:16px;background:var(--bg);color:var(--ink);cursor:pointer;
+}
+.rkbtn svg{display:block;width:18px;height:18px}
+.rkbtn:hover:not([disabled]){border-color:var(--line);background:var(--ink);color:#fff}
+.rkbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.rkbtn[disabled]{opacity:.32;cursor:default}
+.rkcap{flex:1 1 auto;min-width:0;text-align:center;font:400 12px var(--font-mono);color:var(--muted)}
+body.big .rkbtn{width:54px;height:40px;border-radius:20px}
+
+/* табличка на раме: название полки и дата редактирования */
+.pl-sh{fill:rgba(20,30,40,.16)}
+.pl-card{fill:#fff;stroke:var(--line);stroke-width:1}
+.pl-screw{fill:#c4ccd4;stroke:var(--line);stroke-width:.5}
+.pl-t{font:600 15px var(--font-ui);fill:var(--ink)}
+.pl-s{font:400 9.4px var(--font-mono);fill:var(--muted)}
+#plate.in{animation:plateIn .6s .12s cubic-bezier(.2,.9,.3,1.12) both}
+@keyframes plateIn{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
+@media (prefers-reduced-motion:reduce){#plate.in{animation:none}}
+
+/* окно «Настройки»: фото из Google Диска и инструкции */
+details.how{border-top:1px solid var(--rule);padding:2px 0}
+details.how>summary{cursor:pointer;font:500 14px var(--font-ui);min-height:40px;display:flex;align-items:center}
+details.how>summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+details.how[open]>summary{margin-bottom:4px}
+details.how ol.how{margin:0 0 10px}
+.dlg .sec.howto{gap:0}
+.dlg .sec.howto>h3{margin-bottom:6px}
+.engnote{margin:0;font-size:12.5px;color:var(--muted);line-height:1.4}
+
+/* окно импорта из Google Диска */
+#dlgDv{width:min(780px,calc(100vw - 24px))}
+.prog{height:6px;background:var(--grid);border-radius:3px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--ink);transition:width .2s}
+.dvlist{display:grid;grid-template-columns:minmax(0,1fr);gap:0;max-height:min(54vh,540px);overflow:auto;border:1px solid var(--rule);border-radius:6px}
+.dvlist:empty{display:none}
+.dvr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--grid)}
+.dvr:last-child{border-bottom:0}
+.dvr.off{opacity:.6}
+.dvc{display:flex;align-items:center;gap:8px;cursor:pointer}
+.dvc input{width:20px;height:20px;margin:0;accent-color:var(--ink);flex:none}
+.dvc img{height:84px;width:auto;max-width:104px;object-fit:contain;background:var(--fill);border:1px solid var(--rule);border-radius:3px;display:block}
+.dvm{min-width:0;display:grid;grid-template-columns:minmax(0,1fr);gap:5px}
+.dvn{font:400 11.5px var(--font-mono);color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dvs{display:flex;gap:6px;flex-wrap:wrap}
+.dvs select{font:400 14px var(--font-ui);min-height:38px;padding:0 6px;border:1px solid var(--grid-2);border-radius:6px;background:var(--bg);color:var(--ink);min-width:0;max-width:100%}
+.dvs select[data-a="code"]{flex:1 1 200px}
+.dvt{font-size:12px;color:var(--muted);overflow-wrap:anywhere;line-height:1.35}
+.badge{display:inline-block;font:500 11px var(--font-mono);padding:0 6px;border-radius:9px;border:1px solid var(--grid-2);margin-right:6px;white-space:nowrap}
+.badge.hi{color:var(--ok);border-color:var(--ok)}
+.badge.mid{color:var(--warn);border-color:var(--warn)}
+.badge.lo{color:var(--bad);border-color:var(--bad)}
+@media (max-width:640px){
+  .nbdown .nbarrow,body.big .nbdown .nbarrow{top:auto;bottom:6px;transform:translate(-50%,0);width:60px;height:40px;border-radius:20px}
+  .nbup .nbarrow,body.big .nbup .nbarrow{width:60px;height:40px;border-radius:20px}
+  .nbarrow svg{width:22px;height:22px}
+}
+@media (max-width:560px){
+  .dvr{gap:8px;padding:8px 6px}
+  .dvr>.vb{width:40px;min-width:0;height:40px;min-height:0;padding:0;align-self:start}
+  .dvc{gap:6px}
+  .dvc img{height:64px;max-width:56px}
+  .dvs select[data-a="code"]{flex:1 1 100%}
+  .dvr{grid-template-columns:82px minmax(0,1fr) auto}
 }
 </style>
 </head>
@@ -464,7 +550,7 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.2.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.3.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -491,34 +577,34 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
 
   <div class="legend" id="legend" role="group" aria-label="Обозначения переплёта"></div>
 
-  <nav class="shelfnav" id="shelfnav" aria-label="Переход между полками">
-    <button type="button" class="shbtn" id="shUp"><span class="ar" aria-hidden="true">▲</span><span class="tt" id="shUpT"></span></button>
-    <div class="shnow" aria-live="polite"><b id="shNowT"></b><span id="shNowS"></span></div>
-    <button type="button" class="shbtn" id="shDown"><span class="ar" aria-hidden="true">▼</span><span class="tt" id="shDownT"></span></button>
-  </nav>
-
   <div class="pageslide" id="pageSlide">
   <div class="stage haslog" id="stage">
+  <div class="shelfcol" id="shelfcol">
+  <div class="shelfin" id="shelfIn">
+  <div class="nb nbup" id="nbUp" hidden>
+    <div class="nbs" id="nbUpS"><svg id="nbUpSvg" viewBox="0 0 1160 112" aria-hidden="true"></svg></div>
+    <button type="button" class="nbarrow" id="shUp" aria-label="Полка выше"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 15l7-7 7 7"/></svg></button>
+  </div>
   <div class="scroller" id="scroller">
     <svg id="scene" viewBox="0 0 1160 620" width="100%" role="img" aria-label="Полка и стопки книг, книги можно перетаскивать на полку.">
-      <rect class="interior" x="90" y="70" width="1000" height="260"/>
+      <rect class="interior" x="90" y="90" width="1000" height="260"/>
       <g id="grid"></g>
       <g id="books"></g>
-      <path class="frame" fill-rule="evenodd" d="M70 50H1110V350H70Z M90 70V330H1090V70Z"/>
+      <path class="frame" fill-rule="evenodd" d="M70 50H1110V370H70Z M90 90V350H1090V90Z"/>
       <g id="ruler"></g>
 
       <g class="dim">
         <path d="M90 24V46M1090 24V46M90 30H1090"/>
         <path class="arr" d="M90 30l12-4v8zM1090 30l-12-4v8z"/>
         <text x="590" y="23" text-anchor="middle">1000 мм</text>
-        <path d="M28 70V330M22 70H66M22 330H66"/>
-        <path class="arr" d="M28 70l-4 12h8zM28 330l-4-12h8z"/>
-        <text transform="translate(14 200) rotate(-90)" text-anchor="middle">260 мм</text>
+        <path d="M28 90V350M22 90H66M22 350H66"/>
+        <path class="arr" d="M28 90l-4 12h8zM28 350l-4-12h8z"/>
+        <text transform="translate(14 220) rotate(-90)" text-anchor="middle">260 мм</text>
       </g>
 
-      <text class="plate" id="plate" x="590" y="65"></text>
+      <g id="plate"></g>
 
-      <text class="cap" x="90" y="402">Книги: перетащите на полку или нажмите на книгу, затем на место на полке. Описание — в карточке ниже.</text>
+      <text class="cap" x="90" y="422">Книги: перетащите на полку или нажмите на книгу, затем на место на полке. Описание — в карточке ниже.</text>
       <g id="piles"></g>
       <g id="stock"></g>
       <g id="found"></g>
@@ -526,6 +612,17 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
       <g id="ghost"></g>
       <g id="hitlayer"></g>
     </svg>
+  </div>
+  <div class="nb nbdown" id="nbDown" hidden>
+    <div class="nbs" id="nbDownS"><svg id="nbDownSvg" viewBox="0 0 1160 100" aria-hidden="true"></svg></div>
+    <button type="button" class="nbarrow" id="shDown" aria-label="Полка ниже"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9l7 7 7-7"/></svg></button>
+  </div>
+  <div class="racknav" id="racknav">
+    <button type="button" class="rkbtn" id="rkL" aria-label="Стеллаж слева"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span class="rkcap" id="rkCap" aria-live="polite"></span>
+    <button type="button" class="rkbtn" id="rkR" aria-label="Стеллаж справа"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+  </div>
+  </div>
   </div>
   <aside class="chlog" id="chlog" aria-label="Журнал полки"></aside>
   </div>
@@ -632,6 +729,7 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
       <label class="chk"><input type="checkbox" id="sSpines"><span>Показывать фото корешков на книгах (папка spines)</span></label>
       <label class="chk"><input type="checkbox" id="sLog"><span>Журнал полки справа от полки</span></label>
       <label class="fld"><span>Номера полок растут</span><select id="sShDir"><option value="down">вниз: 227 сверху, 229 снизу</option><option value="up">вверх: 229 сверху, 227 снизу</option></select></label>
+      <label class="fld"><span>Полок в стеллаже (не больше 6)</span><select id="sRack"><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></label>
       <label class="fld"><span>Крупный интерфейс</span><select id="sBig"><option value="auto">Автоматически: на телефоне</option><option value="on">Всегда</option><option value="off">Выключен</option></select></label>
       <label class="fld"><span>Шаг кнопок ‹ › на полке, мм</span><select id="sStep"><option value="5">5</option><option value="10">10</option><option value="25">25</option></select></label>
     </div>
@@ -655,6 +753,72 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
       <div class="acct"><button class="btn" id="gTest" type="button">Проверить подключение</button><button class="btn primary" id="gLoad" type="button">Загрузить полку…</button></div>
       <p class="dstat" id="gStat" aria-live="polite"></p>
       <button type="button" class="link" id="gHelp">Как подключить Google Таблицу: подробно</button>
+    </div>
+    <div class="sec" id="secDrv">
+      <h3>Фото из Google Диска</h3>
+      <p class="hint2">Программа сама найдёт на фото обложки и корешки, обрежет их и вставит в книги на полке. Нейросети бесплатные и работают у вас в браузере, ресурсы Claude не тратятся.</p>
+      <label class="fld"><span>Ссылка на папку Google Диска</span><input type="text" id="dvUrl" placeholder="https://drive.google.com/drive/folders/…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <label class="fld"><span>Как открыть папку</span><select id="dvMode"><option value="oauth">Войти в Google (любая моя папка)</option><option value="key">Папка по ссылке и API-ключ</option></select></label>
+      <label class="fld" id="dvCidL"><span>Client ID (общий с Google Таблицей)</span><input type="text" id="dvCid" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+      <label class="fld" id="dvKeyL"><span>API-ключ Google</span><input type="password" id="dvKey" placeholder="AIza…" autocomplete="new-password" autocapitalize="off" spellcheck="false"></label>
+      <button type="button" class="link" data-how="howDrive">Инструкция: как подключить папку</button>
+      <label class="fld"><span>Нейросеть (все бесплатные)</span><select id="dvEng">
+        <option value="coco">На устройстве: COCO-SSD и чтение надписей (рекомендуется)</option>
+        <option value="gemini">Gemini по бесплатному ключу (лучше читает надписи)</option>
+        <option value="owl">На устройстве: OWL-ViT и чтение надписей (тяжёлая)</option>
+        <option value="none">Без нейросети: по имени файла и обрезка по фону</option>
+      </select></label>
+      <p class="engnote" id="dvEngNote"></p>
+      <div id="dvGemB" class="sec" style="border:0;padding:0">
+        <label class="fld"><span>Ключ Gemini (бесплатный)</span><input type="password" id="dvGKey" placeholder="AIza…" autocomplete="new-password" autocapitalize="off" spellcheck="false"></label>
+        <label class="fld"><span>Модель Gemini</span><input type="text" id="dvGModel" placeholder="gemini-2.5-flash" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
+        <button type="button" class="link" data-how="howGem">Инструкция: как получить бесплатный ключ</button>
+      </div>
+      <button type="button" class="link" data-how="howNets">Какую нейросеть выбрать</button>
+      <label class="chk"><input type="checkbox" id="dvSub"><span>Читать вложенные папки</span></label>
+      <label class="chk"><input type="checkbox" id="dvRedo"><span>Разобрать заново и уже разобранные фото</span></label>
+      <div class="acct"><button class="btn primary" id="dvGo" type="button">Импортировать фото из папки…</button></div>
+      <p class="dstat" id="dvsStat" aria-live="polite"></p>
+    </div>
+    <div class="sec howto" id="secHow">
+      <h3>Инструкции</h3>
+      <details class="how" id="howDrive"><summary>Как подключить папку Google Диска</summary>
+        <p class="hint2"><b>Вариант 1. Вход в Google.</b> Подходит любая папка вашего Диска, в том числе закрытая.</p>
+        <ol class="how">
+          <li>Откройте <a href="https://console.cloud.google.com/" target="_blank" rel="noopener">console.cloud.google.com</a>. Выберите тот же проект, что для Google Таблицы, или создайте новый.</li>
+          <li>Меню «API и сервисы», затем «Библиотека». Найдите <b>Google Drive API</b> и нажмите «Включить».</li>
+          <li>«API и сервисы», «Учётные данные», «Создать учётные данные», «Идентификатор клиента OAuth». Тип: «Веб-приложение». В «Разрешённые источники JavaScript» добавьте адрес сайта: <code>https://drakkkkon.github.io</code> (без слэша в конце и без названия папки).</li>
+          <li>«Экран согласия OAuth»: добавьте свою почту в «Тестовые пользователи».</li>
+          <li>Скопируйте «Идентификатор клиента» в поле Client ID выше. Оно общее с Google Таблицей.</li>
+          <li>Нажмите «Импортировать фото из папки…» и разрешите просмотр файлов Диска (только чтение). Если Google пишет «приложение не проверено», нажмите «Дополнительно», затем «Перейти»: это ваше личное приложение.</li>
+        </ol>
+        <p class="hint2"><b>Вариант 2. Папка по ссылке и API-ключ.</b> Без входа в аккаунт, но папка должна быть открыта по ссылке.</p>
+        <ol class="how">
+          <li>В консоли Google включите Google Drive API (шаг 2 выше).</li>
+          <li>«Учётные данные», «Создать учётные данные», «Ключ API». Скопируйте ключ в поле выше. Лучше нажать «Ограничить ключ»: API — только Drive API, сайты — <code>https://drakkkkon.github.io/*</code>.</li>
+          <li>В Google Диске нажмите на папке правой кнопкой, «Поделиться», доступ «Все, у кого есть ссылка», роль «Читатель». Скопируйте ссылку в поле «Ссылка на папку».</li>
+        </ol>
+        <p class="hint2">Как назвать фото: <code>10065.jpg</code> — обложка книги №10065, <code>10065_корешок.jpg</code> — её корешок. Если имена обычные (IMG_0412.jpg), нейросеть прочитает надписи на фото и найдёт книгу сама. Перед применением вы увидите список и сможете всё поправить.</p>
+      </details>
+      <details class="how" id="howGem"><summary>Как получить бесплатный ключ Gemini</summary>
+        <ol class="how">
+          <li>Откройте <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a> и войдите в аккаунт Google.</li>
+          <li>Нажмите «Create API key» («Создать ключ API»). Банковская карта не нужна.</li>
+          <li>Скопируйте ключ в поле «Ключ Gemini» выше. Он хранится только в этом браузере.</li>
+          <li>Модель по умолчанию <code>gemini-2.5-flash</code>. Если Google её отключит, впишите другую модель «flash» или «flash-lite» с бесплатным уровнем (список на ai.google.dev/gemini-api/docs/models).</li>
+          <li>У бесплатного уровня есть лимиты в минуту и в день. Программа делает паузы между фото сама. Если дневной лимит кончился, продолжите завтра: разобранные фото запоминаются.</li>
+        </ol>
+        <p class="hint2">На время разбора фото отправляются в Google. Если это не подходит, выберите нейросеть «На устройстве».</p>
+      </details>
+      <details class="how" id="howNets"><summary>Какую нейросеть выбрать</summary>
+        <ol class="how">
+          <li><b>COCO-SSD и чтение надписей</b> — для начала. Один раз скачается около 25 МБ, фото остаются на вашем устройстве. Хорошо находит книги, когда на фото одна или несколько книг.</li>
+          <li><b>Gemini</b> — если на фото много книг сразу или надписи мелкие: лучше всех читает русские и казахские буквы. Нужен бесплатный ключ, фото уходят в Google.</li>
+          <li><b>OWL-ViT</b> — ищет «обложку» и «корешок» по описанию. Скачивается около 150 МБ, нужен мощный компьютер. Экспериментальный вариант.</li>
+          <li><b>Без нейросети</b> — самый быстрый: книга определяется по номеру в имени файла (<code>10065.jpg</code>), лишние поля обрезаются по цвету фона.</li>
+        </ol>
+        <p class="hint2">Нейросети и языки для чтения надписей загружаются с сайтов jsdelivr.net и projectnaptha.com, нужен интернет.</p>
+      </details>
     </div>
     <div class="actions">
       <button class="btn" id="setReset" type="button">Сбросить настройки</button>
@@ -696,6 +860,21 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
   </div>
 </dialog>
 
+<dialog id="dlgDv" aria-labelledby="dvT">
+  <div class="dlg">
+    <h2 id="dvT">Фото из Google Диска</h2>
+    <p class="dstat" id="dvStat" aria-live="polite"></p>
+    <div class="prog" id="dvProg" hidden><i id="dvBar"></i></div>
+    <p class="hint2" id="dvSum"></p>
+    <div class="dvlist" id="dvList"></div>
+    <div class="actions">
+      <button type="button" class="btn" id="dvStop" hidden>Остановить</button>
+      <button type="button" class="btn" id="dvClose">Закрыть</button>
+      <button type="button" class="btn primary" id="dvApply" disabled>Применить выбранное</button>
+    </div>
+  </div>
+</dialog>
+
 <dialog id="dlgInfo" aria-labelledby="infT">
   <div class="dlg">
     <h2 id="infT"></h2>
@@ -724,7 +903,7 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.2.0'};
+var APP={name:'Геометрия Полки',version:'1.3.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -747,15 +926,16 @@ var SEED={"sheet":"228 С 15.10","columns":[{"label":"Код книги","origin
 
 /* ===== Настройки (хранятся в браузере) ===== */
 var CFG_KEY='gp.settings.v1';
-function defaultCfg(){return {falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,spines:true,shDir:'down',zoom:0,phWorker:'',
-  gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''}};}
+function defaultCfg(){return {falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,spines:true,shDir:'down',zoom:0,phWorker:'',rack:6,
+  gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''},
+  dr:{url:'',mode:'oauth',key:'',eng:'coco',gkey:'',gmodel:'gemini-2.5-flash',sub:true,redo:false}};}
 var CFG=defaultCfg();
 function loadCfg(){
   try{
     var r=JSON.parse(localStorage.getItem(CFG_KEY)||'null');
     if(!r) return;
     Object.keys(r).forEach(function(k){
-      if(k==='gs'&&r.gs){Object.keys(r.gs).forEach(function(g){CFG.gs[g]=r.gs[g];});}
+      if((k==='gs'||k==='dr')&&r[k]&&typeof r[k]==='object'){Object.keys(r[k]).forEach(function(g){CFG[k][g]=r[k][g];});}
       else CFG[k]=r[k];
     });
   }catch(_){}
@@ -906,6 +1086,7 @@ function addLog(entries){
   var L=getLog(DS.sheet),ts=Date.now();
   entries.slice().reverse().forEach(function(e){e.ts=ts;L.unshift(e);});
   putLog(DS.sheet,L);
+  touchEdited();
 }
 function shelvesWithLog(){
   var out=[];
@@ -1175,8 +1356,8 @@ var PALETTE=[
 /* ===== Данные ===== */
 var DS=null;          /* {sheet,columns:[{label,origin}],rows,roles,colRole} */
 var UNITS=[];
-var VW=1160,VH=620,SX=90,SY=70,FLOOR=SY+SHELF.H,WALL=20;
-var ROWTOP0=414,ROWGAP=44,ROWBASE=[414];
+var VW=1160,VH=640,SX=90,RAIL_T=40,SY=50+RAIL_T,FLOOR=SY+SHELF.H,WALL=20;
+var ROWTOP0=434,ROWGAP=44,ROWBASE=[434];
 var COLX=[SX+125,SX+375,SX+625,SX+875];
 var el={},hits=[],sel={id:0},flashId=null,statusNote='';
 
@@ -1274,7 +1455,7 @@ function planPiles(){
     for(var c=0;c<4;c++){var k2=r*4+c;if(k2<P) mx=Math.max(mx,sums[k2]);}
     ROWBASE.push(top+mx);top=top+mx+ROWGAP;
   }
-  VH=P?ROWBASE[rows-1]+36:430;
+  VH=P?ROWBASE[rows-1]+36:450;
 }
 
 function applyLayout(){
@@ -1296,7 +1477,7 @@ function placedList(){
 function initEls(){
   ['scene','scroller','grid','books','ruler','stock','float','ghost','hitlayer','piles','plate','cover',
    'bcode','bname','bauthor','binfo','side','sVol','sSL','sFree','sStock','msg','undo','clear','file','menubar','dock','dockT','dockName','dockInfo','dkLL','dkL','dkOk','dkR','dkRR','dkLie','dkTake','dkCancel','coverPhoto','cvsrc','stage','chlog','mbItems','mbBurger','mbStatus','mbStx','srcnote','auto','gsync','dlgSet','dlgInfo','infT','infB','infOk','sFalls','sThin','sLean','sCovers','sLog','sBig','sStep','gMode','gUrl','gTabs','gGen','gOauth','gCid','gAcct','gIn','gOut','gAuto','gTest','gLoad','gStat','gHelp','setReset','setOk',
-   'found','pageSlide','shelfnav','shUp','shUpT','shDown','shDownT','shNowT','shNowS','pHome','pL','pRange','pR','pEnd','pVal','zOut','zRange','zIn','zVal','zFit','srQ','srPrev','srCnt','srNext','srClear','srList','cvAdd','sSpines','sShDir','dlgPh','phCnt','phDir','phFiles','phDirNote','phDirAct','phRescan','phForget','phName','phDirIn','phFilesIn','phOne','phWk','phTg','phTgAll','phTgStat','phHow','phStat','phClear','phOk',
+   'found','pageSlide','shelfIn','nbUp','nbUpS','nbUpSvg','shUp','nbDown','nbDownS','nbDownSvg','shDown','rkL','rkR','rkCap','sRack','dvUrl','dvMode','dvKeyL','dvKey','dvCidL','dvCid','dvEng','dvEngNote','dvGemB','dvGKey','dvGModel','dvSub','dvRedo','dvGo','dvsStat','dlgDv','dvStat','dvProg','dvBar','dvSum','dvList','dvStop','dvClose','dvApply','pHome','pL','pRange','pR','pEnd','pVal','zOut','zRange','zIn','zVal','zFit','srQ','srPrev','srCnt','srNext','srClear','srList','cvAdd','sSpines','sShDir','dlgPh','phCnt','phDir','phFiles','phDirNote','phDirAct','phRescan','phForget','phName','phDirIn','phFilesIn','phOne','phWk','phTg','phTgAll','phTgStat','phHow','phStat','phClear','phOk',
    'sub','foot','legend','dlg','dFile','dSheet','dStat','dGen','dGenL','dCols','dAll','dNone','dCancel','dOk'
   ].forEach(function(id){el[id]=$(id);});
 }
@@ -1384,14 +1565,9 @@ function buildStatic(){
   el.ruler.innerHTML='<path class="tk" d="'+d+'"/>'+lab;
   drawPileBase();
 
-  var places={},best='',cnt=0;
-  if(DS.roles.place!=null) DS.rows.forEach(function(r){
-    var p=str(r[DS.roles.place]);if(!p) return;
-    places[p]=(places[p]||0)+1;if(places[p]>cnt){cnt=places[p];best=p;}
-  });
-  var label=best&&best.length<=14?'Полка <tspan style="font-weight:600">'+esc(best)+'</tspan>':'Лист <tspan style="font-weight:600">'+esc(DS.sheet)+'</tspan>';
-  el.plate.innerHTML=label;
-  el.scene.setAttribute('aria-label',(best?'Полка '+best:'Лист '+DS.sheet)+'. Под ней стопки книг, их можно перетаскивать на полку.');
+  drawPlate();
+  if(plateAnim){plateAnim=false;el.plate.classList.remove('in');void el.scene.getBoundingClientRect();el.plate.classList.add('in');}
+  el.scene.setAttribute('aria-label',shelfTitle(NAV.cur,DS.sheet)+'. Под ней стопки книг, их можно перетаскивать на полку.');
 }
 
 function updateHeader(){
@@ -1841,7 +2017,7 @@ function doAuto(){
   renderAll();syncButtons();renderLog();
   note('Расставлено автоматически: на полке '+n+' из '+UNITS.length+'.');
 }
-function afterChange(){saveLayoutSoon();}
+function afterChange(){saveLayoutSoon();touchEdited();}
 
 /* ===== Фото обложки: из памяти устройства, без ожидания ===== */
 function setCoverPhoto(u){
@@ -2588,7 +2764,7 @@ function aboutDlg(){
   showInfo('О программе',
     '<p><b>'+esc(APP.name)+'</b> '+esc(APP.version)+'</p>'+
     '<p>Раскладка книг по полке 1000 × 260 × 240 мм. Книги берутся из вашей Google Таблицы или файла Excel; фото обложек лежат в папке <code>covers</code>, корешков в папке <code>spines</code>.</p>'+
-    '<p class="hint2">Фото: oldbook.kz и Telegram-канал OldBookKz, уменьшены для показа на экране. Свои фото можно подключить папкой с компьютера.</p>');
+    '<p class="hint2">Фото: oldbook.kz и Telegram-канал OldBookKz, уменьшены для показа на экране. Свои фото можно подключить папкой с компьютера или импортировать из папки Google Диска.</p>');
 }
 function helpUse(){
   showInfo('Как пользоваться',
@@ -2601,8 +2777,10 @@ function helpUse(){
     '<li><b>Новая полка</b> расставляется автоматически слева направо. Что не влезло по длине, ложится сверху, остальное лежит пачкой под полкой.</li>'+
     '<li><b>Масштаб и перемещение.</b> Под полкой: ползунок и кнопки масштаба, «Вписать», кнопки ‹ › и ползунок положения. Щипок двумя пальцами, Ctrl и колесо мыши меняют масштаб, мышью можно тащить пустое место. Клавиши: + − 0, стрелки, Home, End.</li>'+
     '<li><b>Поиск.</b> Строка под полкой ищет по номеру, названию, автору и другим столбцам. Найденные книги подсвечиваются, остальные тускнеют. Enter или кнопки ‹ › переходят к следующей.</li>'+
-    '<li><b>Другие полки.</b> Кнопки ▲ и ▼ над полкой (или Alt и стрелки) листают к соседним полкам с анимацией. Сейчас 227 и 229 тестовые.</li>'+
+    '<li><b>Другие полки.</b> Над основной полкой нарисована нижняя часть верхней полки, под ней верхняя часть нижней. Нажмите на неё или на стрелку посередине, и полка сдвинется с анимацией (Alt+↑ и Alt+↓). Название полки и дата последней правки написаны на табличке на раме слева сверху.</li>'+
+    '<li><b>Стеллажи.</b> Стеллаж это до 6 полок вместе. Маленькие стрелки под полками слева и справа (Alt+← и Alt+→) переходят на соседний стеллаж. Сейчас полки 225–227 и 229–236 тестовые.</li>'+
     '<li><b>Фото.</b> В меню «Фото» подключается папка с компьютера или выгрузка Telegram. Фото сохраняются на устройстве и показываются сразу.</li>'+
+    '<li><b>Фото из Google Диска.</b> Настройки, блок «Фото из Google Диска»: укажите папку, выберите бесплатную нейросеть и нажмите «Импортировать». Программа найдёт книги и корешки, обрежет и покажет список. Проверьте и нажмите «Применить». Инструкции свёрнуты в самом низу настроек.</li>'+
     '</ol>');
 }
 
@@ -2641,6 +2819,8 @@ function buildMenuDefs(){
       {sep:1},
       {l:'Полка выше',k:'Alt+↑',a:function(){goShelf(-1);}},
       {l:'Полка ниже',k:'Alt+↓',a:function(){goShelf(1);}},
+      {l:'Стеллаж слева',k:'Alt+←',a:function(){goRack(-1);}},
+      {l:'Стеллаж справа',k:'Alt+→',a:function(){goRack(1);}},
       {l:'Поиск по полке',k:'/',a:searchFocus},
       {sep:1},
       {l:'Фото обложек',a:function(){CFG.covers=!CFG.covers;saveCfg();renderInfo();},chk:function(){return CFG.covers;}},
@@ -2651,6 +2831,7 @@ function buildMenuDefs(){
     {id:'photos',label:'Фото',items:[
       {l:'Подключить папку с компьютера…',a:openPhotos},
       {l:'Фото из Telegram…',a:openPhotos},
+      {l:'Фото из Google Диска…',a:openDrive},
       {l:'Добавить фото выбранной книге…',a:addPhotoSel},
       {sep:1},
       {l:'Прочитать папку заново',a:phScanDir,dis:function(){return !PH.dir;}},
@@ -2826,6 +3007,7 @@ function fillSettings(){
   el.sCovers.checked=!!CFG.covers;el.sSpines.checked=CFG.spines!==false;el.sShDir.value=CFG.shDir==='up'?'up':'down';el.sLog.checked=!!CFG.log;el.sBig.value=CFG.big;el.sStep.value=String(CFG.step);
   el.gUrl.value=CFG.gs.url;el.gTabs.value=CFG.gs.tabs;el.gGen.value=CFG.gs.gen;el.gCid.value=CFG.gs.cid;el.gAuto.value=String(CFG.gs.auto);
   applyGMode();updateAcct();gStat('');
+  el.sRack.value=String(rackSize());drvFill();
   el.setReset.textContent='Сбросить настройки';el.setReset._arm=false;
 }
 function openSettings(){
@@ -2838,7 +3020,8 @@ function initSettings(){
   el.sLean.addEventListener('change',function(){var v=Math.round(+el.sLean.value);CFG.lean=isFinite(v)?Math.max(1,Math.min(30,v)):8;el.sLean.value=CFG.lean;saveCfg();});
   el.sCovers.addEventListener('change',function(){CFG.covers=el.sCovers.checked;saveCfg();renderInfo();});
   el.sSpines.addEventListener('change',function(){CFG.spines=el.sSpines.checked;saveCfg();renderAll();});
-  el.sShDir.addEventListener('change',function(){CFG.shDir=el.sShDir.value;saveCfg();updateShelfNav();});
+  el.sShDir.addEventListener('change',function(){CFG.shDir=el.sShDir.value;saveCfg();updateShelfNav();drawPlate();});
+  el.sRack.addEventListener('change',function(){CFG.rack=+el.sRack.value||RACK_MAX;saveCfg();updateShelfNav();drawPlate();});
   el.sLog.addEventListener('change',function(){CFG.log=el.sLog.checked;saveCfg();applyLog();renderLog();});
   el.sBig.addEventListener('change',function(){CFG.big=el.sBig.value;saveCfg();applyBig();});
   el.sStep.addEventListener('change',function(){CFG.step=+el.sStep.value||10;saveCfg();});
@@ -2864,7 +3047,7 @@ function initSettings(){
   el.setReset.addEventListener('click',function(){
     if(!el.setReset._arm){el.setReset._arm=true;el.setReset.textContent='Нажмите ещё раз: сбросить';return;}
     CFG=defaultCfg();
-    saveCfg();applyBig();applyLog();renderLog();renderAll();renderInfo();fillSettings();gsTimer();updateSource();updateShelfNav();
+    saveCfg();applyBig();applyLog();renderLog();renderAll();renderInfo();fillSettings();gsTimer();updateSource();updateShelfNav();drawPlate();
   });
   el.infOk.addEventListener('click',function(){hideInfo();});
   el.srcnote.addEventListener('click',function(e){
@@ -3245,7 +3428,7 @@ function helpGoogle(){
    картинки уже на месте. Сервис-воркер sw.js дополнительно кеширует файлы, и полка открывается даже без интернета. */
 var BUNDLE={"c":{"10065":["86164c27","t"],"10670":["397b3b50","o"],"10737":["f4c494e4","o"],"10838":["c784126e","o"],"10937":["aed55df8","o"],"10938":["8ba1c825","o"],"11036":["287f3c7c","o"],"11064":["2f7ac8ee","o"],"11068":["343908ac","o"],"11069":["030023f6","o"],"11070":["7a72697e","o"],"11139":["9717b0d8","o"],"11155":["3f9e1a79","o"],"11240":["a6e7c0f3","o"],"12034":["310f5632","o"],"12139":["a2a2e900","o"],"12641":["dec5c7a0","o"],"13527":["fd90600a","o"],"14113":["e26a2582","o"],"1993":["0b52f143","o"],"2644":["651ec371","t"],"2716":["61dbd679","o"],"4065":["2cd9e273","o"],"4167":["62709578","t"],"4909":["c5c6fce7","o"],"5958":["e6426ca9","o"],"6744":["487d1471","o"],"7527":["727f362c","o"],"8953":["18e0f88e","o"],"9073":["ae59dbd9","o"],"9233":["04abd7ec","o"],"9236":["7157ccfe","t"]},"s":{"10737":["078a02f8","o"],"10937":["aa9cca37","o"],"11064":["c05f0213","o"],"11070":["b432a96b","o"],"11139":["a2a40a3f","o"],"11155":["fdca5df6","o"],"11240":["a43cf47e","o"],"12034":["45d0e68a","o"],"12139":["fc0e0f1d","o"],"13527":["8a8f2853","o"],"14113":["86364a5a","o"],"1993":["2c609c8b","o"],"2716":["d4e45055","o"],"4909":["18d9cabd","o"],"5958":["cc1476cc","o"],"6744":["1e80fc18","o"],"7527":["b6b0dd78","o"],"8953":["2ae781d2","o"],"9073":["6c94d231","o"],"9233":["81082f50","o"]}};
 var IMG={c:{},s:{}},IMGSRC={c:{},s:{}},IMGORG={c:{},s:{}},IMGKEEP={};
-var ORGN={o:'oldbook.kz',t:'Telegram',d:'папка на компьютере',f:'добавлено вручную'};
+var ORGN={o:'oldbook.kz',t:'Telegram',d:'папка на компьютере',f:'добавлено вручную',g:'Google Диск'};
 var IMGSTAT={total:0,done:0,busy:false},imgT=0,imgReady=false;
 var IDBN='gp-photos',IDBS='img',idbP=null;
 
@@ -3851,6 +4034,7 @@ function setZoom(z,ax,keep){
   var ratio=sc.scrollWidth?(sc.scrollLeft+a)/sc.scrollWidth:0.5;
   Z=z;
   el.scene.style.width=(z*100)+'%';
+  stripWidth();
   if(!keep) sc.scrollLeft=ratio*sc.scrollWidth-a;
   syncViewbar();
   clearTimeout(zRenderT);
@@ -3920,6 +4104,7 @@ function initView(){
   });
   var rafP=0;
   el.scroller.addEventListener('scroll',function(){
+    syncStrips();
     if(rafP) return;
     rafP=requestAnimationFrame(function(){rafP=0;syncViewbar();});
   },{passive:true});
@@ -4040,9 +4225,12 @@ function initSearch(){
   });
 }
 
-/* ===== Полки выше и ниже ===== */
-var NAV={cur:'',real:{},test:{}},navBusy=false;
-var TEST_IDS=['227','229'];
+/* ===== Полки выше и ниже, стеллажи =====
+   Стеллаж: до 6 полок подряд (по возрастанию номеров). Вверх и вниз листаем внутри стеллажа,
+   влево и вправо переходим на соседний стеллаж. Название полки пишется только на табличке на раме. */
+var NAV={cur:'',real:{},test:{}},navBusy=false,plateAnim=false;
+var TEST_IDS=['225','226','227','229','230','231','232','233','234','235','236'];
+var RACK_MAX=6,NB_H={up:112,down:100};
 function shelfIdOf(ds){
   var best='',cnt=0,places={};
   if(ds.roles.place!=null) ds.rows.forEach(function(r){
@@ -4058,83 +4246,972 @@ function testRaw(id){
   var pi=-1,k=TEST_IDS.indexOf(id);
   SEED.columns.forEach(function(c,i){if(pi<0&&roleOf(c.label)==='place') pi=i;});
   if(k<0) k=Math.abs((+id)||0)%2;
+  else k=k%2;
   var rows=[];
   SEED.rows.forEach(function(r,i){if(i%2===k){var c=r.slice();if(pi>=0) c[pi]=+id;rows.push(c);}});
   var raw={sheet:'Тест · '+id,columns:SEED.columns,rows:rows,src:'test',test:true};
   NAV.test[id]=raw;
   return raw;
 }
-function shelfOrder(){
+function rackSize(){var n=Math.round(+CFG.rack);return (n>=1&&n<=RACK_MAX)?n:RACK_MAX;}
+function shelfIdsSorted(){
   var ids={};
   TEST_IDS.concat(['228']).forEach(function(i){ids[i]=1;});
   Object.keys(NAV.real).forEach(function(i){ids[i]=1;});
   if(NAV.cur) ids[NAV.cur]=1;
-  var a=Object.keys(ids).sort(function(x,y){
+  return Object.keys(ids).sort(function(x,y){
     var nx=+x,ny=+y;
     if(isFinite(nx)&&isFinite(ny)) return nx-ny;
     return String(x)<String(y)?-1:1;
   });
-  if(CFG.shDir==='up') a.reverse();
-  return a;
+}
+function racksList(){
+  var a=shelfIdsSorted(),n=rackSize(),out=[];
+  for(var i=0;i<a.length;i+=n) out.push(a.slice(i,i+n));
+  return out;
+}
+/* порядок полок стеллажа сверху вниз: номера растут вниз или вверх (настройка) */
+function rackDisp(list){return CFG.shDir==='up'?list.slice().reverse():list;}
+function rackInfo(id){
+  var R=racksList();
+  for(var i=0;i<R.length;i++){
+    var d=rackDisp(R[i]),p=d.indexOf(id);
+    if(p>=0) return {n:i,total:R.length,list:d,pos:p};
+  }
+  return {n:0,total:R.length||1,list:[id],pos:0};
 }
 function shelfNeighbors(){
-  var a=shelfOrder(),i=a.indexOf(NAV.cur);
-  return {up:i>0?a[i-1]:'',down:(i>=0&&i<a.length-1)?a[i+1]:''};
+  var r=rackInfo(NAV.cur);
+  return {up:r.pos>0?r.list[r.pos-1]:'',down:r.pos<r.list.length-1?r.list[r.pos+1]:'',rack:r};
+}
+/* на какую полку попадём при переходе на соседний стеллаж: на ту же по счёту сверху */
+function rackTarget(d){
+  var R=racksList(),r=rackInfo(NAV.cur),k=r.n+d;
+  if(k<0||k>=R.length) return '';
+  var L=rackDisp(R[k]);
+  return L[Math.min(r.pos,L.length-1)];
+}
+
+/* ----- дата редактирования ----- */
+function editKey(s){return 'gp.edit.'+s;}
+function getEdited(sheet){
+  try{var v=+localStorage.getItem(editKey(sheet));if(v>0) return v;}catch(_){}
+  var L=getLog(sheet);
+  return (L.length&&L[0].ts)?L[0].ts:0;
+}
+function touchEdited(){
+  if(!DS) return;
+  try{localStorage.setItem(editKey(DS.sheet),String(Date.now()));}catch(_){}
+  drawPlate();
+}
+function fmtDate(ts){
+  if(!ts) return '—';
+  var d=new Date(ts),p=function(n){return (n<10?'0':'')+n;};
+  return p(d.getDate())+'.'+p(d.getMonth()+1)+'.'+d.getFullYear();
+}
+function shelfSheet(id){return NAV.real[id]?NAV.real[id].sheet:'Тест · '+id;}
+function shelfTitle(id,sheet){return (id&&String(id).length<=14)?'Полка '+id:'Лист '+sheet;}
+function plateSub(sheet,test,rackN){return (test?'тест · ':'')+'стеллаж '+rackN+' · изм. '+fmtDate(getEdited(sheet));}
+
+/* ----- табличка на раме, слева сверху ----- */
+function plateSvg(x,y,title,sub){
+  var w=Math.max(170,Math.min(560,Math.round(Math.max(title.length*9.6+34,sub.length*5.8+34))));
+  return '<g transform="translate('+x+' '+y+')">'+
+    '<rect class="pl-sh" x="1.5" y="2" width="'+w+'" height="30" rx="3"/>'+
+    '<rect class="pl-card" x="0" y="0" width="'+w+'" height="30" rx="3"/>'+
+    '<circle class="pl-screw" cx="6" cy="6" r="1.7"/><circle class="pl-screw" cx="'+(w-6)+'" cy="6" r="1.7"/>'+
+    '<circle class="pl-screw" cx="6" cy="24" r="1.7"/><circle class="pl-screw" cx="'+(w-6)+'" cy="24" r="1.7"/>'+
+    '<text class="pl-t" x="16" y="14.5">'+esc(title)+'</text>'+
+    '<text class="pl-s" x="16" y="25.4">'+esc(sub)+'</text></g>';
+}
+function drawPlate(){
+  if(!DS||!el.plate) return;
+  var r=rackInfo(NAV.cur);
+  el.plate.innerHTML=plateSvg(SX+8,SY-RAIL_T+5,shelfTitle(NAV.cur,DS.sheet),plateSub(DS.sheet,DS.src==='test',r.n+1));
+}
+
+/* ----- соседние полки: схематичный рисунок, видна только часть ----- */
+function hashStr(s){var h=2166136261;s=String(s);for(var i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function rng(seed){
+  var s=seed>>>0;
+  return function(){
+    s=(s+0x6D2B79F5)>>>0;
+    var t=s;t=Math.imul(t^(t>>>15),t|1);t^=t+Math.imul(t^(t>>>7),t|61);
+    return((t^(t>>>14))>>>0)/4294967296;
+  };
+}
+function nbSvg(kind,id){
+  var up=kind==='up',H=NB_H[kind],rnd=rng(hashStr('gp'+id)),x=SX+3,s='',yF,w,h,c;
+  if(up){
+    /* низ полки выше: нижняя доска, часть стоящих книг */
+    yF=H-6-WALL;
+    s+='<rect class="nb-int" x="'+SX+'" y="0" width="'+SHELF.W+'" height="'+yF+'"/>';
+  }else{
+    /* верх полки ниже: верхняя доска и кончики высоких книг */
+    var top=6+RAIL_T;
+    yF=top+SHELF.H;
+    s+='<rect class="nb-int" x="'+SX+'" y="'+top+'" width="'+SHELF.W+'" height="'+(H-top)+'"/>';
+  }
+  while(x<SX+SHELF.W-6){
+    if(rnd()<0.07){x+=12+rnd()*40;continue;}
+    w=8+rnd()*34;
+    h=up?(60+rnd()*165):(176+rnd()*66);
+    c=PALETTE[Math.floor(rnd()*PALETTE.length)].fill;
+    if(x+w>SX+SHELF.W-2) w=SX+SHELF.W-2-x;
+    if(w<4) break;
+    s+='<rect x="'+x.toFixed(1)+'" y="'+(yF-h).toFixed(1)+'" width="'+w.toFixed(1)+'" height="'+h.toFixed(1)+'" fill="'+c+'" fill-opacity=".42" stroke="#fff" stroke-width=".8"/>';
+    x+=w;
+  }
+  if(up){
+    s+='<path class="frame" d="M'+(SX-WALL)+' 0V'+(H-6)+'H'+(SX+SHELF.W+WALL)+'V0H'+(SX+SHELF.W)+'V'+yF+'H'+SX+'V0Z"/>';
+  }else{
+    s+='<path class="frame" d="M'+(SX-WALL)+' '+H+'V6H'+(SX+SHELF.W+WALL)+'V'+H+'H'+(SX+SHELF.W)+'V'+(6+RAIL_T)+'H'+SX+'V'+H+'Z"/>';
+    var sid=String(id),r=rackInfo(sid);
+    s+=plateSvg(SX+8,11,shelfTitle(sid,shelfSheet(sid)),plateSub(shelfSheet(sid),!NAV.real[sid],r.n+1));
+  }
+  return s;
+}
+function setNb(kind,id){
+  var up=kind==='up',box=up?el.nbUp:el.nbDown,svg=up?el.nbUpSvg:el.nbDownSvg,btn=up?el.shUp:el.shDown;
+  if(!id){box.hidden=true;svg.innerHTML='';return;}
+  box.hidden=false;
+  svg.setAttribute('viewBox','0 0 '+VW+' '+NB_H[kind]);
+  svg.innerHTML=nbSvg(kind,id);
+  var label='Перейти на полку '+id+(NAV.real[id]?'':' (тест)')+(up?' выше':' ниже');
+  btn.setAttribute('aria-label',label);
+  box.title=label;
+}
+function stripWidth(){
+  var w=(Z*100)+'%';
+  if(el.nbUpSvg) el.nbUpSvg.style.width=w;
+  if(el.nbDownSvg) el.nbDownSvg.style.width=w;
+}
+function syncStrips(){
+  var sc=el.scroller;
+  if(!sc) return;
+  if(el.nbUpS) el.nbUpS.scrollLeft=sc.scrollLeft;
+  if(el.nbDownS) el.nbDownS.scrollLeft=sc.scrollLeft;
+}
+function updateRackNav(){
+  var r=rackInfo(NAV.cur),a=rackTarget(-1),b=rackTarget(1);
+  el.rkL.disabled=!a;el.rkR.disabled=!b;
+  el.rkL.setAttribute('aria-label',a?'Стеллаж слева, полка '+a:'Слева стеллажей нет');
+  el.rkR.setAttribute('aria-label',b?'Стеллаж справа, полка '+b:'Справа стеллажей нет');
+  el.rkL.title=a?'Стеллаж слева (Alt+←)':'';
+  el.rkR.title=b?'Стеллаж справа (Alt+→)':'';
+  el.rkCap.textContent='Стеллаж '+(r.n+1)+' из '+r.total+' · полка '+(r.pos+1)+' из '+r.list.length;
 }
 function updateShelfNav(){
-  if(!el.shNowT) return;
+  if(!el.nbUp) return;
   var nb=shelfNeighbors();
-  function lab(id){return id?('Полка '+id+(NAV.real[id]?'':' · тест')):'Выше нет полок';}
-  el.shUp.disabled=!nb.up;el.shDown.disabled=!nb.down;
-  el.shUpT.textContent=nb.up?lab(nb.up):'Выше нет полок';
-  el.shDownT.textContent=nb.down?lab(nb.down):'Ниже нет полок';
-  el.shNowT.textContent='Полка '+NAV.cur;
-  el.shNowS.textContent=(DS&&DS.src==='test')?'тестовые данные':(DS&&DS.src==='google'?'Google Таблица':(DS&&DS.src==='excel'?'файл Excel':'демо-данные'));
+  setNb('up',nb.up);setNb('down',nb.down);
+  updateRackNav();stripWidth();syncStrips();
 }
-function slidePage(delta,swap,done){
-  var pg=el.pageSlide;
-  if(reduce||!pg.animate){swap();done();return;}
-  var dist=Math.min(window.innerHeight*0.45,360)*(delta>0?-1:1),fin=false;
+
+/* ----- переход с анимацией: вниз и вверх по стеллажу, вправо и влево по стеллажам ----- */
+function slideShelf(dir,swap,done){
+  var pg=el.shelfIn,fin=false;
+  if(reduce||!pg||!pg.animate){swap();done();return;}
+  var h=pg.offsetHeight||400,w=pg.offsetWidth||600;
+  var dy=dir.y*Math.min(h*0.5,360),dx=dir.x*Math.min(w*0.55,560);
   function end(){if(fin) return;fin=true;done();}
-  var a=pg.animate([{transform:'translateY(0)',opacity:1},{transform:'translateY('+dist+'px)',opacity:0}],{duration:200,easing:'cubic-bezier(.5,0,1,1)',fill:'forwards'});
+  var a=pg.animate([{transform:'translate(0,0)',opacity:1},{transform:'translate('+(-dx)+'px,'+(-dy)+'px)',opacity:0}],{duration:230,easing:'cubic-bezier(.55,0,1,.6)',fill:'forwards'});
   a.onfinish=function(){
     try{swap();}catch(err){a.cancel();end();throw err;}
-    var b=pg.animate([{transform:'translateY('+(-dist)+'px)',opacity:0},{transform:'translateY(0)',opacity:1}],{duration:340,easing:'cubic-bezier(0,0,.2,1)'});
+    var b=pg.animate([{transform:'translate('+dx+'px,'+dy+'px)',opacity:0},{transform:'translate(0,0)',opacity:1}],{duration:400,easing:'cubic-bezier(.1,.8,.2,1)'});
     a.cancel();
     b.onfinish=end;b.oncancel=end;
   };
   a.oncancel=function(){};
-  setTimeout(end,1500);
+  setTimeout(end,1700);
 }
-function showShelf(id,delta){
+function showShelf(id,dy,dx){
   if(navBusy||float||!DS||!id||id===NAV.cur) return;
   if(arm) disarm(true);
   saveLayout();
   var raw=NAV.real[id]||testRaw(id);
   navBusy=true;
-  toast((delta>0?'▼ ':(delta<0?'▲ ':''))+'Полка '+id+(NAV.real[id]?'':' · тест'),1700);
-  slidePage(delta,function(){
+  slideShelf({y:dy||0,x:dx||0},function(){
     el.srQ.value='';SR={q:'',ids:{},list:[],i:-1};
+    plateAnim=true;
     loadDataset(raw,{sync:true,nav:true});
     setZoom(Z,null,true);
     el.scroller.scrollLeft=0;
     searchRender();
     syncViewbar();
+    syncStrips();
   },function(){navBusy=false;});
 }
 function backToMain(){
-  var ids=Object.keys(NAV.real),id=NAV.real['228']?'228':(ids[0]||'228'),o=shelfOrder();
-  showShelf(id,o.indexOf(id)>o.indexOf(NAV.cur)?1:-1);
+  var ids=Object.keys(NAV.real),id=NAV.real['228']?'228':(ids[0]||'228');
+  var a=rackInfo(NAV.cur),b=rackInfo(id);
+  showShelf(id,b.n===a.n?(b.pos>a.pos?1:-1):0,b.n!==a.n?(b.n>a.n?1:-1):0);
 }
 function goShelf(d){
   var nb=shelfNeighbors();
   var id=d<0?nb.up:nb.down;
-  if(!id){note(d<0?'Выше нет полок.':'Ниже нет полок.',2500);return;}
-  showShelf(id,d);
+  if(!id){note(d<0?'Выше в этом стеллаже полок нет.':'Ниже в этом стеллаже полок нет.',2500);return;}
+  showShelf(id,d,0);
+}
+function goRack(d){
+  var id=rackTarget(d);
+  if(!id){note(d<0?'Слева стеллажей нет.':'Справа стеллажей нет.',2500);return;}
+  showShelf(id,0,d);
 }
 function initShelfNav(){
-  el.shUp.addEventListener('click',function(){goShelf(-1);});
-  el.shDown.addEventListener('click',function(){goShelf(1);});
+  function wire(box,btn,d){
+    btn.addEventListener('click',function(e){e.stopPropagation();goShelf(d);});
+    box.addEventListener('click',function(){goShelf(d);});
+  }
+  wire(el.nbUp,el.shUp,-1);
+  wire(el.nbDown,el.shDown,1);
+  el.rkL.addEventListener('click',function(){goRack(-1);});
+  el.rkR.addEventListener('click',function(){goRack(1);});
+}
+
+/* ======================================================================
+   Фото из Google Диска: нейросеть находит на фото книги и корешки, обрезает их и вставляет в книги.
+   Нейросети бесплатные и работают в вашем браузере (или по вашему бесплатному ключу Gemini),
+   ресурсы Claude не тратятся. Результат показывается списком: каждую находку можно поправить до применения.
+   ====================================================================== */
+var DRV_SCOPE='https://www.googleapis.com/auth/drive.readonly';
+var DRV_API='https://www.googleapis.com/drive/v3/files';
+var GEM_API='https://generativelanguage.googleapis.com/v1beta/models/';
+var CDN={
+  tf:'https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js',
+  coco:'https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js',
+  tess:'https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js',
+  tr:'https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1'
+};
+var TESS_LANGS='https://tessdata.projectnaptha.com/4.0.0_fast';
+var DV={token:'',exp:0,busy:false,stop:false,ctl:null,rows:[],files:[],seq:0,bad:0,cat:null,model:null,ocr:null,gemAt:0,total:0,done:0,known:null};
+var ENG_NOTE={
+  none:'Без нейросети. Книга определяется по номеру в имени файла или папки (10065.jpg, 10065_корешок.jpg), лишние поля обрезаются по цвету фона. Мгновенно, ничего не скачивается.',
+  coco:'На устройстве. TensorFlow.js (COCO-SSD) находит книги на фото, Tesseract читает надписи по-русски, по-казахски и по-английски и сопоставляет с вашими книгами. Один раз скачается около 25 МБ. Фото никуда не отправляются.',
+  owl:'На устройстве, точнее. Transformers.js (OWL-ViT) ищет «обложку» и «корешок» по описанию, Tesseract читает надписи. Один раз скачается около 150 МБ, нужен мощный компьютер. Экспериментально.',
+  gemini:'Бесплатный ключ Google Gemini (AI Studio). Лучше всех читает кириллицу и казахские буквы, находит много книг на одном фото. Фото на время разбора отправляются в Google. Есть дневной лимит бесплатных запросов.'
+};
+var GEM_PROMPT='На фото книги. Найди КАЖДУЮ книгу: либо её лицевую обложку (cover), либо корешок (spine), если виден только корешок. '+
+  'Верни JSON-массив объектов: {"kind":"cover" или "spine","box_2d":[ymin,xmin,ymax,xmax] в долях от 0 до 1000,'+
+  '"title":"название как напечатано","author":"автор или пустая строка","number":"номер каталога, если он виден, иначе пустая строка"}. '+
+  'Рамка должна плотно охватывать только эту обложку или этот корешок, без фона и соседних книг. Только JSON, без пояснений.';
+
+function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
+async function sleepStop(ms){var t=Date.now()+ms;while(Date.now()<t&&!DV.stop) await sleep(Math.min(250,Math.max(1,t-Date.now())));}
+function canvasBlob(cv,q){return new Promise(function(res){cv.toBlob(function(b){res(b);},'image/jpeg',q||0.88);});}
+function blobB64(b){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]||'');};r.onerror=function(){rej(r.error);};r.readAsDataURL(b);});}
+
+var scriptP={};
+function loadScript(url){
+  if(scriptP[url]) return scriptP[url];
+  scriptP[url]=new Promise(function(res,rej){
+    var s=document.createElement('script');
+    s.src=url;s.async=true;
+    s.onload=function(){res();};
+    s.onerror=function(){delete scriptP[url];rej(new Error('не загрузилось с сайта '+(new URL(url)).hostname+': нет интернета или сайт закрыт'));};
+    document.head.appendChild(s);
+  });
+  return scriptP[url];
+}
+
+/* ----- вход в Google для чтения Диска ----- */
+function loadDrvSession(){
+  try{var r=JSON.parse(sessionStorage.getItem('gp.drvtoken')||'null');if(r&&r.exp>Date.now()){DV.token=r.t;DV.exp=r.exp;}}catch(_){}
+}
+function drvTokenOk(){return !!DV.token&&DV.exp>Date.now();}
+function drvSignIn(){
+  var cid=String(CFG.gs.cid||'').trim();
+  if(!cid) return Promise.reject(new Error('укажите Client ID (он общий с Google Таблицей)'));
+  if(location.protocol==='file:') return Promise.reject(new Error('вход работает только на сайте (https://…), а не из файла'));
+  return loadGis().then(function(){return new Promise(function(res,rej){
+    var tc=window.google.accounts.oauth2.initTokenClient({
+      client_id:cid,scope:DRV_SCOPE,
+      callback:function(r){
+        if(r.error){rej(new Error(r.error_description||r.error));return;}
+        DV.token=r.access_token;
+        DV.exp=Date.now()+Math.max(60,(+r.expires_in||3600)-60)*1000;
+        try{sessionStorage.setItem('gp.drvtoken',JSON.stringify({t:DV.token,exp:DV.exp}));}catch(_){}
+        res();
+      },
+      error_callback:function(e){rej(new Error(e&&e.type==='popup_closed'?'окно входа закрыто':((e&&e.type)||'вход отменён')));}
+    });
+    tc.requestAccessToken({});
+  });});
+}
+
+/* ----- Диск: список файлов и скачивание ----- */
+function drvFolderId(v){
+  v=String(v||'').trim();
+  var m=/\/folders\/([a-zA-Z0-9_-]{10,})/.exec(v)||/[?&]id=([a-zA-Z0-9_-]{10,})/.exec(v);
+  if(m) return m[1];
+  return /^[a-zA-Z0-9_-]{15,}$/.test(v)?v:'';
+}
+function drvUrl(base,params){
+  var q=[];
+  Object.keys(params||{}).forEach(function(k){if(params[k]!==''&&params[k]!=null) q.push(encodeURIComponent(k)+'='+encodeURIComponent(params[k]));});
+  if(CFG.dr.mode==='key') q.push('key='+encodeURIComponent(String(CFG.dr.key||'').trim()));
+  return base+(q.length?'?'+q.join('&'):'');
+}
+function drvHeaders(){return CFG.dr.mode==='oauth'?{Authorization:'Bearer '+DV.token}:{};}
+function drvErr(status,txt){
+  var msg='',reason='';
+  try{var j=JSON.parse(txt),e=j.error||{};msg=e.message||'';reason=((e.errors||[])[0]||{}).reason||'';}catch(_){}
+  if(status===401){DV.token='';DV.exp=0;return 'срок входа истёк: нажмите «Импортировать» ещё раз';}
+  if(reason==='accessNotConfigured'||/has not been used|is disabled/i.test(msg)) return 'в вашем проекте Google не включён Google Drive API (см. инструкцию внизу настроек)';
+  if(status===400&&/API key/i.test(msg)) return 'Google не принял API-ключ: проверьте, что он скопирован целиком и подходит для Drive API';
+  if(status===403&&/referer|referrer/i.test(msg)) return 'ключ ограничен по сайтам, а этот сайт в списке не указан';
+  if(status===403) return 'нет доступа к папке: откройте доступ «Все, у кого есть ссылка» или войдите в нужный аккаунт'+(msg?' ('+msg+')':'');
+  if(status===404) return 'папка не найдена: проверьте ссылку и доступ';
+  return 'Google ответил '+status+(msg?': '+msg:'');
+}
+async function drvJson(url){
+  for(var a=0;a<3;a++){
+    var r=await fetch(url,{headers:drvHeaders(),signal:DV.ctl.signal});
+    if(r.ok) return r.json();
+    var tx=await r.text().catch(function(){return '';});
+    if((r.status===429||(r.status===403&&/rateLimit/i.test(tx)))&&a<2){await sleepStop(1500*(a+1));continue;}
+    throw new Error(drvErr(r.status,tx));
+  }
+}
+async function drvList(root,sub,say){
+  var out=[],queue=[{id:root,path:'',depth:0}],nf=0;
+  while(queue.length&&!DV.stop){
+    var f=queue.shift(),tok='';
+    do{
+      var q="'"+f.id+"' in parents and trashed=false and (mimeType contains 'image/' or mimeType='application/vnd.google-apps.folder')";
+      var j=await drvJson(drvUrl(DRV_API,{q:q,fields:'nextPageToken,files(id,name,mimeType,size,modifiedTime,thumbnailLink)',pageSize:'1000',orderBy:'name',supportsAllDrives:'true',includeItemsFromAllDrives:'true',pageToken:tok}));
+      (j.files||[]).forEach(function(x){
+        if(x.mimeType==='application/vnd.google-apps.folder'){
+          if(sub&&f.depth<4&&nf<200){nf++;queue.push({id:x.id,path:f.path+x.name+'/',depth:f.depth+1});}
+        }else{
+          out.push({id:x.id,name:x.name,path:f.path+x.name,mime:x.mimeType,size:+x.size||0,mod:x.modifiedTime||'',thumb:x.thumbnailLink||''});
+        }
+      });
+      tok=j.nextPageToken||'';
+      say('Читаю папку… найдено фото: '+out.length);
+    }while(tok&&!DV.stop&&out.length<3000);
+  }
+  return out;
+}
+async function drvDownload(f){
+  var r=await fetch(drvUrl(DRV_API+'/'+encodeURIComponent(f.id),{alt:'media',supportsAllDrives:'true'}),{headers:drvHeaders(),signal:DV.ctl.signal});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return r.blob();
+}
+
+/* ----- картинки: открыть, обрезать, повернуть ----- */
+async function decodeToCanvas(blob,maxSide){
+  var bmp=await createImageBitmap(blob);
+  var s=Math.min(1,maxSide/Math.max(bmp.width,bmp.height)),w=Math.max(1,Math.round(bmp.width*s)),h=Math.max(1,Math.round(bmp.height*s));
+  var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  var cx=cv.getContext('2d');cx.imageSmoothingQuality='high';cx.fillStyle='#fff';cx.fillRect(0,0,w,h);cx.drawImage(bmp,0,0,w,h);
+  if(bmp.close) bmp.close();
+  return cv;
+}
+/* iPhone (HEIC): если браузер не открывает файл, Диск отдаёт уменьшенный JPEG */
+async function decodeViaThumb(f){
+  if(!f.thumb) return null;
+  var u=f.thumb.replace(/=s\d+(-c)?$/,'=s2000');
+  var r=await fetch(u,{headers:drvHeaders(),signal:DV.ctl.signal});
+  if(!r.ok) return null;
+  return decodeToCanvas(await r.blob(),2400);
+}
+function rotateCanvas(cv,deg){
+  deg=((deg%360)+360)%360;
+  if(!deg) return cv;
+  var sw=(deg===90||deg===270),o=document.createElement('canvas');
+  o.width=sw?cv.height:cv.width;o.height=sw?cv.width:cv.height;
+  var c=o.getContext('2d');
+  c.translate(o.width/2,o.height/2);c.rotate(deg*Math.PI/180);c.drawImage(cv,-cv.width/2,-cv.height/2);
+  return o;
+}
+function cropCanvas(src,b,pad){
+  var px=Math.round(Math.max(b.w,b.h)*pad);
+  var x=Math.max(0,Math.round(b.x-px)),y=Math.max(0,Math.round(b.y-px));
+  var x2=Math.min(src.width,Math.round(b.x+b.w+px)),y2=Math.min(src.height,Math.round(b.y+b.h+px));
+  var w=Math.max(8,x2-x),h=Math.max(8,y2-y),o=document.createElement('canvas');
+  o.width=w;o.height=h;
+  o.getContext('2d').drawImage(src,x,y,w,h,0,0,w,h);
+  return o;
+}
+/* Обрезка по фону без нейросети: цвет фона берётся по краям фото, всё отличающееся от него считается книгой. */
+function trimBox(cv){
+  var W=cv.width,H=cv.height,k=Math.min(1,200/Math.max(W,H)),w=Math.max(8,Math.round(W*k)),h=Math.max(8,Math.round(H*k));
+  var t=document.createElement('canvas');t.width=w;t.height=h;
+  var cx=t.getContext('2d',{willReadFrequently:true});cx.drawImage(cv,0,0,w,h);
+  var d=cx.getImageData(0,0,w,h).data,R=[],G=[],B=[],m=Math.max(1,Math.min(3,Math.floor(Math.min(w,h)/10))),x,y,j,i;
+  function take(px,py){i=(py*w+px)*4;R.push(d[i]);G.push(d[i+1]);B.push(d[i+2]);}
+  for(x=0;x<w;x++) for(j=0;j<m;j++){take(x,j);take(x,h-1-j);}
+  for(y=0;y<h;y++) for(j=0;j<m;j++){take(j,y);take(w-1-j,y);}
+  function med(a){a.sort(function(p,q){return p-q;});return a[a.length>>1];}
+  var br=med(R),bg=med(G),bb=med(B),rows=[],cols=[];
+  for(y=0;y<h;y++) rows[y]=0;
+  for(x=0;x<w;x++) cols[x]=0;
+  for(y=0;y<h;y++) for(x=0;x<w;x++){
+    i=(y*w+x)*4;
+    if(Math.abs(d[i]-br)+Math.abs(d[i+1]-bg)+Math.abs(d[i+2]-bb)>80){rows[y]++;cols[x]++;}
+  }
+  var ty=Math.max(2,Math.round(w*0.03)),tx=Math.max(2,Math.round(h*0.03)),y0=0,y1=h-1,x0=0,x1=w-1;
+  while(y0<h-1&&rows[y0]<ty) y0++;
+  while(y1>y0&&rows[y1]<ty) y1--;
+  while(x0<w-1&&cols[x0]<tx) x0++;
+  while(x1>x0&&cols[x1]<tx) x1--;
+  if(x1-x0<w*0.1||y1-y0<h*0.1) return {x:0,y:0,w:W,h:H,full:true};
+  var fx=W/w,fy=H/h,b={x:x0*fx,y:y0*fy,w:(x1-x0+1)*fx,h:(y1-y0+1)*fy};
+  b.full=(b.w*b.h)>0.97*W*H;
+  return b;
+}
+function iouBox(a,b){
+  var x1=Math.max(a.x,b.x),y1=Math.max(a.y,b.y),x2=Math.min(a.x+a.w,b.x+b.w),y2=Math.min(a.y+a.h,b.y+b.h);
+  var i=Math.max(0,x2-x1)*Math.max(0,y2-y1),u=a.w*a.h+b.w*b.h-i;
+  return {iou:u?i/u:0,inB:b.w*b.h?i/(b.w*b.h):0};
+}
+function nms(list,th){
+  list.sort(function(p,q){return q.conf-p.conf;});
+  var keep=[];
+  list.forEach(function(d){
+    var bad=keep.some(function(k){var o=iouBox(k,d);return o.iou>th||o.inB>0.85;});
+    if(!bad) keep.push(d);
+  });
+  return keep.slice(0,12);
+}
+
+/* ----- чтение надписей: Tesseract.js, бесплатно, в браузере ----- */
+async function loadOcr(say){
+  say('Загружаю распознавание текста Tesseract…');
+  await loadScript(CDN.tess);
+  var T=window.Tesseract;
+  if(!T||!T.createWorker) throw new Error('Tesseract не запустился');
+  var opt={langPath:TESS_LANGS,logger:function(m){if(m&&m.status&&typeof m.progress==='number'&&/load|init/i.test(m.status)) say('Tesseract: '+m.status+' '+Math.round(m.progress*100)+'%');}};
+  say('Загружаю языки: русский, английский, казахский…');
+  try{return await T.createWorker('rus+eng+kaz',1,opt);}
+  catch(_){say('Казахский язык не загрузился, беру русский и английский…');return await T.createWorker('rus+eng',1,opt);}
+}
+function ocrScale(cv){
+  var m=Math.max(cv.width,cv.height);
+  if(m>=1600||m<10) return cv;
+  var k=Math.min(2.5,1600/m),o=document.createElement('canvas');
+  o.width=Math.round(cv.width*k);o.height=Math.round(cv.height*k);
+  var c=o.getContext('2d');c.imageSmoothingQuality='high';c.drawImage(cv,0,0,o.width,o.height);
+  return o;
+}
+/* theta — на сколько градусов по часовой повернуть вырезку, чтобы текст стал прямым */
+async function ocrText(w,cv,kind){
+  var angles=kind==='s'?(cv.height>=cv.width?[270,90]:[0,180]):[0];
+  var best={text:'',score:-1,theta:angles[0]};
+  try{await w.setParameters({tessedit_pageseg_mode:kind==='s'?'6':'11'});}catch(_){}
+  for(var i=0;i<angles.length;i++){
+    var c=ocrScale(rotateCanvas(cv,angles[i])),r;
+    try{r=await w.recognize(c);}catch(_){continue;}
+    var tx=(r.data&&r.data.text)||'',cf=(r.data&&r.data.confidence)||0;
+    var letters=(tx.match(/[A-Za-zА-Яа-яЁёӘәІіҢңҒғҮүҰұҚқӨөҺһ]/g)||[]).length;
+    var sc=cf*Math.min(1,letters/12);
+    if(sc>best.score) best={text:tx,score:sc,theta:angles[i]};
+  }
+  return best;
+}
+
+/* ----- нейросети-детекторы: каждая возвращает рамки книг [{x,y,w,h,conf,kind?,title?,author?,number?}] ----- */
+async function loadCoco(say){
+  say('Загружаю TensorFlow.js…');
+  await loadScript(CDN.tf);
+  say('Загружаю модель поиска книг COCO-SSD…');
+  await loadScript(CDN.coco);
+  if(!window.cocoSsd||!window.cocoSsd.load) throw new Error('COCO-SSD не запустилась');
+  return window.cocoSsd.load({base:'lite_mobilenet_v2'});
+}
+async function cocoDetect(cv){
+  var res=await DV.model.detect(cv,20,0.25),out=[],A=cv.width*cv.height;
+  res.forEach(function(r){
+    if(r.class!=='book') return;
+    var b=r.bbox;
+    if(b[2]*b[3]<A*0.012) return;
+    out.push({x:b[0],y:b[1],w:b[2],h:b[3],conf:r.score});
+  });
+  out=nms(out,0.5);
+  if(!out.length){
+    var t=trimBox(cv);
+    out.push({x:t.x,y:t.y,w:t.w,h:t.h,conf:0.2,note:'нейросеть не нашла книгу: взято всё фото'});
+  }
+  return out;
+}
+async function loadOwl(say){
+  say('Загружаю Transformers.js…');
+  var T=await import(CDN.tr);
+  T.env.allowLocalModels=false;
+  say('Загружаю модель OWL-ViT (около 150 МБ, один раз)…');
+  return T.pipeline('zero-shot-object-detection','Xenova/owlvit-base-patch32',{
+    progress_callback:function(p){if(p&&p.status==='progress'&&p.file) say('Модель OWL-ViT: '+Math.round(p.progress||0)+'% ('+p.file.split('/').pop()+')');}
+  });
+}
+async function owlDetect(cv){
+  var s=Math.min(1,1024/Math.max(cv.width,cv.height)),sc=cv;
+  if(s<1){sc=document.createElement('canvas');sc.width=Math.round(cv.width*s);sc.height=Math.round(cv.height*s);sc.getContext('2d').drawImage(cv,0,0,sc.width,sc.height);}
+  var url=URL.createObjectURL(await canvasBlob(sc,0.85)),out=[];
+  try{
+    var res=await DV.model(url,['a book cover','a book spine'],{threshold:0.1,top_k:30});
+    res.forEach(function(r){
+      var b=r.box;
+      if(!b) return;
+      out.push({x:b.xmin/s,y:b.ymin/s,w:(b.xmax-b.xmin)/s,h:(b.ymax-b.ymin)/s,conf:r.score,kind:/spine/i.test(r.label)?'s':'c'});
+    });
+  }finally{URL.revokeObjectURL(url);}
+  out=nms(out.filter(function(d){return d.w*d.h>=cv.width*cv.height*0.01;}),0.5);
+  if(!out.length){
+    var t=trimBox(cv);
+    out.push({x:t.x,y:t.y,w:t.w,h:t.h,conf:0.2,note:'нейросеть не нашла книгу: взято всё фото'});
+  }
+  return out;
+}
+function parseLoose(t){
+  t=String(t||'').trim().replace(/^```(?:json)?/i,'').replace(/```\s*$/,'').trim();
+  var j=null;
+  try{j=JSON.parse(t);}catch(_){
+    var m=/\[[\s\S]*\]/.exec(t);
+    if(m){try{j=JSON.parse(m[0]);}catch(_2){}}
+  }
+  if(j&&!Array.isArray(j)&&typeof j==='object'){
+    var arr=null;
+    Object.keys(j).forEach(function(k){if(!arr&&Array.isArray(j[k])) arr=j[k];});
+    j=arr;
+  }
+  return Array.isArray(j)?j:[];
+}
+function gemError(status,tx){
+  var msg='';
+  try{msg=(JSON.parse(tx).error||{}).message||'';}catch(_){}
+  if(status===400&&/API key/i.test(msg)) return 'Gemini не принял ключ: проверьте, что он скопирован целиком';
+  if(status===403) return 'Gemini отказал в доступе (403): проверьте ключ и его ограничения по сайтам'+(msg?' ('+msg+')':'');
+  if(status===404) return 'Gemini не знает модель «'+(CFG.dr.gmodel||'')+'»: впишите другую в настройках, например gemini-2.5-flash';
+  return 'Gemini ответил '+status+(msg?': '+msg:'');
+}
+async function gemCall(b64){
+  var d=CFG.dr,model=String(d.gmodel||'gemini-2.5-flash').trim()||'gemini-2.5-flash';
+  for(var a=0;a<4&&!DV.stop;a++){
+    var gap=DV.gemAt+4300-Date.now();
+    if(gap>0) await sleepStop(gap);
+    DV.gemAt=Date.now();
+    var r=await fetch(GEM_API+encodeURIComponent(model)+':generateContent',{
+      method:'POST',signal:DV.ctl.signal,
+      headers:{'Content-Type':'application/json','x-goog-api-key':String(d.gkey||'').trim()},
+      body:JSON.stringify({
+        contents:[{parts:[{text:GEM_PROMPT},{inline_data:{mime_type:'image/jpeg',data:b64}}]}],
+        generationConfig:{temperature:0.1,responseMimeType:'application/json'}
+      })
+    });
+    if(r.status===429||r.status===503){
+      var tx=await r.text().catch(function(){return '';});
+      if(/PerDay|per day/i.test(tx)) throw new Error('Gemini: дневной бесплатный лимит исчерпан. Продолжите завтра: разобранные фото запомнены.');
+      var m=/"retryDelay":\s*"(\d+(?:\.\d+)?)s"/.exec(tx),wait=m?Math.ceil(+m[1]*1000)+500:15000*(a+1);
+      dvSay('Gemini просит подождать '+Math.round(wait/1000)+' с…');
+      await sleepStop(wait);
+      continue;
+    }
+    if(!r.ok) throw new Error(gemError(r.status,await r.text().catch(function(){return '';})));
+    var j=await r.json(),parts=(((j.candidates||[])[0]||{}).content||{}).parts||[];
+    return parts.map(function(p){return p.text||'';}).join('');
+  }
+  if(DV.stop) return '[]';
+  throw new Error('Gemini: бесплатный лимит запросов в минуту исчерпан. Подождите немного и запустите импорт снова.');
+}
+async function gemDetect(cv){
+  var s=Math.min(1,1600/Math.max(cv.width,cv.height)),sc=cv;
+  if(s<1){sc=document.createElement('canvas');sc.width=Math.round(cv.width*s);sc.height=Math.round(cv.height*s);sc.getContext('2d').drawImage(cv,0,0,sc.width,sc.height);}
+  var items=parseLoose(await gemCall(await blobB64(await canvasBlob(sc,0.85)))),out=[];
+  items.forEach(function(it){
+    var bx=it&&it.box_2d;
+    if(!bx||bx.length!==4) return;
+    var y1=+bx[0],x1=+bx[1],y2=+bx[2],x2=+bx[3];
+    if(![y1,x1,y2,x2].every(isFinite)) return;
+    var w=Math.abs(x2-x1)/1000*cv.width,h=Math.abs(y2-y1)/1000*cv.height;
+    if(w<12||h<12) return;
+    var kd=String(it.kind||'');
+    out.push({x:Math.min(x1,x2)/1000*cv.width,y:Math.min(y1,y2)/1000*cv.height,w:w,h:h,conf:0.9,
+      kind:/spine|корешок/i.test(kd)?'s':(/cover|обложк/i.test(kd)?'c':''),title:str(it.title),author:str(it.author),number:str(it.number)});
+  });
+  return nms(out,0.6);
+}
+var ENG={
+  none:{ocr:false,load:async function(){},detect:async function(cv){var b=trimBox(cv);return [{x:b.x,y:b.y,w:b.w,h:b.h,conf:b.full?0.3:0.5,note:'обрезка по фону'}];}},
+  coco:{ocr:true,load:async function(say){DV.model=await loadCoco(say);},detect:cocoDetect},
+  owl:{ocr:true,load:async function(say){DV.model=await loadOwl(say);},detect:owlDetect},
+  gemini:{ocr:false,load:async function(){},detect:gemDetect}
+};
+
+/* ----- сопоставление находки с книгой из каталога: по номеру в имени файла и по тексту на фото ----- */
+var FOLD={'ё':'е','й':'и','ә':'а','і':'и','ң':'н','ғ':'г','ү':'у','ұ':'у','қ':'к','ө':'о','һ':'х',
+  'a':'а','b':'в','c':'с','e':'е','h':'н','k':'к','m':'м','o':'о','p':'р','t':'т','x':'х','y':'у'};
+var STOP={'или':1,'для':1,'что':1,'как':1,'при':1,'его':1,'это':1,'том':1,'тома':1,'вып':1,'выпуск':1,'the':1,'and':1};
+function fold(s){
+  return String(s||'').toLowerCase().replace(/[a-zа-яёәіңғүұқөһ0-9]/g,function(c){return FOLD[c]||c;}).replace(/[^a-zа-я0-9]+/g,' ').trim();
+}
+function lev(a,b,max){
+  var la=a.length,lb=b.length,prev=[],cur=[],i,j;
+  if(Math.abs(la-lb)>max) return max+1;
+  for(j=0;j<=lb;j++) prev[j]=j;
+  for(i=1;i<=la;i++){
+    cur[0]=i;
+    var rm=cur[0];
+    for(j=1;j<=lb;j++){
+      cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a.charCodeAt(i-1)===b.charCodeAt(j-1)?0:1));
+      if(cur[j]<rm) rm=cur[j];
+    }
+    if(rm>max) return max+1;
+    var t=prev;prev=cur;cur=t;
+  }
+  return prev[lb];
+}
+function catalogBooks(){
+  var seen={},out=[];
+  function addRaw(columns,rows){
+    var ci=-1,ti=-1,ai=-1;
+    columns.forEach(function(c,i){var r=roleOf(c.label);if(r==='code'&&ci<0) ci=i;else if(r==='title'&&ti<0) ti=i;else if(r==='author'&&ai<0) ai=i;});
+    if(ci<0||ti<0) return;
+    rows.forEach(function(r){
+      var c=r[ci];
+      if(c==null||c==='') return;
+      var code=typeof c==='number'?String(Math.round(c)):str(c);
+      if(!code||seen[code]) return;
+      seen[code]=1;
+      out.push({code:code,title:str(r[ti]),author:ai>=0?str(r[ai]):''});
+    });
+  }
+  if(DS) addRaw(DS.columns,DS.rows);
+  Object.keys(NAV.real).forEach(function(k){addRaw(NAV.real[k].columns,NAV.real[k].rows);});
+  addRaw(SEED.columns,SEED.rows);
+  return out.sort(function(a,b){return (+a.code||0)-(+b.code||0)||(a.code<b.code?-1:1);});
+}
+function prepCatalog(){
+  var list=catalogBooks(),byCode={};
+  list.forEach(function(e){
+    byCode[e.code]=e;
+    e.tt=fold(e.title).split(' ').filter(function(t){return t.length>=3&&!STOP[t];});
+    e.at=fold(e.author).split(' ').filter(function(t){return t.length>=3;}).slice(0,2);
+  });
+  return {list:list,byCode:byCode};
+}
+function matchBook(raw){
+  var cat=DV.cat,T=fold(raw);
+  if(T.length<4) return {code:'',conf:0};
+  var nm=/(?:№|no\.?|n[oо]\s)\s*(\d{3,7})/i.exec(String(raw));
+  if(nm&&cat.byCode[nm[1]]) return {code:nm[1],conf:0.98};
+  var toks=T.split(' ').filter(function(t){return t.length>=2;}),set={};
+  toks.forEach(function(t){set[t]=1;});
+  function has(t){
+    if(set[t]) return true;
+    if(t.length<5) return false;
+    var md=t.length>=9?2:1;
+    for(var i=0;i<toks.length;i++){var o=toks[i];if(Math.abs(o.length-t.length)<=md&&lev(o,t,md)<=md) return true;}
+    return T.indexOf(t)>=0;
+  }
+  var best=null,second=0;
+  cat.list.forEach(function(e){
+    var tw=0,mw=0,aw=0,am=0;
+    e.tt.forEach(function(t){tw+=t.length;if(has(t)) mw+=t.length;});
+    e.at.forEach(function(t){aw+=t.length;if(has(t)) am+=t.length;});
+    if(mw<4&&am<5) return;
+    var s=(tw?mw/tw:0)*0.8+(aw?am/aw:0)*0.25;
+    if(mw===0) s*=0.5;
+    s=Math.min(1,s);
+    if(!best||s>best.s){second=best?best.s:0;best={e:e,s:s};}
+    else if(s>second) second=s;
+  });
+  if(!best) return {code:'',conf:0};
+  var conf=best.s;
+  if(second>0&&best.s-second<0.06&&best.s<0.95) conf*=0.75;
+  return {code:best.e.code,conf:Math.round(conf*100)/100};
+}
+function hintCodeFor(f){
+  var known=DV.known,segs=String(f.path).split('/'),i,c;
+  for(i=segs.length-1;i>=0;i--){c=phCodeFromName(segs[i],known);if(c) return c;}
+  return '';
+}
+
+/* ----- обработка одной фотографии ----- */
+async function drvProcessFile(f,eng){
+  var blob,cv;
+  try{blob=await drvDownload(f);}catch(e){if(DV.stop) return;DV.bad++;return;}
+  try{cv=await decodeToCanvas(blob,2400);}
+  catch(_){try{cv=await decodeViaThumb(f);}catch(_2){cv=null;}}
+  blob=null;
+  if(!cv){DV.bad++;return;}
+  var dets=await eng.detect(cv,f);
+  var hint=hintCodeFor(f),hintKind=phKindFromPath(f.path),single=dets.length===1;
+  for(var i=0;i<dets.length&&!DV.stop;i++){
+    var det=dets[i],crop=cropCanvas(cv,det,0.012);
+    var asp=Math.max(crop.width,crop.height)/Math.max(1,Math.min(crop.width,crop.height));
+    var kind=(det.kind==='s'||det.kind==='c')?det.kind:(hintKind||(asp>=2.6?'s':'c'));
+    if(asp>=3.6) kind='s';
+    var text=[det.title,det.author,det.number,det.text].filter(Boolean).join(' '),theta=null;
+    if(!text.trim()&&DV.ocr&&eng.ocr){
+      var o=await ocrText(DV.ocr,crop,kind);
+      text=o.text;theta=o.theta;
+    }
+    if(kind==='s'){
+      var th=theta!=null?theta:(crop.height>=crop.width?270:0);
+      crop=rotateCanvas(crop,(th+90)%360);
+    }
+    var code='',conf=0,how='';
+    var nmb=String(det.number||'').replace(/\D/g,'');
+    if(nmb&&DV.cat.byCode[nmb]){code=nmb;conf=0.98;how='номер на фото';}
+    else if(single&&hint){code=hint;conf=1;how='по имени файла';}
+    else{
+      var m=matchBook(text);
+      if(m.code){code=m.code;conf=m.conf;how='по тексту на фото';}
+      else if(hint){code=hint;conf=0.35;how='по имени файла (на фото несколько книг)';}
+    }
+    var shr=await imgShrink(await canvasBlob(crop,0.9),kind);
+    if(!shr) continue;
+    DV.rows.push({n:++DV.seq,fid:f.id,mod:f.mod,name:f.path,kind:kind,code:code,conf:conf,how:how,note:det.note||'',
+      blob:shr.blob,url:URL.createObjectURL(shr.blob),text:String(text||'').replace(/\s+/g,' ').trim().slice(0,140),on:false});
+    dvRowAdded();
+  }
+}
+
+/* ----- запуск и ход работы ----- */
+function dvSay(m,err){
+  if(el.dvStat){el.dvStat.textContent=m||'';el.dvStat.className='dstat'+(err?' err':'');}
+}
+function dvsSay(m,err){
+  if(el.dvsStat){el.dvsStat.textContent=m||'';el.dvsStat.className='dstat'+(err?' err':'');}
+}
+function openDv(){
+  if(typeof el.dlgDv.showModal==='function'){if(!el.dlgDv.open) el.dlgDv.showModal();}else el.dlgDv.setAttribute('open','');
+}
+function hideDv(){if(typeof el.dlgDv.close==='function'&&el.dlgDv.open) el.dlgDv.close();else el.dlgDv.removeAttribute('open');}
+function dvClearRows(){
+  DV.rows.forEach(function(r){try{URL.revokeObjectURL(r.url);}catch(_){}});
+  DV.rows=[];DV.seq=0;DV.bad=0;DV.opt=null;
+  if(el.dvList) el.dvList.innerHTML='';
+}
+async function drvStart(){
+  var d=CFG.dr;
+  if(DV.busy) return;
+  var root=drvFolderId(d.url);
+  if(!root){dvsSay('Вставьте ссылку на папку Google Диска.',true);return;}
+  if(d.mode==='key'&&!String(d.key||'').trim()){dvsSay('Вставьте API-ключ или выберите вход в Google.',true);return;}
+  if(d.mode==='oauth'&&!String(CFG.gs.cid||'').trim()){dvsSay('Для входа в Google нужен Client ID (см. инструкцию внизу настроек).',true);return;}
+  if(d.eng==='gemini'&&!String(d.gkey||'').trim()){dvsSay('Для Gemini нужен бесплатный ключ (см. инструкцию внизу настроек).',true);return;}
+  dvsSay('');
+  var eng=ENG[d.eng]||ENG.coco;
+  hideSet();dvClearRows();openDv();
+  DV.busy=true;DV.stop=false;DV.ctl=new AbortController();DV.files=[];DV.done=0;DV.total=0;
+  syncDvButtons();
+  el.dvProg.hidden=false;el.dvBar.style.width='0%';
+  try{
+    if(d.mode==='oauth'&&!drvTokenOk()){dvSay('Открываю окно входа Google…');await drvSignIn();}
+    dvSay('Читаю папку…');
+    var files=await drvList(drvFolderId(d.url),!!d.sub,dvSay);
+    if(DV.stop) throw new Error('остановлено');
+    var seen={};
+    if(!d.redo){try{seen=((await idbGet('m:drv'))||{}).files||{};}catch(_){}}
+    var todo=files.filter(function(f){return !(seen[f.id]&&seen[f.id]===f.mod);});
+    var skipped=files.length-todo.length;
+    if(!files.length){dvSay('В папке нет фотографий. Проверьте ссылку и вложенные папки.',true);throw new Error('');}
+    if(!todo.length){dvSay('Все '+files.length+' фото из этой папки уже разобраны. Включите «Разобрать заново» в настройках, чтобы повторить.');throw new Error('');}
+    if(todo.length>400){dvSay('В папке '+todo.length+' новых фото: беру первые 400. Остальные разберёте следующим запуском.');todo=todo.slice(0,400);await sleep(1200);}
+    DV.files=todo;DV.total=todo.length;
+    DV.cat=prepCatalog();DV.known=phKnown();
+    dvSay('Готовлю нейросеть…');
+    DV.ocr=null;
+    await eng.load(dvSay);
+    if(eng.ocr){try{DV.ocr=await loadOcr(dvSay);}catch(e){dvSay('Чтение надписей недоступно ('+(e&&e.message?e.message:e)+'). Опираюсь на имена файлов.');await sleep(1500);}}
+    var fails=0;
+    for(var i=0;i<todo.length&&!DV.stop;i++){
+      dvSay('Разбираю фото '+(i+1)+' из '+todo.length+(skipped?' (уже разобранные пропущены: '+skipped+')':'')+': '+todo[i].name);
+      var before=DV.bad;
+      try{await drvProcessFile(todo[i],eng);}
+      catch(e){
+        if(DV.stop) break;
+        if(/Gemini:|Gemini |лимит/i.test(String(e&&e.message))) throw e;
+        DV.bad++;
+      }
+      fails=DV.bad>before?fails+1:0;
+      if(fails>=6) throw new Error('шесть фото подряд не удалось разобрать: проверьте интернет и настройки, затем запустите ещё раз');
+      todo[i].done=true;DV.done=i+1;
+      el.dvBar.style.width=Math.round(100*DV.done/DV.total)+'%';
+    }
+    drvAutoPick();
+    var msg=(DV.stop?'Остановлено. ':'Готово. ')+'Разобрано фото: '+DV.done+', найдено книг и корешков: '+DV.rows.length+(DV.bad?', не открылось: '+DV.bad:'')+'. Проверьте список и нажмите «Применить».';
+    dvSay(msg);
+  }catch(e){
+    var em=e&&e.message?e.message:'';
+    if(DV.stop) dvSay('Остановлено. Найдено книг и корешков: '+DV.rows.length+'. Проверьте список и нажмите «Применить».');
+    else if(em) dvSay('Не получилось: '+em,true);
+    drvAutoPick();
+  }
+  if(DV.ocr){try{DV.ocr.terminate();}catch(_){}DV.ocr=null;}
+  DV.busy=false;DV.model=null;
+  el.dvProg.hidden=true;
+  syncDvButtons();dvRenderAll();
+}
+
+/* ----- список находок ----- */
+function drvAutoPick(){
+  var bestKey={};
+  DV.rows.forEach(function(r){
+    r.on=false;
+    if(!r.code||r.conf<0.4||r.kind==='x') return;
+    var k=r.kind+':'+r.code;
+    if(!bestKey[k]||r.conf>bestKey[k].conf) bestKey[k]=r;
+  });
+  Object.keys(bestKey).forEach(function(k){bestKey[k].on=true;});
+}
+function dvOptHtml(){
+  if(!DV.cat) DV.cat=prepCatalog();
+  return '<option value="">— выбрать книгу —</option>'+DV.cat.list.map(function(e){
+    var t=e.title.length>46?e.title.slice(0,45)+'…':e.title;
+    return '<option value="'+esc(e.code)+'">№'+esc(e.code)+' · '+esc(t)+'</option>';
+  }).join('');
+}
+function dvRowHtml(r){
+  var cls=r.conf>=0.7?'hi':(r.conf>=0.4?'mid':'lo');
+  var badge=r.code?('<span class="badge '+cls+'">'+Math.round(r.conf*100)+'%</span>'+esc(r.how)):'<span class="badge lo">не опознано</span>выберите книгу вручную';
+  var rep=(r.code&&r.kind!=='x'&&IMGSRC[r.kind]&&IMGSRC[r.kind][r.code]==='u')?' · заменит ваше фото':'';
+  return '<label class="dvc"><input type="checkbox" data-a="on"'+(r.on?' checked':'')+' aria-label="Применить"><img src="'+r.url+'" alt=""></label>'+
+    '<div class="dvm"><div class="dvn" title="'+esc(r.name)+'">'+esc(r.name)+'</div>'+
+    '<div class="dvs"><select data-a="kind" aria-label="Что на фото"><option value="c"'+(r.kind==='c'?' selected':'')+'>Обложка</option><option value="s"'+(r.kind==='s'?' selected':'')+'>Корешок</option><option value="x"'+(r.kind==='x'?' selected':'')+'>Пропустить</option></select>'+
+    '<select data-a="code" aria-label="Книга">'+DV.opt+'</select></div>'+
+    '<div class="dvt">'+badge+esc(rep)+(r.note?' · '+esc(r.note):'')+(r.text?'<br>Прочитано: «'+esc(r.text)+'»':'')+'</div></div>'+
+    '<button type="button" class="vb" data-a="rot" aria-label="Повернуть на 90°" title="Повернуть на 90°">⟳</button>';
+}
+function dvMakeRow(r,i){
+  var d=document.createElement('div');
+  d.className='dvr'+(r.on?'':' off');d.setAttribute('data-i',i);
+  d.innerHTML=dvRowHtml(r);
+  d.querySelector('select[data-a="code"]').value=r.code||'';
+  return d;
+}
+var dvT=0;
+function dvRowAdded(){
+  if(!DV.opt) DV.opt=dvOptHtml();
+  var r=DV.rows[DV.rows.length-1];
+  el.dvList.appendChild(dvMakeRow(r,DV.rows.length-1));
+  clearTimeout(dvT);dvT=setTimeout(dvSummary,200);
+}
+function dvRenderAll(){
+  DV.opt=dvOptHtml();
+  el.dvList.innerHTML='';
+  var fr=document.createDocumentFragment();
+  DV.rows.forEach(function(r,i){fr.appendChild(dvMakeRow(r,i));});
+  el.dvList.appendChild(fr);
+  dvSummary();
+}
+function dvRefreshRow(i){
+  var box=el.dvList.querySelector('.dvr[data-i="'+i+'"]');
+  if(!box) return;
+  var r=DV.rows[i];
+  box.className='dvr'+(r.on?'':' off');
+  box.innerHTML=dvRowHtml(r);
+  box.querySelector('select[data-a="code"]').value=r.code||'';
+}
+function dvSummary(){
+  var n=DV.rows.filter(function(r){return r.on&&r.code&&r.kind!=='x';}).length;
+  el.dvSum.textContent=DV.rows.length?('Найдено: '+DV.rows.length+'. К применению отмечено: '+n+'. Неопознанные и сомнительные снимите или назначьте книгу вручную.'):'';
+  el.dvApply.textContent=n?('Применить выбранное ('+n+')'):'Применить выбранное';
+  el.dvApply.disabled=DV.busy||!n;
+}
+function syncDvButtons(){
+  el.dvStop.hidden=!DV.busy;
+  el.dvClose.textContent=DV.busy?'Закрыть и остановить':'Закрыть';
+  dvSummary();
+}
+async function drvRotate(i){
+  var r=DV.rows[i];
+  if(!r) return;
+  try{
+    var cv=await decodeToCanvas(r.blob,2000),b=await canvasBlob(rotateCanvas(cv,90),0.9);
+    try{URL.revokeObjectURL(r.url);}catch(_){}
+    r.blob=b;r.url=URL.createObjectURL(b);
+    dvRefreshRow(i);
+  }catch(_){}
+}
+async function drvApply(){
+  var c=0,s=0;
+  el.dvApply.disabled=true;
+  for(var i=0;i<DV.rows.length;i++){
+    var r=DV.rows[i];
+    if(!r.on||!r.code||r.kind==='x') continue;
+    await imgSaveUser(r.kind,r.code,r.blob,'g','g:'+r.fid+':'+r.n);
+    if(r.kind==='c') c++;else s++;
+  }
+  var m=null;
+  try{m=await idbGet('m:drv');}catch(_){}
+  m=m||{files:{}};m.files=m.files||{};
+  DV.files.forEach(function(f){if(f.done) m.files[f.id]=f.mod;});
+  try{await idbPut('m:drv',m);}catch(_){}
+  hideDv();
+  note('Из Google Диска добавлено: обложек '+c+', корешков '+s+'. Они уже стоят на книгах.',7000);
+}
+function closeDvDialog(){
+  if(DV.busy){DV.stop=true;if(DV.ctl) DV.ctl.abort();}
+}
+
+function openHow(id){
+  var d=$(id);
+  if(!d) return;
+  d.open=true;
+  if(d.scrollIntoView) d.scrollIntoView({block:'center',behavior:reduce?'auto':'smooth'});
+}
+function openDrive(){
+  openSettings();
+  setTimeout(function(){var s=$('secDrv');if(s&&s.scrollIntoView) s.scrollIntoView({block:'start'});},60);
+}
+function dvLayout(){
+  var d=CFG.dr;
+  el.dvKeyL.hidden=d.mode!=='key';
+  el.dvCidL.hidden=d.mode!=='oauth';
+  el.dvGemB.hidden=d.eng!=='gemini';
+  el.dvEngNote.textContent=ENG_NOTE[d.eng]||'';
+}
+function drvFill(){
+  var d=CFG.dr;
+  el.dvUrl.value=d.url;el.dvMode.value=d.mode;el.dvKey.value=d.key;el.dvCid.value=CFG.gs.cid;
+  el.dvEng.value=d.eng;el.dvGKey.value=d.gkey;el.dvGModel.value=d.gmodel;el.dvSub.checked=!!d.sub;el.dvRedo.checked=!!d.redo;
+  dvsSay('');dvLayout();
+  if(d.mode==='oauth') loadGis().catch(function(){});
+}
+function initDrive(){
+  loadDrvSession();
+  var d=function(){return CFG.dr;};
+  el.dvUrl.addEventListener('change',function(){d().url=el.dvUrl.value.trim();saveCfg();});
+  el.dvMode.addEventListener('change',function(){d().mode=el.dvMode.value;saveCfg();dvLayout();if(d().mode==='oauth') loadGis().catch(function(){});});
+  el.dvKey.addEventListener('change',function(){d().key=el.dvKey.value.trim();saveCfg();});
+  el.dvCid.addEventListener('change',function(){CFG.gs.cid=el.dvCid.value.trim();el.gCid.value=CFG.gs.cid;saveCfg();});
+  el.dvEng.addEventListener('change',function(){d().eng=el.dvEng.value;saveCfg();dvLayout();});
+  el.dvGKey.addEventListener('change',function(){d().gkey=el.dvGKey.value.trim();saveCfg();});
+  el.dvGModel.addEventListener('change',function(){d().gmodel=el.dvGModel.value.trim()||'gemini-2.5-flash';el.dvGModel.value=d().gmodel;saveCfg();});
+  el.dvSub.addEventListener('change',function(){d().sub=el.dvSub.checked;saveCfg();});
+  el.dvRedo.addEventListener('change',function(){d().redo=el.dvRedo.checked;saveCfg();});
+  el.gCid.addEventListener('change',function(){el.dvCid.value=el.gCid.value.trim();});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-how]'),function(b){
+    b.addEventListener('click',function(){openHow(b.getAttribute('data-how'));});
+  });
+  el.dvGo.addEventListener('click',function(){
+    /* поля сохраняются при выходе из них, но на телефоне «Импортировать» можно нажать сразу после ввода */
+    d().url=el.dvUrl.value.trim();d().key=el.dvKey.value.trim();d().gkey=el.dvGKey.value.trim();
+    CFG.gs.cid=el.dvCid.value.trim()||CFG.gs.cid;saveCfg();
+    drvStart();
+  });
+  el.dvStop.addEventListener('click',function(){DV.stop=true;if(DV.ctl) DV.ctl.abort();dvSay('Останавливаю…');});
+  el.dvClose.addEventListener('click',function(){closeDvDialog();hideDv();});
+  el.dlgDv.addEventListener('close',function(){closeDvDialog();});
+  el.dvApply.addEventListener('click',drvApply);
+  el.dvList.addEventListener('change',function(e){
+    var row=e.target.closest?e.target.closest('.dvr'):null,a=e.target.getAttribute?e.target.getAttribute('data-a'):null;
+    if(!row||!a) return;
+    var r=DV.rows[+row.getAttribute('data-i')];
+    if(!r) return;
+    if(a==='on'){r.on=e.target.checked;row.className='dvr'+(r.on?'':' off');}
+    else if(a==='kind'){r.kind=e.target.value;if(r.kind==='x') r.on=false;dvRefreshRow(+row.getAttribute('data-i'));}
+    else if(a==='code'){r.code=e.target.value;if(r.code){r.conf=1;r.how='выбрано вами';r.on=r.kind!=='x';}else r.on=false;dvRefreshRow(+row.getAttribute('data-i'));}
+    dvSummary();
+  });
+  el.dvList.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-a="rot"]'):null;
+    if(!b) return;
+    drvRotate(+b.parentNode.getAttribute('data-i'));
+  });
 }
 
 /* ===== Запуск ===== */
@@ -4159,6 +5236,7 @@ function init(){
   initView();
   initSearch();
   initShelfNav();
+  initDrive();
 
   el.undo.addEventListener('click',doUndo);
   el.clear.addEventListener('click',doClear);
@@ -4190,6 +5268,7 @@ function init(){
     if(ctrl&&k===','){e.preventDefault();openSettings();return;}
     if(ctrl&&(k==='r'||k==='R'||k==='к'||k==='К')&&gsConfigured()){e.preventDefault();gsRefresh({});return;}
     if(e.altKey&&!ctrl&&(k==='ArrowUp'||k==='ArrowDown')){e.preventDefault();goShelf(k==='ArrowUp'?-1:1);return;}
+    if(e.altKey&&!ctrl&&(k==='ArrowLeft'||k==='ArrowRight')){e.preventDefault();goRack(k==='ArrowLeft'?-1:1);return;}
     if(ctrl&&(k==='k'||k==='K'||k==='л'||k==='Л')){e.preventDefault();searchFocus();return;}
     if(ctrl||e.altKey) return;
     if(k==='/'){e.preventDefault();searchFocus();return;}

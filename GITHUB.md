@@ -5,16 +5,16 @@
 
 ## Вариант 1. Через сайт, без программ (проще всего, лучше с компьютера)
 
-1. Распакуйте `geometriya_polki_v1_2_0.zip` в любую папку.
+1. Распакуйте `geometriya_polki_v1_3_0.zip` в любую папку.
 2. Зайдите на https://github.com и войдите в аккаунт.
 3. Нажмите **+** в правом верхнем углу, затем **New repository**.
 4. Repository name: `geometriya-polki`. Доступ **Public** (для бесплатных Pages репозиторий должен быть публичным).
    Галочки README, .gitignore, license не ставьте. Нажмите **Create repository**.
 5. На открывшейся странице нажмите ссылку **uploading an existing file**.
 6. Перетащите в окно браузера всё содержимое распакованной папки: `index.html`, `README.txt`, `GITHUB.md`,
-   `GOOGLE_SHEETS.md`, `sw.js` и папки `vendor`, `covers`, `spines`, `tools` целиком. Проверьте, что в списке есть
+   `GOOGLE_SHEETS.md`, `GOOGLE_DRIVE.md`, `sw.js` и папки `vendor`, `covers`, `spines`, `tools` целиком. Проверьте, что в списке есть
    `vendor/jszip.min.js`, файлы `covers/*.jpg` (32 штуки) и `spines/*.jpg` (20 штук, всего около 0,8 МБ).
-7. Внизу в поле Commit напишите `Геометрия Полки 1.2.0` и нажмите **Commit changes**.
+7. Внизу в поле Commit напишите `Геометрия Полки 1.3.0` и нажмите **Commit changes**.
 8. Откройте **Settings**, слева **Pages**. В блоке *Build and deployment*: Source **Deploy from a branch**,
    Branch **main**, папка **/ (root)**, нажмите **Save**.
 9. Через 1–2 минуты вверху страницы Pages появится адрес сайта:
@@ -31,7 +31,7 @@
 cd путь/к/распакованной/папке
 git init
 git add .
-git commit -m "Геометрия Полки 1.2.0"
+git commit -m "Геометрия Полки 1.3.0"
 git branch -M main
 git remote add origin https://github.com/Drakkkkon/geometriya-polki.git
 git push -u origin main
@@ -46,7 +46,7 @@ git push -u origin main
 - Через git: замените файлы и выполните
   ```
   git add .
-  git commit -m "Геометрия Полки 1.2.1"
+  git commit -m "Геометрия Полки 1.3.1"
   git push
   ```
 
@@ -56,9 +56,10 @@ git push -u origin main
   Pages выбран branch `main`, папка `/ (root)`.
 - Кнопки Excel пишут про библиотеку: на GitHub нет папки `vendor`, загрузите её (шаг 6).
 - Нет фото обложек или корешков: на GitHub нет папок `covers` и `spines` или имена файлов не `<номер>.jpg`.
-- Старые фото после обновления не меняются: в `sw.js` увеличьте номер в строке `var VER` (например `gp-1.2.1`),
+- Старые фото после обновления не меняются: в `sw.js` увеличьте номер в строке `var VER` (например `gp-1.3.1`),
   тогда браузер заново возьмёт файлы. Обновление страницы с Ctrl+F5 тоже помогает.
 - Фото из Telegram: инструкция в программе, меню «Фото» → «Как подключить Telegram».
+- Фото из Google Диска: инструкция в Настройках внизу и в `GOOGLE_DRIVE.md`.
 - Вход в Google не работает: в Google Cloud в «Разрешённых источниках JavaScript» должен быть `https://drakkkkon.github.io`
   (подробно в `GOOGLE_SHEETS.md`).
 - Старая версия после обновления: обновите страницу с очисткой кэша (Ctrl+F5, на телефоне откройте в
