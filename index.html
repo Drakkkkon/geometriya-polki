@@ -86,6 +86,7 @@ body{
 
 .sp{font-family:var(--font-ui);font-weight:500;fill:#fff}
 .selo{fill:none;stroke:#10151a;stroke-width:2.6}
+.ovh{fill:none;stroke:#d9822b;stroke-width:1.8;stroke-dasharray:6 3;pointer-events:none}
 .flash{fill:#fff;opacity:0;pointer-events:none;animation:flash .55s ease-out}
 @keyframes flash{from{opacity:.7}to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.flash{animation:none}}
@@ -361,11 +362,8 @@ body.big .collist .chk{padding:11px 0}
   .mb-status .stx{max-width:34vw;overflow:hidden;text-overflow:ellipsis}
   .head p{font-size:14px}
   .toolbar{gap:10px}
-  .tnote{display:none}
   .zoom{width:100%}
   .zoom button{flex:1;min-height:50px;font-size:16px}
-  .xgroup{width:100%}
-  .xgroup .btn{flex:1 1 0}
   .legend{font-size:12.5px}
   .panel{gap:20px}
   .coverbox{width:150px}
@@ -442,7 +440,8 @@ body.big .srch input[type=search]{min-height:50px;font-size:16px}
 
 /* ===== 1.3.0: соседние полки сверху и снизу, табличка на раме, стеллажи, фото из Google Диска ===== */
 .pageslide{display:grid;gap:14px}
-.shelfcol{min-width:0;overflow:hidden;position:relative}
+.shelfcol{min-width:0;position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:0 8px;align-items:start}
+.shelfclip{min-width:0;overflow:hidden;position:relative}
 .shelfin{display:grid;grid-template-columns:minmax(0,1fr);gap:0;will-change:transform,opacity}
 .nb{
   --nbh:84px;position:relative;overflow:hidden;cursor:pointer;background:var(--bg);
@@ -489,11 +488,194 @@ body.big .nbarrow{width:76px;height:50px;border-radius:25px}
 .rkcap{flex:1 1 auto;min-width:0;text-align:center;font:400 12px var(--font-mono);color:var(--muted)}
 body.big .rkbtn{width:54px;height:40px;border-radius:20px}
 
+/* ===== 1.4.0: боковая панель, окошки, общий вид, цвет рамки, створки ===== */
+.rail{display:flex;flex-direction:column;gap:6px;padding-top:6px;width:54px}
+.ri{position:relative}
+.rbtn{
+  position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;width:54px;min-height:52px;padding:5px 2px 4px;
+  border:1px solid var(--grid-2);border-radius:8px;background:var(--bg);color:var(--ink);font:500 10.5px/1.1 var(--font-ui);cursor:pointer;
+  touch-action:manipulation;
+}
+.rbtn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;display:block}
+.rbtn:hover{border-color:var(--line)}
+.rbtn:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.rbtn[aria-expanded="true"],.rbtn[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.rbtn .dot{position:absolute;top:4px;right:5px;width:8px;height:8px;border-radius:50%;background:#d9480f;border:1.5px solid #fff}
+.rbtn[aria-expanded="true"] .dot{border-color:var(--ink)}
+.pop{
+  position:absolute;right:calc(100% + 8px);top:0;z-index:40;width:min(380px,calc(100vw - 100px));padding:10px 12px;
+  background:var(--bg);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 28px rgba(20,30,40,.22);
+}
+.pop[hidden]{display:none}
+.pop-view{width:min(470px,calc(100vw - 100px))}
+.pop-view .vrow{flex-wrap:wrap;row-gap:0}
+.pop-view .vrow .tlabel{flex:1 0 100%;min-width:0}
+.pop-view .vrow input[type=range]{min-width:120px}
+.pop-view .vrow.pan{margin-bottom:2px}
+.pop-search .srrow{display:flex;align-items:center;gap:6px;min-width:0}
+.pop .srlist{margin:8px 0 0}
+.pop .hint2{margin:6px 0 0}
+.pop h3{margin:0 0 8px;font:600 12px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{width:36px;height:36px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px var(--line);cursor:pointer;padding:0;position:relative}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--ink)}
+.sw[aria-pressed="true"]::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:600 16px var(--font-ui);color:var(--ink)}
+.sw:focus-visible{outline:2px solid var(--info);outline-offset:2px}
+.pop .chk{display:flex;gap:8px;align-items:center;margin:10px 0 0;font-size:13.5px;cursor:pointer}
+.pop .chk input{width:18px;height:18px;accent-color:var(--ink)}
+.rkov{
+  flex:none;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border:1px solid var(--grid-2);border-radius:16px;
+  background:var(--bg);color:var(--ink);font:500 13px var(--font-ui);cursor:pointer;
+}
+.rkov svg{width:18px;height:18px;display:block}
+.rkov:hover{border-color:var(--line);background:var(--ink);color:#fff}
+.rkov:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+body.big .rkov{height:40px;border-radius:20px;font-size:14px}
+.tnote b{font-weight:600;color:var(--ink)}
+@media (max-width:760px){
+  .tnote{display:block;font-size:13px}
+  .rail{width:46px;gap:5px}
+  .rbtn{width:46px;min-height:48px;font-size:9.5px}
+  .rkov span{display:none}
+  .rkov{padding:0 10px}
+  .pop{width:min(340px,calc(100vw - 78px))}
+}
+body.big .rbtn{min-height:56px}
+
+/* выбор листов Google Таблицы */
+.tbtools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tbtools input[type=search],.tbadd input{flex:1 1 180px;min-width:0;min-height:40px;padding:0 12px;font:400 15px var(--font-ui);color:var(--ink);background:var(--bg);border:1px solid var(--grid-2);border-radius:6px}
+.tbtools .btn,.tbadd .btn{min-height:40px;padding:0 12px;font-size:14px}
+.tblist{display:grid;gap:0;max-height:min(46vh,420px);overflow:auto;border:1px solid var(--rule);border-radius:6px}
+.tblist:empty{display:none}
+.tbrow{display:flex;align-items:center;gap:12px;padding:8px 12px;min-height:48px;border-bottom:1px solid var(--grid);cursor:pointer;font-size:15px}
+.tbrow:last-child{border-bottom:0}
+.tbrow:hover{background:var(--fill)}
+.tbrow input{width:22px;height:22px;margin:0;accent-color:var(--ink);flex:none}
+.tbrow .tbn{flex:1 1 auto;min-width:0;overflow-wrap:anywhere}
+.tbrow small{font:400 12px var(--font-mono);color:var(--muted);text-align:right}
+.tbrow.off{opacity:.55;cursor:default}
+.tbadd{display:flex;gap:8px}
+.tbadd[hidden]{display:none}
+
+/* перенос книг между полками */
+.bkacts{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.bkacts .btn{min-height:38px;padding:0 14px;font-size:14px}
+.mvbar{
+  position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;
+  max-width:calc(100vw - 20px);padding:8px 10px;background:var(--bg);border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 30px rgba(20,30,40,.3);
+}
+.mvbar[hidden]{display:none}
+.mvl{font:500 13px var(--font-ui);color:var(--muted)}
+.mvchip{
+  display:inline-flex;align-items:center;gap:6px;min-height:42px;padding:0 14px;border:1.5px solid var(--grid-2);border-radius:21px;background:var(--bg);color:var(--ink);
+  font:600 15px var(--font-mono);cursor:pointer;
+}
+.mvchip small{font:400 11px var(--font-mono);color:var(--muted)}
+.mvchip.hot{background:var(--info);border-color:var(--info);color:#fff}
+.mvchip.hot small{color:#fff}
+.mvchip.closed{opacity:.55;border-style:dashed}
+.nb.mvdrop{outline:3px dashed var(--info);outline-offset:-3px}
+.nb.mvdrop.hot{outline-style:solid;background:rgba(46,90,138,.12)}
+.mvlist{display:grid;gap:0;max-height:min(58vh,520px);overflow:auto;border:1px solid var(--rule);border-radius:6px}
+.mvrk{font:600 11.5px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px 12px 4px;background:var(--fill);border-bottom:1px solid var(--grid)}
+.mvrow{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 12px;min-height:48px;border:0;border-bottom:1px solid var(--grid);background:var(--bg);color:var(--ink);font:500 15px var(--font-ui);cursor:pointer}
+.mvrow:hover:not([disabled]){background:var(--fill)}
+.mvrow[disabled]{opacity:.5;cursor:default}
+.mvrow .mvn{flex:1 1 auto}
+.mvrow small{font:400 12px var(--font-mono);color:var(--muted)}
+body.big .mvchip{min-height:50px}
+
+/* общий вид стеллажей */
+.ov{display:grid;gap:8px}
+.ov[hidden]{display:none}
+.ovbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.ovt{font:600 15px var(--font-ui)}
+.ovsp{flex:1 1 auto}
+.ovnote{margin:0;font-size:12.5px;color:var(--muted)}
+.ovsel{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--grid-2);border-radius:8px;background:var(--fill)}
+.ovsel[hidden]{display:none}
+.ovsel .btn{min-height:36px;padding:0 12px;font-size:13.5px}
+.ovsel .swatches{gap:5px}
+.ovsel .sw{width:24px;height:24px}
+.ovsel .sw[aria-pressed="true"]::after{font-size:12px}
+.ovpg{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:start}
+.ovpg .rkbtn{margin-top:40px}
+.ovgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;min-width:0}
+.ovrack{border:1px solid var(--rule);border-radius:8px;padding:6px 8px 8px;background:#fff;display:flex;flex-direction:column;min-width:0}
+.ovrack.inc{border-color:#d9822b;box-shadow:0 0 0 1px #d9822b inset}
+.ovrack.empty{border-style:dashed;color:var(--muted);align-items:center;justify-content:center;min-height:140px;font-size:13px}
+.ovh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;font:600 12px var(--font-ui);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.ovh span{font:400 11.5px var(--font-mono);letter-spacing:0;text-transform:none}
+.ovh .warn{color:#b3601a}
+.ov{scroll-margin-top:50px}
+body.ovmode .head,body.ovmode .toolbar,body.ovmode .srcnote,body.ovmode .panel,body.ovmode .foot{display:none}
+.ovshelf{position:relative;width:min(100%,calc((100vh - 270px) / 6 * 3.25));margin:0 auto;border-radius:6px;outline-offset:2px;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
+.ovshelf svg{display:block;width:100%;height:auto;border-radius:4px}
+.ovshelf:hover{outline:2px solid var(--grid-2)}
+.ovshelf.cur svg{box-shadow:0 0 0 2px #d9480f}
+.ovshelf.sel{outline:3px solid var(--ink)}
+.ovshelf.drag{opacity:.3}
+.ovshelf.tgt{outline:3px solid var(--info)}
+.ovshelf.bad{outline:3px solid var(--bad)}
+.ovshelf:focus-visible{outline:3px solid var(--ink)}
+.ovshelf .fillpill{position:absolute;left:4px;bottom:3px;height:19px;padding:0 7px 0 6px;font-size:10.5px;gap:5px}
+.ovshelf .fillpill .fbar{width:20px;height:5px}
+.ovgrip{position:absolute;top:3px;right:4px;width:28px;height:22px;border-radius:5px;background:rgba(255,255,255,.92);border:1px solid var(--grid-2);display:flex;align-items:center;justify-content:center;cursor:grab;touch-action:none;color:var(--muted)}
+.ovgrip svg{width:14px;height:14px;fill:currentColor}
+.ovgap{height:7px;border-radius:4px;transition:height .12s,background .12s}
+.ovdragging .ovgap{height:18px;background:rgba(46,90,138,.08)}
+.ovgap.tgt{background:var(--info)!important}
+.ovgap.bad{background:var(--bad)!important}
+.ovfoot{margin-top:6px;display:flex;justify-content:space-between;align-items:center;gap:6px}
+.ovfoot .fillpill{height:24px;font-size:11.5px}
+.ovnew{border:2px dashed var(--info);color:var(--info);border-radius:8px;padding:14px;text-align:center;font:500 14px var(--font-ui);background:rgba(46,90,138,.06)}
+.ovnew.tgt{background:rgba(46,90,138,.18)}
+.ovnew.bad{border-color:var(--bad);color:var(--bad)}
+.ovnew[hidden]{display:none}
+.ovcap{margin:0;font:400 12px var(--font-mono);color:var(--muted);text-align:center}
+.ovghost{position:fixed;z-index:90;pointer-events:none;opacity:.92;border-radius:6px;box-shadow:0 10px 26px rgba(20,30,40,.35);background:#fff}
+.ovghost svg{display:block;width:100%;height:auto}
+@media (max-width:760px){
+  .ovgrid{gap:6px}
+  .ovrack{padding:4px 4px 6px}
+  .ovh{font-size:10px;letter-spacing:.02em}
+  .ovh span{display:none}
+  .ovpg{grid-template-columns:minmax(0,1fr);}
+  .ovpg .rkbtn{display:none}
+  .ovshelf .fillpill{height:16px;font-size:9px;padding:0 5px}
+  .ovshelf .fillpill .fbar{display:none}
+  .ovgrip{width:22px;height:18px}
+  .ovfoot .fillpill{font-size:10px;padding:0 6px}
+  .ovfoot .fillpill .fbar{display:none}
+}
+
+/* заполненность, створки */
+.fp-bg{fill:#fff;stroke:var(--line);stroke-width:1}
+.fp-tr{fill:var(--grid)}
+.fp-fg{fill:#5d6975}
+.fp-t{font:500 10.5px var(--font-mono);fill:var(--ink)}
+.fp.full .fp-bg{fill:#2d8a57;stroke:#2d8a57}
+.fp.full .fp-t{fill:#fff}
+.fp.full .fp-ck{stroke:#fff;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.fp.mid .fp-fg{fill:#a96a14}
+.fillpill{flex:none;display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px 0 8px;border:1px solid var(--line);border-radius:13px;background:#fff;font:500 12px var(--font-mono);color:var(--ink);white-space:nowrap}
+.fillpill .fbar{display:inline-block;width:34px;height:7px;border-radius:4px;background:var(--grid);overflow:hidden}
+.fillpill .fbar b{display:block;height:100%;background:#5d6975}
+.fillpill.full{background:#2d8a57;border-color:#2d8a57;color:#fff}
+.fillpill.full .fbar{background:rgba(255,255,255,.35)}
+.fillpill.full .fbar b{background:#fff}
+#doors{pointer-events:none}
+.dr-leaf{fill:rgba(255,255,255,.34);stroke:#34404b;stroke-opacity:.6;stroke-width:1.4}
+.dr-glint{stroke:rgba(255,255,255,.75);stroke-width:5;stroke-linecap:round;fill:none}
+.dr-handle{fill:#8a95a0;stroke:#34404b;stroke-width:.8}
+
 /* табличка на раме: название полки и дата редактирования */
 .pl-sh{fill:rgba(20,30,40,.16)}
 .pl-card{fill:#fff;stroke:var(--line);stroke-width:1}
 .pl-screw{fill:#c4ccd4;stroke:var(--line);stroke-width:.5}
 .pl-t{font:600 15px var(--font-ui);fill:var(--ink)}
+.ov-id{font:600 30px var(--font-ui);fill:var(--ink)}
 .pl-s{font:400 9.4px var(--font-mono);fill:var(--muted)}
 #plate.in{animation:plateIn .6s .12s cubic-bezier(.2,.9,.3,1.12) both}
 @keyframes plateIn{from{opacity:0;transform:translateY(-18px)}to{opacity:1;transform:translateY(0)}}
@@ -544,13 +726,32 @@ details.how ol.how{margin:0 0 10px}
   .dvs select[data-a="code"]{flex:1 1 100%}
   .dvr{grid-template-columns:82px minmax(0,1fr) auto}
 }
+
+/* ===== 1.4.0: уплотнение для компьютера ===== */
+@media (min-width:1000px) and (pointer:fine){
+  body{padding-block:0 74px}
+  .app{gap:8px;padding-top:2px}
+  .head{padding-top:4px}
+  .head p{max-width:none;font-size:13px}
+  .toolbar{gap:4px 18px}
+  .tnote,.srcnote{font-size:12.5px}
+  .legend{font-size:12px;gap:4px 14px}
+  .pageslide{gap:8px}
+  .nb{--nbh:62px}
+  .racknav{padding:4px 2px 0}
+  .panel{gap:14px 26px}
+  .card{padding-top:8px}
+  .card h2{margin-bottom:6px}
+  .chlog{padding:8px 10px 10px}
+  .rail{padding-top:2px}
+}
 </style>
 </head>
 <body>
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.3.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.4.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -565,21 +766,17 @@ details.how ol.how{margin:0 0 10px}
   </header>
 
   <div class="toolbar">
-    <span class="tnote">Масштаб, перемещение и поиск — под полкой. Ctrl и колесо мыши: масштаб.</span>
+    <span class="tnote" id="tnote"><b>Расставить автоматически</b> и <b>Обновить из Google Таблицы</b> теперь в меню сверху: «Правка» и «Файл» (на телефоне — кнопка ≡).</span>
     <span class="tsp"></span>
-    <div class="xgroup">
-      <button class="btn" id="auto" type="button">Расставить автоматически</button>
-      <button class="btn" id="gsync" type="button">Обновить из Google Таблицы</button>
-    </div>
+    <div class="legend" id="legend" role="group" aria-label="Обозначения переплёта"></div>
     <input type="file" id="file" hidden accept=".xlsx,.xlsm,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
   </div>
   <p class="srcnote" id="srcnote"></p>
 
-  <div class="legend" id="legend" role="group" aria-label="Обозначения переплёта"></div>
-
   <div class="pageslide" id="pageSlide">
   <div class="stage haslog" id="stage">
   <div class="shelfcol" id="shelfcol">
+  <div class="shelfclip">
   <div class="shelfin" id="shelfIn">
   <div class="nb nbup" id="nbUp" hidden>
     <div class="nbs" id="nbUpS"><svg id="nbUpSvg" viewBox="0 0 1160 112" aria-hidden="true"></svg></div>
@@ -590,7 +787,8 @@ details.how ol.how{margin:0 0 10px}
       <rect class="interior" x="90" y="90" width="1000" height="260"/>
       <g id="grid"></g>
       <g id="books"></g>
-      <path class="frame" fill-rule="evenodd" d="M70 50H1110V370H70Z M90 90V350H1090V90Z"/>
+      <g id="doors"></g>
+      <path class="frame" id="frameMain" fill-rule="evenodd" d="M70 50H1110V370H70Z M90 90V350H1090V90Z"/>
       <g id="ruler"></g>
 
       <g class="dim">
@@ -603,6 +801,7 @@ details.how ol.how{margin:0 0 10px}
       </g>
 
       <g id="plate"></g>
+      <g id="fill"></g>
 
       <text class="cap" x="90" y="422">Книги: перетащите на полку или нажмите на книгу, затем на место на полке. Описание — в карточке ниже.</text>
       <g id="piles"></g>
@@ -619,42 +818,82 @@ details.how ol.how{margin:0 0 10px}
   </div>
   <div class="racknav" id="racknav">
     <button type="button" class="rkbtn" id="rkL" aria-label="Стеллаж слева"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <span class="fillpill" id="rkFill" hidden></span>
     <span class="rkcap" id="rkCap" aria-live="polite"></span>
+    <button type="button" class="rkov" id="rkOv" title="Общий вид стеллажей: три стеллажа на одном экране"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="5" height="16" rx="1"/><rect x="9.5" y="4" width="5" height="16" rx="1"/><rect x="16" y="4" width="5" height="16" rx="1"/></svg><span>Общий вид</span></button>
     <button type="button" class="rkbtn" id="rkR" aria-label="Стеллаж справа"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
   </div>
   </div>
   </div>
+  <nav class="rail" id="rail" aria-label="Инструменты полки">
+    <div class="ri">
+      <button type="button" class="rbtn" id="rbSearch" aria-haspopup="dialog" aria-expanded="false" aria-controls="pSearch" title="Поиск по полке ( / )"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="M15.2 15.2L20 20"/></svg><span>Поиск</span><i class="dot" hidden></i></button>
+      <div class="pop pop-search srch" id="pSearch" role="dialog" aria-label="Поиск по полке" hidden>
+        <label class="sr" for="srQ">Поиск по полке</label>
+        <div class="srrow">
+          <input type="search" id="srQ" placeholder="Номер, название, автор…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
+          <button type="button" class="vb" id="srPrev" aria-label="Предыдущая найденная книга" disabled hidden>‹</button>
+          <output id="srCnt" for="srQ" hidden></output>
+          <button type="button" class="vb" id="srNext" aria-label="Следующая найденная книга" disabled hidden>›</button>
+          <button type="button" class="vb" id="srClear" aria-label="Очистить поиск" hidden>✕</button>
+        </div>
+        <div class="srlist" id="srList" hidden></div>
+      </div>
+    </div>
+    <div class="ri">
+      <button type="button" class="rbtn" id="rbView" aria-haspopup="dialog" aria-expanded="false" aria-controls="pView" title="Положение и масштаб полки"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><path d="M9 12h6M12 9v6"/></svg><span>Масштаб</span></button>
+      <div class="pop pop-view viewbar" id="pView" role="dialog" aria-label="Положение и масштаб полки" hidden>
+        <div class="vrow pan">
+          <span class="tlabel">Положение</span>
+          <button type="button" class="vb" id="pHome" aria-label="К началу полки">|‹</button>
+          <button type="button" class="vb" id="pL" aria-label="Сдвинуть полку влево">‹</button>
+          <input type="range" id="pRange" min="0" max="1000" step="1" value="0" aria-label="Положение по полке">
+          <button type="button" class="vb" id="pR" aria-label="Сдвинуть полку вправо">›</button>
+          <button type="button" class="vb" id="pEnd" aria-label="К концу полки">›|</button>
+          <output id="pVal" for="pRange"></output>
+        </div>
+        <div class="vrow zm">
+          <span class="tlabel">Масштаб</span>
+          <button type="button" class="vb" id="zOut" aria-label="Уменьшить">−</button>
+          <input type="range" id="zRange" min="0" max="1000" step="1" value="0" aria-label="Масштаб полки">
+          <button type="button" class="vb" id="zIn" aria-label="Увеличить">+</button>
+          <output id="zVal" for="zRange">×1</output>
+          <button type="button" class="vb wide" id="zFit" title="Вся полка по ширине экрана">Вписать</button>
+        </div>
+        <p class="hint2">Ctrl и колесо мыши — масштаб, на телефоне — щипок двумя пальцами.</p>
+      </div>
+    </div>
+    <div class="ri">
+      <button type="button" class="rbtn" id="rbColor" aria-haspopup="dialog" aria-expanded="false" aria-controls="pColor" title="Цвет рамки полки"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a8.5 8.5 0 100 17c1.3 0 2-.8 2-1.8 0-1.2-1-1.5-1-2.6 0-.9.7-1.6 1.6-1.6H17a3.5 3.5 0 003.5-3.5C20.5 6.7 16.7 3.5 12 3.5z"/><circle cx="7.6" cy="11" r="1" fill="currentColor" stroke="none"/><circle cx="10.2" cy="7.4" r="1" fill="currentColor" stroke="none"/><circle cx="14.6" cy="7.4" r="1" fill="currentColor" stroke="none"/></svg><span>Рамка</span></button>
+      <div class="pop pop-color" id="pColor" role="dialog" aria-label="Цвет рамки" hidden></div>
+    </div>
+    <div class="ri">
+      <button type="button" class="rbtn" id="rbDoors" aria-pressed="false" title="Закрыть шкаф створками: книги нельзя переставлять"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="1.5"/><path d="M12 3.5v17"/><circle cx="10" cy="12" r=".9" fill="currentColor" stroke="none"/><circle cx="14" cy="12" r=".9" fill="currentColor" stroke="none"/></svg><span>Створки</span></button>
+    </div>
+  </nav>
+  </div>
   <aside class="chlog" id="chlog" aria-label="Журнал полки"></aside>
   </div>
 
-  <section class="viewbar" aria-label="Перемещение, масштаб и поиск по полке">
-    <div class="vrow pan">
-      <span class="tlabel">Положение</span>
-      <button type="button" class="vb" id="pHome" aria-label="К началу полки">|‹</button>
-      <button type="button" class="vb" id="pL" aria-label="Сдвинуть полку влево">‹</button>
-      <input type="range" id="pRange" min="0" max="1000" step="1" value="0" aria-label="Положение по полке">
-      <button type="button" class="vb" id="pR" aria-label="Сдвинуть полку вправо">›</button>
-      <button type="button" class="vb" id="pEnd" aria-label="К концу полки">›|</button>
-      <output id="pVal" for="pRange"></output>
+  <section class="ov" id="overview" hidden aria-label="Общий вид стеллажей">
+    <div class="ovbar">
+      <button type="button" class="btn" id="ovBack">← К полке</button>
+      <strong class="ovt">Общий вид стеллажей</strong>
+      <span class="ovsp"></span>
+      <button type="button" class="btn" id="ovUndo" disabled>Отменить</button>
+      <button type="button" class="btn" id="ovAuto" title="Вернуть порядок по номерам">По номерам</button>
     </div>
-    <div class="vrow zm">
-      <span class="tlabel">Масштаб</span>
-      <button type="button" class="vb" id="zOut" aria-label="Уменьшить">−</button>
-      <input type="range" id="zRange" min="0" max="1000" step="1" value="0" aria-label="Масштаб полки">
-      <button type="button" class="vb" id="zIn" aria-label="Увеличить">+</button>
-      <output id="zVal" for="zRange">×1</output>
-      <button type="button" class="vb wide" id="zFit" title="Вся полка по ширине экрана">Вписать</button>
+    <p class="ovnote" id="ovNote"></p>
+    <div class="ovsel" id="ovSel" hidden></div>
+    <div class="ovpg">
+      <button type="button" class="rkbtn" id="ovPrev" aria-label="Стеллажи левее"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="ovgrid" id="ovGrid"></div>
+      <button type="button" class="rkbtn" id="ovNext" aria-label="Стеллажи правее"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
     </div>
-    <div class="vrow srch">
-      <label class="sr" for="srQ">Поиск по полке</label>
-      <input type="search" id="srQ" placeholder="Поиск: номер, название, автор…" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="search">
-      <button type="button" class="vb" id="srPrev" aria-label="Предыдущая найденная книга" disabled hidden>‹</button>
-      <output id="srCnt" for="srQ" hidden></output>
-      <button type="button" class="vb" id="srNext" aria-label="Следующая найденная книга" disabled hidden>›</button>
-      <button type="button" class="vb" id="srClear" aria-label="Очистить поиск" hidden>✕</button>
-    </div>
-    <div class="srlist" id="srList" hidden></div>
+    <div class="ovnew" id="ovNew" hidden>Отпустите здесь: полка начнёт новый стеллаж</div>
+    <p class="ovcap" id="ovCap"></p>
   </section>
+
 
   <div class="panel">
     <section class="card book" aria-live="polite">
@@ -666,6 +905,7 @@ details.how ol.how{margin:0 0 10px}
           <p class="bname" id="bname"></p>
           <p class="bauthor" id="bauthor"></p>
           <dl class="binfo" id="binfo"></dl>
+          <div class="bkacts"><button type="button" class="btn" id="bkMove">Перенести на другую полку…</button><button type="button" class="btn" id="bkHome" hidden>Вернуть на свою полку</button></div>
         </div>
       </div>
     </section>
@@ -707,6 +947,7 @@ details.how ol.how{margin:0 0 10px}
   <div class="dr">
     <button class="btn" id="dkLie" type="button">Положить</button>
     <button class="btn" id="dkTake" type="button">Снять</button>
+    <button class="btn" id="dkMove" type="button">Перенести…</button>
     <button class="btn bad" id="dkCancel" type="button">Отмена</button>
   </div>
 </div>
@@ -729,7 +970,7 @@ details.how ol.how{margin:0 0 10px}
       <label class="chk"><input type="checkbox" id="sSpines"><span>Показывать фото корешков на книгах (папка spines)</span></label>
       <label class="chk"><input type="checkbox" id="sLog"><span>Журнал полки справа от полки</span></label>
       <label class="fld"><span>Номера полок растут</span><select id="sShDir"><option value="down">вниз: 227 сверху, 229 снизу</option><option value="up">вверх: 229 сверху, 227 снизу</option></select></label>
-      <label class="fld"><span>Полок в стеллаже (не больше 6)</span><select id="sRack"><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></label>
+      <label class="fld"><span>Полок в стеллаже при раскладке по номерам (от 2 до 6)</span><select id="sRack"><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option></select></label>
       <label class="fld"><span>Крупный интерфейс</span><select id="sBig"><option value="auto">Автоматически: на телефоне</option><option value="on">Всегда</option><option value="off">Выключен</option></select></label>
       <label class="fld"><span>Шаг кнопок ‹ › на полке, мм</span><select id="sStep"><option value="5">5</option><option value="10">10</option><option value="25">25</option></select></label>
     </div>
@@ -741,16 +982,18 @@ details.how ol.how{margin:0 0 10px}
       </div>
       <label class="fld"><span>Ссылка на таблицу или её ID</span><input type="text" id="gUrl" placeholder="https://docs.google.com/spreadsheets/d/…" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
       <div class="row2">
-        <label class="fld"><span>Листы-полки (через запятую)</span><input type="text" id="gTabs" placeholder="228 С 15.10" autocomplete="off" spellcheck="false"></label>
+        <label class="fld"><span>Листы-полки (отмечаются кнопкой «Выбрать листы…», можно вписать)</span><input type="text" id="gTabs" placeholder="228 С 15.10, 229 С 15.10" autocomplete="off" spellcheck="false"></label>
         <label class="fld"><span>Лист с общим списком</span><input type="text" id="gGen" placeholder="Генеральная" autocomplete="off" spellcheck="false"></label>
       </div>
+      <label class="fld" id="gKeyL"><span>Ключ API Google (необязательно): чтобы выбирать листы щелчком без входа</span><input type="password" id="gKey" placeholder="AIza…" autocomplete="new-password" autocapitalize="off" spellcheck="false"></label>
       <div id="gOauth" class="sec" style="border:0;padding:0">
         <label class="fld"><span>Client ID (OAuth, тип «Веб-приложение»)</span><input type="text" id="gCid" placeholder="123456-abc.apps.googleusercontent.com" autocomplete="off" autocapitalize="off" spellcheck="false"></label>
         <div class="acct"><span id="gAcct">Вход не выполнен</span></div>
         <div class="acct"><button class="btn" id="gIn" type="button">Войти в Google</button><button class="btn" id="gOut" type="button">Выйти</button></div>
       </div>
       <label class="fld"><span>Автообновление</span><select id="gAuto"><option value="0">Только вручную</option><option value="2">Каждые 2 минуты</option><option value="5">Каждые 5 минут</option><option value="15">Каждые 15 минут</option><option value="60">Раз в час</option></select></label>
-      <div class="acct"><button class="btn" id="gTest" type="button">Проверить подключение</button><button class="btn primary" id="gLoad" type="button">Загрузить полку…</button></div>
+      <div class="acct"><button class="btn" id="gTest" type="button">Проверить подключение</button><button class="btn primary" id="gLoad" type="button">Выбрать листы…</button></div>
+      <button type="button" class="link" id="gForget">Забыть загруженные листы на этом устройстве</button>
       <p class="dstat" id="gStat" aria-live="polite"></p>
       <button type="button" class="link" id="gHelp">Как подключить Google Таблицу: подробно</button>
     </div>
@@ -875,6 +1118,41 @@ details.how ol.how{margin:0 0 10px}
   </div>
 </dialog>
 
+<dialog id="dlgTabs" aria-labelledby="tbT">
+  <div class="dlg">
+    <h2 id="tbT">Листы из Google Таблицы</h2>
+    <p class="hint2" id="tbSub">Отметьте щелчком листы-полки, которые нужно загрузить. Можно сразу несколько: каждый лист станет отдельной полкой.</p>
+    <div class="tbtools">
+      <input type="search" id="tbQ" placeholder="Найти лист…" autocomplete="off" spellcheck="false" aria-label="Найти лист">
+      <button class="btn" id="tbAll" type="button">Выбрать все</button>
+      <button class="btn" id="tbNone" type="button">Снять все</button>
+    </div>
+    <div class="tblist" id="tbList" role="group" aria-label="Листы таблицы"></div>
+    <div class="tbadd" id="tbAdd" hidden>
+      <input type="text" id="tbName" placeholder="Название листа, как на вкладке внизу таблицы" autocomplete="off" spellcheck="false" aria-label="Название листа">
+      <button class="btn" id="tbAddBtn" type="button">Добавить</button>
+    </div>
+    <p class="dstat" id="tbStat" aria-live="polite"></p>
+    <div class="prog" id="tbProg" hidden><i id="tbBar"></i></div>
+    <div class="actions">
+      <button type="button" class="link" id="tbCols">Выбрать столбцы для одного листа…</button>
+      <button class="btn" id="tbCancel" type="button">Закрыть</button>
+      <button class="btn primary" id="tbGo" type="button" disabled>Загрузить</button>
+    </div>
+  </div>
+</dialog>
+
+<div class="mvbar" id="mvBar" hidden role="group" aria-label="Перенести книгу на другую полку"></div>
+
+<dialog id="dlgMv" aria-labelledby="mvT">
+  <div class="dlg">
+    <h2 id="mvT">Перенести книгу</h2>
+    <p class="hint2" id="mvSub"></p>
+    <div class="mvlist" id="mvList"></div>
+    <div class="actions"><button class="btn" id="mvClose" type="button">Отмена</button></div>
+  </div>
+</dialog>
+
 <dialog id="dlgInfo" aria-labelledby="infT">
   <div class="dlg">
     <h2 id="infT"></h2>
@@ -903,7 +1181,7 @@ details.how ol.how{margin:0 0 10px}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.3.0'};
+var APP={name:'Геометрия Полки',version:'1.4.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -920,6 +1198,19 @@ var SUPPORT_MARGIN=10; /* лежачая книга опирается, если
 var REST_TOL=6;        /* опорой считаются стоящие книги не ниже самой высокой минус 6 мм */
 var FLUSH_BONUS=6;     /* притяжение вплотную к соседней книге, мм */
 var CAP=7;             /* торцы твёрдого переплёта, мм */
+var OVER_MAX=SHELF.D;  /* книга может выступать вперёд за край полки не больше, чем полка глубока: дальше центр тяжести за краем */
+var RACK_MIN=2,RACK_MAX=6; /* полок в стеллаже: от 2 до 6 */
+var SHOW_RACKS=3;      /* стеллажей на экране в общем виде */
+/* Семь пастельных цветов рамки полки, не слишком ярких. Первый — прежний серо-голубой. */
+var FRAMES=[
+  {name:'серо-голубой',fill:'#e3e8ed'},
+  {name:'мятный',fill:'#d9ecdf'},
+  {name:'персиковый',fill:'#f5dfd0'},
+  {name:'лавандовый',fill:'#e4dcf1'},
+  {name:'песочный',fill:'#f0e8c9'},
+  {name:'розовый',fill:'#f3dbe3'},
+  {name:'небесный',fill:'#d4e6f4'}
+];
 
 var SEED={"sheet":"228 С 15.10","columns":[{"label":"Код книги","origin":"sheet"},{"label":"Автор","origin":"sheet"},{"label":"Название","origin":"sheet"},{"label":"Год","origin":"sheet"},{"label":"Цена","origin":"sheet"},{"label":"Место хр новое","origin":"sheet"},{"label":"Количество на складе","origin":"sheet"},{"label":"Формат","origin":"sheet"},{"label":"Высота (Длина)","origin":"sheet"},{"label":"Ширина","origin":"sheet"},{"label":"Корешок","origin":"sheet"},{"label":"Вес","origin":"sheet"},{"label":"Состояние","origin":"sheet"},{"label":"Состояние - примечание","origin":"sheet"},{"label":"Примечание","origin":"sheet"},{"label":"Кол-во страниц","origin":"general"},{"label":"Если нет формата НОВЫЙ ставить сюда","origin":"general"},{"label":"Бумага","origin":"general"},{"label":"Переплет","origin":"general"},{"label":"Формат размера","origin":"general"},{"label":"Формат в мм","origin":"general"},{"label":"Telegram пост","origin":"general"}],"rows":[[11070,"Қамбаров Қапан","Алтай аясында",1959,7000,228,1,null,205,135,12,166,"Хорошее","Замечания по обложке",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12030"],[11155,"Токмагамбетов Аскар","Әке мен бала",1961,4000,228,1,null,205,135,14,227,"Хорошее","Замечания по обложке, Отметки ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12116"],[10065,"Момыш-улы Баурджан","Психология войны",1990,2300,228,1,null,200,135,15,230,"Удовлетворительное","Замечания по обложке, Раскол форзаца, Раскол блока, Замечания по уголкам, Штамп на форзаце, Порваны страницы",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/10997"],[1993,"Тутыбаев К. Жолдыбаев О. Естаев Е.","Ислам",1988,3000,228,1,"70×90/32",165,107,15,164,"Хорошее","Замечания по обложке, Пятна на страницах",null,null,null,null,null,null,"Малый | 165×107 мм","https://t.me/oldbookkz/2251"],[11064,"Қайырбеков Ғафу","Дала қоңырауы",1957,3500,228,1,null,170,135,15,180,"Хорошее","Замечания по обложке",null,null,null,null,"Твердый переплет","Уменьшенный",null,"https://t.me/oldbookkz/12024"],[11068,"Молдагалиев Жубан","Жесір тағдыры",1961,7000,228,1,null,170,130,10,140,"Хорошее","Замечания по обложке, Надписи карандашом, Надписи ручкой, Замечания по корешку",null,null,null,null,"Твердый переплет","Уменьшенный",null,"https://t.me/oldbookkz/12028"],[12641,"Хасуй Ацуси","Техника напыления",1975,5000,228,2,null,221,148,16,420,"Очень хорошее","Замечания по обложке, Отметки ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/13631"],[4065,"Борн Макс","Моя жизнь и взгляды",1973,4000,228,1,null,200,127,10,175,"Очень хорошее","Замечания по суперобложке",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/4452"],[4909,"Борисов Трофим","Камчатские сказки",1950,6000,228,1,null,205,150,10,95,"Удовлетворительное","Замечания по обложке, Надписи ручкой, Надписи карандашом, Раскол блока, Замечания по форзацу, Пятна на страницах, Следы залития",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/5371"],[2716,"Алексин Анатолий","Hеобычайные поxождeния Сeвы Koтлoвa",1958,12000,228,1,"84×108/32",200,130,15,174,"Хорошее","Замечания по обложке, Замечания по уголкам, Замечания по корешку",null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/3061"],[9233,"Филлис Гэйлд","Исцеление кристаллами",2006,18200,228,1,"84×108/32",200,130,10,140,"Очень хорошее",null,null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/10099"],[14113,"Минц З.Г.","Ученые записки Тартуского государственного университета. Л. БЛОК И РЕВОЛЮЦИЯ 1905 года. Блоковский сборник 8",1988,10000,228,1,"70×90/16",215,170,17,444,"Очень хорошее",null,null,null,null,null,null,null,"Увеличенный | 215×170 мм","https://t.me/oldbookkz/15110"],[4167,"Моргенштерн Илья","Психографология",1994,3000,228,1,"84×108/32",200,130,25,412,"Хорошее","Скос блока",null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/4555"],[5958,"Турлугуров Тотай","Рассказы по истории Казахской ССР",1991,500,228,1,"70×90/16",215,170,5,78,"Очень хорошее",null,null,null,null,null,"Мягкий переплет","Увеличенный","Увеличенный | 215×170 мм","https://t.me/oldbookkz/6523"],[7527,"Цойгнер Герхард","Учение о цвете",1971,8000,228,1,null,220,172,18,545,"Хорошее","Замечания по обложке, Надписи ручкой, Штампы",null,null,null,null,"Твердый переплет","Увеличенный",null,"https://t.me/oldbookkz/8250"],[6744,"Бандас Лев","Производство и ремонт щипковых музыкальных инструментов",1983,15000,228,1,"60×90/16",215,145,25,349,"Удовлетворительное","Следы залития, Замечания по обложке, Пятна на страницах",null,null,null,null,"Твердый переплет","Стандартный","Стандартный | 215×145 мм","https://t.me/oldbookkz/7423"],[10670,"Көбеев Спандияр","Орындалған арман",1954,5000,228,1,null,208,135,10,204,"Хорошее","Замечания по обложке, Замечания по корешку, Надписи ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/11617"],[9236,"Кастанеда Карлос","Безмолвное знание",1996,3200,228,2,null,205,145,5,71,"Хорошее","Надписи карандашом, Замечания по титулу, Замечания по обложке",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/10102"],[11069,"Ковпак С. А.","Путивль-Карпат жорығы",1950,5000,228,1,null,205,135,12,192,"Хорошее","Замечания по обложке, Надписи карандашом, Скос блока",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12029"],[8953,"Бабақов Болат","Алтын алқа",1981,2000,228,1,"70×108/32",165,130,10,96,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Уменьшенный","Уменьшенный | 165×130 мм","https://t.me/oldbookkz/9801"],[9073,"Джунусов М. Утепов Ш","Нигмет Сыргабеков",1975,4000,228,1,"70×108/32",165,130,5,43,"Очень хорошее","Замечания по обложке, Отметки ручкой, Замечания по уголкам","С автографом",null,null,null,"Мягкий переплет","Уменьшенный","Уменьшенный | 165×130 мм","https://t.me/oldbookkz/9925"],[2646,"Аль-Фараби","Социально-этические трактаты",1973,6000,228,1,"70×90/32",165,107,25,310,"Очень хорошее","Замечания по суперобложке, Надписи ручкой, Пятна на страницах",null,null,null,null,"Твердый переплет","Уменьшенный","Малый | 165×107 мм",null],[2645,"Аль-Фараби","Математические трактаты",1972,6000,228,1,"70×90/32",165,107,20,267,"Очень хорошее","Замечания по суперобложке, Отметки ручкой",null,null,null,null,"Твердый пер. супероб","Уменьшенный","Малый | 165×107 мм",null],[2644,"Аль-Фараби","Философские трактаты",1970,8000,228,1,"70×90/32",165,107,30,367,"Очень хорошее","Замечания по суперобложке, Отметки ручкой",null,null,null,null,"Твердый пер. супероб","Уменьшенный","Малый | 165×107 мм","https://t.me/oldbookkz/2986"],[10737,"Клюн Иван","Мой путь в искусстве. Воспоминания. Статьи. Дневники",1999,49000,228,1,null,215,165,40,983,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/11686"],[10838,"Удальцова Надежда","Жизнь Русской Кубистки. Дневники, статьи, воспоминания",1994,25000,228,1,null,215,165,15,423,"Очень хорошее","Замечания по корешку, Замечания по уголкам",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11788"],[11036,"Харджиев Николай","Статьи об авангарде в 2-х томах",1997,48000,228,1,null,215,160,65,1500,"Очень хорошее","Замечания по обложке",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11994"],[10937,"Пунин Николай","О Татлине",1994,25000,228,1,null,215,165,10,278,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11890"],[11240,"Крученых Алексей","Наш выход. К истории русского футуризма",1996,25000,228,1,null,215,165,23,520,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/12204"],[11139,"Митурич Петр","Записки сурового реалиста эпохи авангарда. Дневники. Письма. Воспоминания. Статьи",1997,30000,228,1,null,215,165,25,668,"Хорошее","Замечания по корешку, Пятна на обложке, Замечания по обложке",null,null,null,null,"Твердый переплет","Увеличенный",null,"https://t.me/oldbookkz/12100"],[13527,"Егоров Б.Ф.","Труды по русской и славянской филологии. XV: Литературоведение",1970,7000,228,1,null,170,112,15,131,"Удовлетворительное","Замечания по обложке, Раскол блока, Замечания по корешку",null,176,null,null,null,null,null,"https://t.me/oldbookkz/14523"],[12034,"Лотман Ю.","Труды по знаковым системам. Выпуск III",1967,10000,228,1,null,215,142,20,445,"Хорошее","Замечания по суперобложке",null,null,null,null,"Твердый пер. супероб","Стандартный",null,"https://t.me/oldbookkz/13018"],[12139,"Лотман Ю.","Труды по знаковым системам. IV",1969,12000,228,1,null,215,142,20,522,"Хорошее","Отметки ручкой, Замечания по корешку",null,null,null,null,null,null,null,"https://t.me/oldbookkz/13123"],[10938,"Катаев В.Б.","Университетский пушкинский сборник",1999,2000,228,1,null,212,142,22,635,"Очень хорошее","Замечания по уголкам",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/11891"]]};
 
@@ -927,7 +1218,7 @@ var SEED={"sheet":"228 С 15.10","columns":[{"label":"Код книги","origin
 /* ===== Настройки (хранятся в браузере) ===== */
 var CFG_KEY='gp.settings.v1';
 function defaultCfg(){return {falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,spines:true,shDir:'down',zoom:0,phWorker:'',rack:6,
-  gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:''},
+  gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:'',key:'',known:[]},
   dr:{url:'',mode:'oauth',key:'',eng:'coco',gkey:'',gmodel:'gemini-2.5-flash',sub:true,redo:false}};}
 var CFG=defaultCfg();
 function loadCfg(){
@@ -977,29 +1268,40 @@ function standCheck(list){
 }
 function standOK(list){return standCheck(list).length===0;}
 
-/* Убрать то, что упало или повисло в воздухе: после снятия опоры соседи и лежачие книги уходят в стопку. */
+/* Убрать то, что упало или повисло в воздухе: после снятия опоры соседи уходят в стопку,
+   лежачие книги оседают ниже; стопка, которая не держится, теряет верхние книги. */
 function settle(){
-  var out=[],again=true;
-  while(again){
+  var out=[],again=true,guard=0;
+  while(again&&guard++<400){
     again=false;
     standCheck(placedList()).forEach(function(u){u.where='stock';out.push(u);again=true;});
-    placedList().forEach(function(p){
-      if(p.mode!=='lie'||p.u.where!=='shelf') return;
-      var info=lieInfo(p.x,p.w,placedList());
-      if(!info||!info.ok||info.rest+p.u.t>SHELF.H){p.u.where='stock';out.push(p.u);again=true;}
-    });
+    var S=solveLevels(placedList()),bad=[];
+    S.recs.forEach(function(r){if(r.rest+r.p.u.t>SHELF.H+0.01) bad.push(r);});
+    stackCheck(S).forEach(function(r){if(bad.indexOf(r)<0) bad.push(r);});
+    if(bad.length){
+      bad.sort(function(a,b){return (b.p.z||0)-(a.p.z||0);});
+      bad[0].p.u.where='stock';out.push(bad[0].p.u);again=true;
+    }
   }
   return out;
 }
 
-/* Расставить сохранённые позиции: сначала устойчивые стоящие, затем остальные стоящие, потом лежачие. */
+/* Поставить книгу на полку. Для лежачей запоминается порядок укладки z: она ляжет выше всех, что уже лежат. */
+function putOnShelf(u,x,mode){
+  var z=0;
+  if(mode==='lie'){u.where='stock';z=nextZ(placedList());}
+  u.where='shelf';u.x=x;u.mode=mode;u.z=z;
+}
+
+/* Расставить сохранённые позиции: сначала устойчивые стоящие, затем остальные стоящие, потом лежачие
+   в порядке укладки (снизу вверх). */
 function placeItems(items){
   var failed=[],f0=CFG.falls;
   function pass(list,mode){
-    list.slice().sort(function(a,b){return a.x-b.x;}).forEach(function(a){
+    list.slice().sort(function(a,b){return (mode==='lie'?(a.z||0)-(b.z||0):0)||a.x-b.x;}).forEach(function(a){
       var placed=placedList();
       var ok=mode==='stand'?canStand(placed,a.u,a.x):canLie(placed,a.u,a.x);
-      if(ok){a.u.where='shelf';a.u.x=a.x;a.u.mode=mode;}else failed.push(a.u);
+      if(ok) putOnShelf(a.u,a.x,mode);else failed.push(a.u);
     });
   }
   CFG.falls=false;
@@ -1010,60 +1312,68 @@ function placeItems(items){
   return failed.concat(settle());
 }
 
+/* Первое подходящее место. Стоя: слева направо. Лёжа: сначала самое низкое (на пол, потом на стоящие, потом стопкой), затем левее. */
 function firstSpot(placed,u,mode){
-  var w=mode==='lie'?u.h:u.t,max=SHELF.W-w;
+  var w=mode==='lie'?u.h:u.t,max=SHELF.W-w,i;
   var list=candidates(placed,mode,w,max).sort(function(a,b){return a.x-b.x;});
-  for(var i=0;i<list.length;i++){
-    var ok=mode==='stand'?canStand(placed,u,list[i].x):canLie(placed,u,list[i].x);
-    if(ok) return list[i].x;
+  if(mode==='stand'){
+    for(i=0;i<list.length;i++){if(canStand(placed,u,list[i].x)) return list[i].x;}
+    return null;
   }
+  if(!fitsLie(u)) return null;
+  var S=solveLevels(placed);
+  list.forEach(function(c){c.r=levelFor(c.x,w,S.stands,S.recs,null).rest;});
+  list=list.filter(function(c){return c.r+u.t<=SHELF.H+0.01;}).sort(function(a,b){return (a.r-b.r)||(a.x-b.x);});
+  for(i=0;i<list.length;i++){if(canLie(placed,u,list[i].x)) return list[i].x;}
   return null;
 }
 
 /* Автоматическая расстановка: стоя, вплотную слева направо; мягкие и тонкие рядом с опорой;
-   что не влезло по длине, ложится сверху; остальное остаётся пачкой под полкой. */
+   что не влезло по длине или выше полки, ложится: на свободный пол, на стоящие книги и стопкой; остальное остаётся пачкой под полкой. */
 function autoArrange(){
-  UNITS.forEach(function(u){u.where='stock';u.x=0;u.mode='stand';});
+  UNITS.forEach(function(u){u.where='stock';u.x=0;u.mode='stand';u.z=0;});
   var seq=[],deferred=[],lean=0,hasStable=false;
   UNITS.forEach(function(u){
-    if(!fits(u)){deferred.push(u);return;}
+    if(!fitsStand(u)){deferred.push(u);return;}
     if(isStable(u)){
       seq.push(u);hasStable=true;lean=0;
-      while(deferred.length&&lean<CFG.lean&&fits(deferred[0])){seq.push(deferred.shift());lean++;}
+      while(deferred.length&&lean<CFG.lean&&fitsStand(deferred[0])){seq.push(deferred.shift());lean++;}
     }else if(hasStable&&lean<CFG.lean){seq.push(u);lean++;}
     else deferred.push(u);
   });
   var pre=[];
-  while(deferred.length&&pre.length<CFG.lean&&fits(deferred[0])&&seq.length) pre.push(deferred.shift());
+  while(deferred.length&&pre.length<CFG.lean&&fitsStand(deferred[0])&&seq.length) pre.push(deferred.shift());
   seq=pre.concat(seq);
   var x=0,over=deferred.slice(),i;
   for(i=0;i<seq.length;i++){
     var u=seq[i];
     if(x+u.t>SHELF.W){over=over.concat(seq.slice(i));break;}
-    u.where='shelf';u.mode='stand';u.x=x;x+=u.t;
+    putOnShelf(u,x,'stand');x+=u.t;
   }
   over=over.concat(settle());
   over.forEach(function(u){
     var sp=firstSpot(placedList(),u,'lie');
-    if(sp!==null){u.where='shelf';u.mode='lie';u.x=sp;}
+    if(sp!==null) putOnShelf(u,sp,'lie');
     else u.where='stock';
   });
   settle();
   pileSig='#';
 }
 
-/* Новая книга: если есть место, встаёт на полку, иначе пачкой под полку. */
+/* Новая книга: если есть место, встаёт на полку, иначе ложится на полку, иначе пачкой под полку. */
 function placeNewUnit(u){
   var placed=placedList(),sp=firstSpot(placed,u,'stand');
-  if(sp!==null){u.where='shelf';u.mode='stand';u.x=sp;return 'shelf';}
+  if(sp!==null){putOnShelf(u,sp,'stand');return 'shelf';}
   sp=firstSpot(placed,u,'lie');
-  if(sp!==null){u.where='shelf';u.mode='lie';u.x=sp;return 'top';}
+  if(sp!==null){putOnShelf(u,sp,'lie');return 'top';}
   u.where='stock';
   return 'stock';
 }
 
 /* ===== Сохранение расстановки и журнал изменений по каждой полке ===== */
-function unitKey(u){return (u.code?u.code:'T:'+u.title.toLowerCase())+'#'+u.copyI;}
+function baseKey(u){return (u.code?u.code:'T:'+u.title.toLowerCase())+'#'+u.copyI;}
+function unitKey(u){return (u.home?u.home+'/':'')+baseKey(u);}
+function dsOf(u){return u.src||DS;}
 function layoutKey(s){return 'gp.layout.'+s;}
 function logKey(s){return 'gp.log.'+s;}
 function readSaved(s){
@@ -1074,15 +1384,16 @@ function saveLayoutSoon(){
   clearTimeout(saveT);
   saveT=setTimeout(saveLayout,250);
 }
+var TEMP=false; /* true, пока полка считается «про запас» (общий вид, заполненность): ничего не пишем в память */
 function saveLayout(){
-  if(!DS||!UNITS.length||float) return;
-  var o={v:1,ts:Date.now(),u:UNITS.map(function(u){return [unitKey(u),u.title,u.where==='shelf'?1:0,u.x,u.mode==='lie'?1:0,u.sig,u.code,u.copyI];})};
+  if(!DS||!UNITS.length||float||TEMP) return;
+  var o={v:1,ts:Date.now(),u:UNITS.map(function(u){return [unitKey(u),u.title,u.where==='shelf'?1:0,u.x,u.mode==='lie'?1:0,u.sig,u.code,u.copyI,u.z||0];})};
   try{localStorage.setItem(layoutKey(DS.sheet),JSON.stringify(o));}catch(_){}
 }
 function getLog(s){try{return JSON.parse(localStorage.getItem(logKey(s))||'[]');}catch(_){return [];}}
 function putLog(s,L){try{localStorage.setItem(logKey(s),JSON.stringify(L.slice(0,300)));}catch(_){}}
 function addLog(entries){
-  if(!DS||!entries.length) return;
+  if(!DS||!entries.length||TEMP) return;
   var L=getLog(DS.sheet),ts=Date.now();
   entries.slice().reverse().forEach(function(e){e.ts=ts;L.unshift(e);});
   putLog(DS.sheet,L);
@@ -1116,7 +1427,7 @@ function syncWithSaved(saved){
     var k=unitKey(u),a=prev[k];seen[k]=1;
     if(!a){added.push(u);return;}
     if(a[5]!==u.sig) changed.push({u:u,d:sigDiff(a[5],u.sig)});
-    if(a[2]) items.push({u:u,x:a[3],mode:a[4]?'lie':'stand'});
+    if(a[2]) items.push({u:u,x:a[3],mode:a[4]?'lie':'stand',z:a[8]||0});
   });
   saved.u.forEach(function(a){if(!seen[a[0]]) removed.push(a);});
   var failed=placeItems(items);
@@ -1125,7 +1436,7 @@ function syncWithSaved(saved){
   });
   added.forEach(function(u){
     var r=placeNewUnit(u);
-    log.push({type:'add',t:bookTitle(u),c:u.code,n:r==='shelf'?'поставлена на полку':(r==='top'?'положена на полку сверху':'выложена пачкой под полку: нет места')});
+    log.push({type:'add',t:bookTitle(u),c:u.code,n:(u.home?'пришла с полки '+u.home+': ':'')+(r==='shelf'?'поставлена на полку':(r==='top'?'положена на полку сверху':'выложена пачкой под полку: нет места'))});
   });
   changed.forEach(function(o){log.push({type:'chg',t:bookTitle(o.u),c:o.u.code,n:'изменено: '+o.d});});
   var toPile=0,reput=0;
@@ -1162,12 +1473,20 @@ function standWhy(placed,u,d){
   var f0=CFG.falls;CFG.falls=false;
   var x=findStand(placed,u,d);
   CFG.falls=f0;
+  if(!fitsStand(u)) return u.h>SHELF.H?'выше полки: только лёжа':'слишком глубокая';
   return x!==null?'упадёт: нужна опора рядом':'нет места';
+}
+function lieWhy(placed,u,x){
+  if(!fitsLie(u)) return u.h>SHELF.W?'длиннее полки':(u.t>SHELF.H?'толще полки':'слишком глубокая');
+  var S=solveLevels(placed),xx=Math.max(0,Math.min(SHELF.W-u.h,x));
+  var r=levelFor(xx,u.h,S.stands,S.recs,null);
+  if(r.rest+u.t>SHELF.H+0.01) return 'выше полки: стопка слишком высокая';
+  return 'упадёт: нет опоры';
 }
 function lockWhy(placed,idx){
   var rest=placed.filter(function(p,i){return i!==idx;});
   if(standOK(placed)&&!standOK(rest)) return 'Эта книга держит соседние: сначала уберите их.';
-  return 'Сначала снимите книгу, которая лежит сверху: она опирается на эти.';
+  return 'Сначала снимите книги, которые лежат сверху: они опираются на эту.';
 }
 function drawPileBase(){
   var b='';
@@ -1181,11 +1500,11 @@ var ROLES=[
   ['code',/^код( книги)?$/],['author',/^автор/],['title',/^(название|наименование)/],['year',/^год/],['price',/^цена/],
   ['place',/^место/],['qty',/^количество/],['format',/^формат$/],['h',/^высота/],['w',/^ширина/],['t',/^(корешок|толщина)/],
   ['weight',/^вес/],['cond',/^состояние$/],['condNote',/^состояние.*примечан/],['binding',/^перепл[её]т/],
-  ['copy',/^экземпляр/],['where',/^положение/],['px',/^позиция/],['orient',/^ориентация/]
+  ['copy',/^экземпляр/],['where',/^положение/],['px',/^позиция/],['orient',/^ориентация/],['lvl',/^ярус/]
 ];
 var DEFAULT_HEAD=['Код книги','Автор','Название','Год','Цена','Место хр новое','Количество на складе','Формат','Высота (Длина)','Ширина','Корешок','Вес','Состояние','Состояние - примечание','Кол-во страниц','Если нет формата НОВЫЙ ставить сюда','Бумага','Переплет','Формат размера','Формат в мм','Telegram пост'];
 var LABELS={place:'Место хранения',condNote:'Примечание к состоянию',binding:'Переплёт'};
-var HIDE={author:1,title:1,code:1,h:1,w:1,t:1,copy:1,where:1,px:1,orient:1};
+var HIDE={author:1,title:1,code:1,h:1,w:1,t:1,copy:1,where:1,px:1,orient:1,lvl:1};
 
 function normLabel(s){return String(s==null?'':s).replace(/\s+/g,' ').trim();}
 function roleOf(label){
@@ -1205,50 +1524,118 @@ function thousands(n){return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))
 function fmtSize(b){return b>1048576?(b/1048576).toFixed(1)+' МБ':Math.max(1,Math.round(b/1024))+' КБ';}
 function plural(n,a,b,c){var m=n%100,k=n%10;if(m>10&&m<20) return c;if(k===1) return a;if(k>1&&k<5) return b;return c;}
 
-/* ===== Правила размещения ===== */
+/* ===== Правила размещения =====
+   placed: [{x,w,mode:'stand'|'lie',u,z}] — x вдоль полки от левого края.
+   Стоя книга занимает по полке корешок t, лёжа — свою высоту h.
+   Лёжа книги кладутся на пол полки, на стоящие книги и друг на друга стопкой. Порядок укладки хранится в z:
+   каждая следующая книга ложится на самую высокую опору под собой.
+   Книга глубже полки (ширина больше 240 мм) выступает вперёд. Пока её центр тяжести над полкой, она держится. */
 function ov(a0,a1,b0,b1){return a0<b1&&b0<a1;}
 
-/* placed: [{x,w,mode:'stand'|'lie',u}] — x вдоль полки от левого края.
-   Стоя книга занимает по полке корешок t, лёжа — свою высоту h. */
-function fits(u){return u.h<=SHELF.H&&u.w<=SHELF.D;}
+function fitsStand(u){return u.h<=SHELF.H&&u.w<=SHELF.D+OVER_MAX;}
+function fitsLie(u){return u.h<=SHELF.W&&u.t<=SHELF.H&&u.w<=SHELF.D+OVER_MAX;}
+function fits(u){return fitsStand(u)||fitsLie(u);}
+function overhang(u){return Math.max(0,u.w-SHELF.D);}
+function massOf(u){return u.h*u.w*u.t;}
+function nextZ(placed){
+  var z=0;
+  placed.forEach(function(p){if(p.mode==='lie'&&(p.z||0)>z) z=p.z||0;});
+  return z+1;
+}
 
-/* Лежачая книга держится на стоящих под ней. Опора — самые высокие из них (не ниже самой высокой минус 6 мм);
-   центр книги должен быть между крайними опорами, не ближе 10 мм к краю. rest — на какой высоте она лежит. */
-function lieInfo(x,len,placed){
-  var sup=[],rest=0;
-  placed.forEach(function(p){
-    if(p.mode==='stand'&&ov(x,x+len,p.x,p.x+p.w)){sup.push(p);rest=Math.max(rest,p.u.h);}
+/* На какой высоте ляжет книга длиной len с левым краем x: на самой высокой опоре под ней.
+   stands — стоящие, recs — уже уложенные лежачие. Опоры: все, чья верхняя грань не ниже самой высокой минус 6 мм. */
+function levelFor(x,len,stands,recs,p){
+  var hit=[],rest=0,i;
+  for(i=0;i<stands.length;i++){
+    var s=stands[i];
+    if(ov(x,x+len,s.x,s.x+s.w)) hit.push({top:s.u.h,x0:s.x,x1:s.x+s.w,d:s.u.w,ref:s});
+  }
+  for(i=0;i<recs.length;i++){
+    var r=recs[i],q=r.p;
+    if(ov(x,x+len,q.x,q.x+q.w)) hit.push({top:r.rest+q.u.t,x0:q.x,x1:q.x+q.w,d:q.u.w,ref:r});
+  }
+  var rec={p:p,x:x,len:len,rest:0,sup:[],lo:0,hi:SHELF.W,dmax:SHELF.D,floor:true};
+  if(hit.length){
+    var lo=Infinity,hi=-Infinity,dm=0;
+    hit.forEach(function(h){rest=Math.max(rest,h.top);});
+    hit.forEach(function(h){
+      if(h.top>=rest-REST_TOL){rec.sup.push(h.ref);lo=Math.min(lo,h.x0);hi=Math.max(hi,h.x1);dm=Math.max(dm,h.d);}
+    });
+    rec.rest=rest;rec.lo=lo;rec.hi=hi;rec.dmax=dm;rec.floor=false;
+  }
+  return rec;
+}
+/* Уложить все лежачие книги по порядку z. */
+function solveLevels(placed){
+  var stands=[],lies=[],recs=[];
+  placed.forEach(function(p){(p.mode==='stand'?stands:lies).push(p);});
+  lies.sort(function(a,b){return (a.z||0)-(b.z||0)||a.x-b.x||a.u.id-b.u.id;});
+  lies.forEach(function(p){recs.push(levelFor(p.x,p.w,stands,recs,p));});
+  return {stands:stands,recs:recs};
+}
+/* Высота, на которой лежит (или ляжет) книга u в точке x. Если книга уже на полке, берётся её настоящий уровень. */
+function restFor(u,x,placed){
+  var S=solveLevels(placed||placedList());
+  for(var i=0;i<S.recs.length;i++){if(S.recs[i].p.u===u) return S.recs[i].rest;}
+  return levelFor(x,u.h,S.stands,S.recs,null).rest;
+}
+/* Падает ли стопка: центр тяжести книги вместе со всем, что на ней держится, должен быть над её опорой (не ближе 10 мм к краю)
+   и по глубине не дальше края опоры. Книга на самом полу полки не падает. Возвращает неустойчивые записи. */
+function stackCheck(S){
+  var recs=S.recs,bad=[];
+  recs.forEach(function(r){
+    var set=[r],inSet=new Set([r]),grow=true,j;
+    while(grow){
+      grow=false;
+      for(j=0;j<recs.length;j++){
+        var q=recs[j];
+        if(inSet.has(q)||!q.sup.length) continue;
+        if(q.sup.every(function(s){return inSet.has(s);})){inSet.add(q);set.push(q);grow=true;}
+      }
+    }
+    var M=0,cx=0,cd=0;
+    set.forEach(function(q){var m=massOf(q.p.u);M+=m;cx+=m*(q.x+q.len/2);cd+=m*(q.p.u.w/2);});
+    cx/=M;cd/=M;
+    if(r.floor){
+      if(cd>SHELF.D+0.01) bad.push(r);
+    }else if(cx<r.lo+SUPPORT_MARGIN||cx>r.hi-SUPPORT_MARGIN||cd>r.dmax+0.01) bad.push(r);
   });
-  if(!sup.length) return null;
-  var lo=Infinity,hi=-Infinity;
-  sup.forEach(function(p){if(p.u.h>=rest-REST_TOL){lo=Math.min(lo,p.x);hi=Math.max(hi,p.x+p.w);}});
-  var c=x+len/2;
-  return {rest:rest,ok:c>=lo+SUPPORT_MARGIN&&c<=hi-SUPPORT_MARGIN};
+  return bad;
 }
 
 function canStand(placed,u,x){
-  var w=u.t;
-  if(!fits(u)||x<0||x+w>SHELF.W) return false;
-  for(var i=0;i<placed.length;i++){
+  var w=u.t,i;
+  if(!fitsStand(u)||x<0||x+w>SHELF.W) return false;
+  var anyLie=false;
+  for(i=0;i<placed.length;i++){
     var p=placed[i];
     if(!ov(x,x+w,p.x,p.x+p.w)) continue;
     if(p.mode==='stand') return false;
-    /* над этим местом лежит книга: стоящая не должна быть выше уровня, на котором она лежит */
-    var info=lieInfo(p.x,p.w,placed);
-    if(!info||u.h>info.rest+0.01) return false;
+    anyLie=true;
+  }
+  if(anyLie){
+    /* над этим местом лежат книги: стоящая не должна быть выше уровня, на котором они лежат */
+    var S=solveLevels(placed);
+    for(i=0;i<S.recs.length;i++){
+      var r=S.recs[i];
+      if(ov(x,x+w,r.x,r.x+r.len)&&u.h>r.rest+0.01) return false;
+    }
   }
   return standOK(placed.concat([{x:x,w:w,mode:'stand',u:u}]));
 }
 
 function canLie(placed,u,x){
   var len=u.h;
-  if(!fits(u)||x<0||x+len>SHELF.W) return false;
-  if(placed.some(function(p){return p.mode==='lie'&&ov(x,x+len,p.x,p.x+p.w);})) return false;
-  var info=lieInfo(x,len,placed);
-  return !!(info&&info.ok&&info.rest+u.t<=SHELF.H);
+  if(!fitsLie(u)||x<0||x+len>SHELF.W) return false;
+  var np={x:x,w:len,mode:'lie',u:u,z:nextZ(placed)};
+  var S=solveLevels(placed.concat([np])),me=null;
+  S.recs.forEach(function(r){if(r.p===np) me=r;});
+  if(!me||me.rest+u.t>SHELF.H+0.01) return false;
+  return stackCheck(S).length===0;
 }
 
-/* Кандидаты: шаг 5 мм, плюс «вплотную» к соседям и краям — им небольшая льгота. */
+/* Кандидаты: шаг 5 мм, плюс «вплотную» к соседям, краям и ровно по краю или по центру стопки — им небольшая льгота. */
 function candidates(placed,mode,w,maxX){
   var map={},list=[];
   function add(x,b){
@@ -1259,7 +1646,14 @@ function candidates(placed,mode,w,maxX){
   }
   for(var x=0;x<=maxX;x+=SHELF.STEP) add(x,0);
   add(0,FLUSH_BONUS);add(maxX,FLUSH_BONUS);
-  placed.forEach(function(p){if(p.mode===mode){add(p.x+p.w,FLUSH_BONUS);add(p.x-w,FLUSH_BONUS);}});
+  placed.forEach(function(p){
+    if(mode==='stand'){
+      if(p.mode==='stand'){add(p.x+p.w,FLUSH_BONUS);add(p.x-w,FLUSH_BONUS);}
+    }else{
+      add(p.x+p.w,FLUSH_BONUS);add(p.x-w,FLUSH_BONUS);
+      if(p.mode==='lie'){add(p.x,FLUSH_BONUS);add(p.x+p.w-w,FLUSH_BONUS);add(p.x+(p.w-w)/2,FLUSH_BONUS);}
+    }
+  });
   return list;
 }
 function nearestFree(test,list,desired,reach){
@@ -1280,20 +1674,44 @@ function findLie(placed,u,desired){
   return nearestFree(function(x){return canLie(placed,u,x);},candidates(placed,'lie',u.h,SHELF.W-u.h),desired,80);
 }
 
-/* Можно ли снять placed[idx]: лежачие книги не должны потерять опору или осесть ниже. */
+/* Можно ли снять placed[idx]: ничего не должно потерять опору, осесть ниже или упасть. */
 function canRemove(placed,idx){
   var rest=placed.filter(function(p,i){return i!==idx;});
   if(standOK(placed)&&!standOK(rest)) return false;
-  return rest.every(function(p){
-    if(p.mode!=='lie') return true;
-    var a=lieInfo(p.x,p.w,placed),b=lieInfo(p.x,p.w,rest);
-    return !!(b&&b.ok&&a&&Math.abs(a.rest-b.rest)<0.01);
+  var A=solveLevels(placed),B=solveLevels(rest),was=new Map(),ok=true;
+  A.recs.forEach(function(r){was.set(r.p,r.rest);});
+  B.recs.forEach(function(r){
+    var a=was.get(r.p);
+    if(a===undefined||Math.abs(a-r.rest)>0.01) ok=false;
   });
+  return ok&&stackCheck(B).length===0;
+}
+
+/* Что занимает пол полки: стоящие книги и лежащие прямо на полу. Возвращает слитые отрезки по длине полки. */
+function floorSpans(placed){
+  var iv=[];
+  placed.forEach(function(p){if(p.mode==='stand') iv.push([p.x,p.x+p.w]);});
+  solveLevels(placed).recs.forEach(function(r){if(r.rest<0.01) iv.push([r.x,r.x+r.len]);});
+  iv.sort(function(a,b){return a[0]-b[0];});
+  var out=[];
+  iv.forEach(function(s){
+    var l=out[out.length-1];
+    if(l&&s[0]<=l[1]+0.01) l[1]=Math.max(l[1],s[1]);else out.push([s[0],s[1]]);
+  });
+  return out;
 }
 function freeFloor(placed){
   var used=0;
-  placed.forEach(function(p){if(p.mode==='stand') used+=p.w;});
-  return SHELF.W-used;
+  floorSpans(placed).forEach(function(s){used+=s[1]-s[0];});
+  return Math.max(0,Math.round(SHELF.W-used));
+}
+/* Заполненность полки: доля занятого пола; полная, если не осталось места даже для самой тонкой книги. */
+function fillStats(placed,minT){
+  var spans=floorSpans(placed),used=0,gap=0,pos=0;
+  spans.forEach(function(s){used+=s[1]-s[0];gap=Math.max(gap,s[0]-pos);pos=s[1];});
+  gap=Math.max(gap,SHELF.W-pos);
+  var pct=Math.max(0,Math.min(1,used/SHELF.W));
+  return {pct:pct,full:placed.length>0&&(pct>=0.985||gap<Math.max(5,minT||5)),free:Math.round(SHELF.W-used),gap:Math.round(gap)};
 }
 
 /* ===== Раскладка текста ===== */
@@ -1374,7 +1792,7 @@ function shortAuthor(a){
   return w.replace(/[,;]+$/,'');
 }
 
-function loadDataset(raw,opts){
+function prepareDataset(raw,opts){
   opts=opts||{};
   var roles={},colRole=[];
   raw.columns.forEach(function(c,i){
@@ -1396,6 +1814,10 @@ function loadDataset(raw,opts){
     autoArrange();
     addLog([{type:'inf',t:'Новая полка расставлена автоматически',c:'',n:UNITS.filter(onShelf).length+' из '+UNITS.length+' на полке, остальные пачкой под полкой'}]);
   }
+  return res;
+}
+function loadDataset(raw,opts){
+  var res=prepareDataset(raw,opts);
   sel={id:UNITS.length?UNITS[0].id:0};
   logShelf=null;
   buildStatic();
@@ -1411,10 +1833,70 @@ function loadDataset(raw,opts){
   return res;
 }
 
-function buildUnits(){
-  UNITS=[];
-  var R=DS.roles,colorOf={},nextColor=0,id=0;
-  DS.rows.forEach(function(row,ri){
+/* ===== Модель полки без показа: книги на полке и заполненность любой полки, не только открытой ===== */
+var MODEL={};
+function modelNow(){
+  var placed=placedList(),S=solveLevels(placed),books=[];
+  S.stands.forEach(function(p){books.push({x:p.x,w:p.w,h:p.u.h,t:p.u.t,lie:0,rest:0,c:p.u.color,id:p.u.id});});
+  S.recs.forEach(function(r){books.push({x:r.p.x,w:r.len,h:r.p.u.h,t:r.p.u.t,lie:1,rest:r.rest,c:r.p.u.color,id:r.p.u.id,ov:overhang(r.p.u)});});
+  return {books:books,fill:fillStats(placed,minThin()),n:placed.length,total:UNITS.length};
+}
+function modelSig(id,raw){
+  var sv=readSaved(raw.sheet);
+  return [sv?sv.ts:0,raw.at||raw.hash||raw.rows.length,raw.rows.length,movSig()].join('|');
+}
+function shelfModel(id){
+  id=String(id);
+  if(id===NAV.cur&&DS&&!TEMP) return modelNow();
+  var raw=NAV.real[id]||testRaw(id);
+  if(!raw) return null;
+  var sig=modelSig(id,raw);
+  if(MODEL[id]&&MODEL[id].sig===sig) return MODEL[id];
+  var S={DS:DS,UNITS:UNITS,cur:NAV.cur,pile:pileSig,undo:undoStack,sel:sel,arm:arm,flash:flashId,note:statusNote,pc:pileCount,pr:ROWBASE,vh:VH,tr:NAV.test[id],re:NAV.real[id]},m=null;
+  TEMP=true;
+  try{
+    prepareDataset(raw,{sync:true});
+    m=modelNow();m.sig=sig;
+  }catch(err){
+    if(window.console) console.warn('Не удалось посчитать полку '+id,err);
+  }finally{
+    TEMP=false;
+    DS=S.DS;UNITS=S.UNITS;NAV.cur=S.cur;pileSig=S.pile;undoStack=S.undo;sel=S.sel;arm=S.arm;flashId=S.flash;statusNote=S.note;pileCount=S.pc;ROWBASE=S.pr;VH=S.vh;
+  }
+  if(m) MODEL[id]=m;
+  return m;
+}
+function fillOf(id){var m=shelfModel(id);return m?m.fill:null;}
+/* заполненность стеллажа: среднее по его полкам; полный, когда полны все полки */
+function rackFillStats(ids){
+  var sum=0,cnt=0,full=true,n=0,total=0;
+  ids.forEach(function(id){
+    var m=shelfModel(id);
+    if(!m) return;
+    cnt++;sum+=m.fill.pct;if(!m.fill.full) full=false;n+=m.n;total+=m.total;
+  });
+  return {pct:cnt?sum/cnt:0,full:cnt>0&&full,n:n,total:total,cnt:cnt};
+}
+function updateRackFill(){
+  if(!el.rkFill||!DS) return;
+  var r=rackInfo(NAV.cur),st=rackFillStats(r.list),pct=Math.round(st.pct*100);
+  el.rkFill.hidden=false;
+  el.rkFill.className='fillpill'+(st.full?' full':'');
+  el.rkFill.innerHTML='<i class="fbar"><b style="width:'+pct+'%"></b></i><span>'+(st.full?'стеллаж полон':'стеллаж '+pct+'%')+'</span>';
+  el.rkFill.title=(st.full?'Все полки стеллажа заполнены':'Стеллаж заполнен на '+pct+' %')+': на полках '+st.n+' из '+st.total+' книг.';
+}
+
+function analyzeRaw(raw){
+  var roles={},colRole=[];
+  raw.columns.forEach(function(c,i){
+    var r=roleOf(c.label);colRole.push(r);
+    if(r&&roles[r]==null) roles[r]=i;
+  });
+  return {sheet:raw.sheet,columns:raw.columns,rows:raw.rows,roles:roles,colRole:colRole};
+}
+function unitsFrom(D,id0){
+  var out=[],R=D.roles,colorOf={},nextColor=0,id=id0||0;
+  D.rows.forEach(function(row,ri){
     function g(role){return R[role]==null?null:row[R[role]];}
     var title=str(g('title'))||'Без названия',author=str(g('author'));
     var h=num(g('h')),w=num(g('w')),t=num(g('t'));
@@ -1425,15 +1907,42 @@ function buildUnits(){
     var key=(author||title).toLowerCase();
     if(colorOf[key]==null){colorOf[key]=nextColor;nextColor=(nextColor+1)%PALETTE.length;}
     var code=g('code');code=code==null?'':(typeof code==='number'?String(Math.round(code)):str(code));
-    for(var c=1;c<=n&&UNITS.length<MAXU;c++){
-      UNITS.push({
+    for(var c=1;c<=n&&out.length<MAXU;c++){
+      out.push({
         id:++id,ri:ri,code:code,title:title,author:author,short:shortAuthor(author),color:colorOf[key],
         h:h,w:w,t:t,defs:defs,bk:bindKind(g('binding')),
         copyN:n,copyI:c,copyText:R.copy!=null?str(g('copy')):'',
-        where:'stock',x:0,mode:'stand',pile:0,
+        where:'stock',x:0,mode:'stand',pile:0,home:'',src:null,
         sig:[title,author,h,w,t,bindKind(g('binding')),n].join('|')
       });
     }
+  });
+  return out;
+}
+/* Книги, перенесённые с других полок. MOVES.m[«полка|ключ»]={to:куда,row:строка таблицы}, MOVES.cols[полка]=столбцы той таблицы:
+   перенесённая книга несёт свою строку с собой и не зависит от того, загружена ли её прежняя полка. */
+var MOVES={m:{},cols:{}},MOVES_KEY='gp.moves.v1',AWAY=[];
+function loadMoves(){
+  try{var r=JSON.parse(localStorage.getItem(MOVES_KEY)||'null');if(r&&r.m){MOVES.m=r.m;MOVES.cols=r.cols||{};}}catch(_){}
+}
+function saveMoves(){try{localStorage.setItem(MOVES_KEY,JSON.stringify(MOVES));}catch(_){}}
+function movSig(){return String(hashStr(JSON.stringify(MOVES.m)));}
+function buildUnits(){
+  var all=unitsFrom(DS,0),cur=DS.shelf,gi=100000;
+  UNITS=[];AWAY=[];
+  all.forEach(function(u){
+    var mv=MOVES.m[cur+'|'+baseKey(u)];
+    if(mv&&mv.to!==cur) AWAY.push({u:u,to:mv.to});else UNITS.push(u);
+  });
+  Object.keys(MOVES.m).forEach(function(mk){
+    var mv=MOVES.m[mk],bar=mk.indexOf('|'),home=mk.slice(0,bar),key=mk.slice(bar+1);
+    if(mv.to!==cur||home===cur||!MOVES.cols[home]) return;
+    var D=analyzeRaw({sheet:home,columns:MOVES.cols[home],rows:[mv.row]}),f=null;
+    unitsFrom(D,0).forEach(function(u){if(baseKey(u)===key) f=u;});
+    if(!f) return;
+    f.id=++gi;f.home=home;f.src=D;f.ri=0;
+    f.color=hashStr(f.author||f.title)%PALETTE.length;
+    UNITS.push(f);
   });
 }
 
@@ -1461,8 +1970,9 @@ function planPiles(){
 function applyLayout(){
   var R=DS.roles,items=[];
   UNITS.forEach(function(u){
+    if(u.home) return;
     var row=DS.rows[u.ri],where=str(row[R.where]).toLowerCase(),x=num(row[R.px]);
-    if(/полк/.test(where)&&isFinite(x)) items.push({u:u,x:x,mode:/л[её]ж/i.test(str(row[R.orient]))?'lie':'stand'});
+    if(/полк/.test(where)&&isFinite(x)) items.push({u:u,x:x,mode:/л[её]ж/i.test(str(row[R.orient]))?'lie':'stand',z:R.lvl==null?0:(num(row[R.lvl])||0)});
   });
   placeItems(items);
   return items.length;
@@ -1470,13 +1980,13 @@ function applyLayout(){
 
 function placedList(){
   return UNITS.filter(function(u){return u.where==='shelf';}).map(function(u){
-    return {x:u.x,w:u.mode==='lie'?u.h:u.t,mode:u.mode,u:u};
+    return {x:u.x,w:u.mode==='lie'?u.h:u.t,mode:u.mode,u:u,z:u.z||0};
   });
 }
 
 function initEls(){
   ['scene','scroller','grid','books','ruler','stock','float','ghost','hitlayer','piles','plate','cover',
-   'bcode','bname','bauthor','binfo','side','sVol','sSL','sFree','sStock','msg','undo','clear','file','menubar','dock','dockT','dockName','dockInfo','dkLL','dkL','dkOk','dkR','dkRR','dkLie','dkTake','dkCancel','coverPhoto','cvsrc','stage','chlog','mbItems','mbBurger','mbStatus','mbStx','srcnote','auto','gsync','dlgSet','dlgInfo','infT','infB','infOk','sFalls','sThin','sLean','sCovers','sLog','sBig','sStep','gMode','gUrl','gTabs','gGen','gOauth','gCid','gAcct','gIn','gOut','gAuto','gTest','gLoad','gStat','gHelp','setReset','setOk',
+   'bcode','bname','bauthor','binfo','side','sVol','sSL','sFree','sStock','msg','undo','clear','file','menubar','dock','dockT','dockName','dockInfo','dkLL','dkL','dkOk','dkR','dkRR','dkLie','dkTake','dkCancel','coverPhoto','cvsrc','stage','chlog','mbItems','mbBurger','mbStatus','mbStx','srcnote','tnote','gKey','gKeyL','gForget','dlgTabs','tbQ','tbAll','tbNone','tbList','tbAdd','tbName','tbAddBtn','tbStat','tbProg','tbBar','tbCols','tbCancel','tbGo','tbSub','bkMove','bkHome','dkMove','mvBar','dlgMv','mvT','mvSub','mvList','mvClose','overview','ovBack','ovUndo','ovAuto','ovNote','ovSel','ovGrid','ovPrev','ovNext','ovNew','ovCap','frameMain','doors','fill','rkFill','rail','rbSearch','rbView','rbColor','rbDoors','pSearch','pView','pColor','rkOv','dlgSet','dlgInfo','infT','infB','infOk','sFalls','sThin','sLean','sCovers','sLog','sBig','sStep','gMode','gUrl','gTabs','gGen','gOauth','gCid','gAcct','gIn','gOut','gAuto','gTest','gLoad','gStat','gHelp','setReset','setOk',
    'found','pageSlide','shelfIn','nbUp','nbUpS','nbUpSvg','shUp','nbDown','nbDownS','nbDownSvg','shDown','rkL','rkR','rkCap','sRack','dvUrl','dvMode','dvKeyL','dvKey','dvCidL','dvCid','dvEng','dvEngNote','dvGemB','dvGKey','dvGModel','dvSub','dvRedo','dvGo','dvsStat','dlgDv','dvStat','dvProg','dvBar','dvSum','dvList','dvStop','dvClose','dvApply','pHome','pL','pRange','pR','pEnd','pVal','zOut','zRange','zIn','zVal','zFit','srQ','srPrev','srCnt','srNext','srClear','srList','cvAdd','sSpines','sShDir','dlgPh','phCnt','phDir','phFiles','phDirNote','phDirAct','phRescan','phForget','phName','phDirIn','phFilesIn','phOne','phWk','phTg','phTgAll','phTgStat','phHow','phStat','phClear','phOk',
    'sub','foot','legend','dlg','dFile','dSheet','dStat','dGen','dGenL','dCols','dAll','dNone','dCancel','dOk'
   ].forEach(function(id){el[id]=$(id);});
@@ -1520,6 +2030,7 @@ function unitShape(u,o){
       s+='<text class="sp" x="'+(x0+L-pad-3).toFixed(1)+'" y="'+(afs*0.35).toFixed(2)+'" font-size="'+afs.toFixed(2)+'" text-anchor="end" fill-opacity=".88">'+esc(u.short)+'</text>';
     }
   }
+  if(overhang(u)>0) s+='<rect class="ovh" x="'+(x0+1)+'" y="'+(y0+1)+'" width="'+(L-2)+'" height="'+(t-2)+'"/>';
   if(o.flash) s+='<rect class="flash" x="'+x0+'" y="'+y0+'" width="'+L+'" height="'+t+'"/>';
   if(o.sel) s+='<rect class="selo" x="'+(x0-1.3)+'" y="'+(y0-1.3)+'" width="'+(L+2.6)+'" height="'+(t+2.6)+'"/>';
   return s;
@@ -1540,7 +2051,7 @@ function pileLayout(extraId){
 
 function shelfCenter(u,x,mode,placed){
   if(mode==='lie'){
-    var info=lieInfo(x,u.h,placed||placedList()),rest=info?info.rest:u.h;
+    var rest=restFor(u,x,placed||placedList());
     return {cx:SX+x+u.h/2,cy:FLOOR-rest-u.t/2,rest:rest};
   }
   return {cx:SX+x+u.t/2,cy:FLOOR-u.h/2};
@@ -1565,7 +2076,7 @@ function buildStatic(){
   el.ruler.innerHTML='<path class="tk" d="'+d+'"/>'+lab;
   drawPileBase();
 
-  drawPlate();
+  drawPlate();applyFrameColor();
   if(plateAnim){plateAnim=false;el.plate.classList.remove('in');void el.scene.getBoundingClientRect();el.plate.classList.add('in');}
   el.scene.setAttribute('aria-label',shelfTitle(NAV.cur,DS.sheet)+'. Под ней стопки книг, их можно перетаскивать на полку.');
 }
@@ -1600,19 +2111,19 @@ function renderAll(){
   });
   el.stock.innerHTML=s;
 
-  var placed=placedList(),st='',ly='';
+  var placed=placedList(),st='',ly='',S=solveLevels(placed);
   UNITS.forEach(function(u){
-    if(u.where!=='shelf') return;
-    var o={sel:sel.id===u.id,flash:u.id===flashId,lie:u.mode==='lie'},c;
-    if(u.mode==='stand'){
-      c=shelfCenter(u,u.x,'stand');
-      st+='<g transform="translate('+c.cx+' '+c.cy+') rotate(90)"'+dimA(u)+'>'+unitShape(u,o)+'</g>';
-      hits.push({kind:'shelf',prio:1,u:u,x0:c.cx-u.t/2,x1:c.cx+u.t/2,y0:FLOOR-u.h,y1:FLOOR,cx:c.cx,cy:c.cy});
-    }else{
-      c=shelfCenter(u,u.x,'lie',placed);
-      ly+='<g transform="translate('+c.cx+' '+c.cy+')"'+dimA(u)+'>'+unitShape(u,o)+'</g>';
-      hits.push({kind:'shelf',prio:2,u:u,x0:c.cx-u.h/2,x1:c.cx+u.h/2,y0:c.cy-u.t/2,y1:c.cy+u.t/2,cx:c.cx,cy:c.cy});
-    }
+    if(u.where!=='shelf'||u.mode!=='stand') return;
+    var o={sel:sel.id===u.id,flash:u.id===flashId,lie:false},c=shelfCenter(u,u.x,'stand');
+    st+='<g transform="translate('+c.cx+' '+c.cy+') rotate(90)"'+dimA(u)+'>'+unitShape(u,o)+'</g>';
+    hits.push({kind:'shelf',prio:1,u:u,x0:c.cx-u.t/2,x1:c.cx+u.t/2,y0:FLOOR-u.h,y1:FLOOR,cx:c.cx,cy:c.cy});
+  });
+  /* лежачие рисуются снизу вверх в порядке укладки, поэтому верхние книги стопки поверх нижних */
+  S.recs.forEach(function(r,i){
+    var u=r.p.u,o={sel:sel.id===u.id,flash:u.id===flashId,lie:true};
+    var cx=SX+u.x+u.h/2,cy=FLOOR-r.rest-u.t/2;
+    ly+='<g transform="translate('+cx+' '+cy+')"'+dimA(u)+'>'+unitShape(u,o)+'</g>';
+    hits.push({kind:'shelf',prio:2+i*0.001,u:u,x0:cx-u.h/2,x1:cx+u.h/2,y0:cy-u.t/2,y1:cy+u.t/2,cx:cx,cy:cy});
   });
   el.books.innerHTML=st+ly;
 
@@ -1624,6 +2135,7 @@ function renderAll(){
   drawFound();
   drawArm();
   updateDock();
+  drawShelfExtras();
 
   renderInfo();
   renderSide();
@@ -1697,28 +2209,34 @@ function whereText(u){
   if(u.where==='arm') return 'в руке: выберите место на полке';
   if(u.where!=='shelf') return 'в стопке';
   var w=u.mode==='lie'?u.h:u.t;
-  return 'на полке · '+(u.mode==='lie'?'лёжа':'стоя')+' · '+u.x+'–'+(u.x+w)+' мм';
+  var extra='';
+  if(u.mode==='lie'){var rs=restFor(u,u.x,placedList());if(rs>0.5) extra=' · в стопке, на высоте '+Math.round(rs)+' мм';}
+  return 'на полке · '+(u.mode==='lie'?'лёжа':'стоя')+' · '+u.x+'–'+(u.x+w)+' мм'+extra;
 }
 
 function renderInfo(){
   var u=byId(sel.id);
   if(!u){
+    el.bkHome.hidden=true;el.bkMove.hidden=true;
     el.cover.innerHTML='';setCoverPhoto(null);el.bcode.textContent='';el.bname.textContent='Нет книг';el.bauthor.textContent='';el.binfo.innerHTML='';
     return;
   }
   renderCover(u);
   setCoverPhoto(u);
+  el.bkHome.hidden=!u.home;
+  el.bkHome.textContent='Вернуть на полку '+(u.home||'');
+  el.bkMove.hidden=false;
   el.bcode.textContent=u.code?'Номер в каталоге: '+u.code:'';
   el.bname.textContent=u.title;
   el.bauthor.textContent=u.author||'Автор не указан';
-  var row=DS.rows[u.ri],items=[],sized=false;
+  var D=dsOf(u),row=D.rows[u.ri],items=[],sized=false;
   function sizeItem(){
     sized=true;
     var d=[];if(u.defs.h) d.push('высота');if(u.defs.w) d.push('ширина');if(u.defs.t) d.push('корешок');
     items.push(['Размер, мм','<span class="mono">'+u.h+' × '+u.w+' × '+u.t+'</span> <span class="hint">высота × ширина × корешок'+(d.length?'; по умолчанию: '+d.join(', '):'')+'</span>']);
   }
-  DS.columns.forEach(function(c,i){
-    var role=DS.colRole[i],v=row[i];
+  D.columns.forEach(function(c,i){
+    var role=D.colRole[i],v=row[i];
     if(role==='h'||role==='w'||role==='t'){if(!sized) sizeItem();return;}
     if(HIDE[role]) return;
     if(v==null||str(v)==='') return;
@@ -1727,6 +2245,8 @@ function renderInfo(){
   if(!sized) sizeItem();
   if(u.copyN>1) items.push(['Экземпляр','<span class="mono">'+u.copyI+' из '+u.copyN+'</span>']);
   else if(u.copyText) items.push(['Экземпляр','<span class="mono">'+esc(u.copyText)+'</span>']);
+  if(u.home) items.push(['Своя полка','<span class="mono">'+esc(u.home)+'</span> <span class="hint">книга перенесена сюда</span>']);
+  if(overhang(u)>0) items.push(['Глубже полки','<span class="mono">+'+Math.round(overhang(u))+' мм</span> <span class="hint">книга шире полки ('+SHELF.D+' мм) и выступает вперёд, пока центр тяжести над полкой</span>']);
   items.push(['Сейчас',esc(whereText(u))]);
   el.binfo.innerHTML=items.map(function(it){return '<div><dt>'+esc(it[0])+'</dt><dd>'+it[1]+'</dd></div>';}).join('');
 }
@@ -1735,14 +2255,17 @@ function renderSide(){
   var u=byId(sel.id);
   if(!u){el.side.innerHTML='';return;}
   var lie=u.where==='shelf'&&u.mode==='lie',rest=0;
-  if(lie){var info=lieInfo(u.x,u.h,placedList());rest=info?info.rest:0;}
+  if(lie) rest=restFor(u,u.x,placedList());
   var bw=u.w,bh=lie?u.t:u.h,by=lie?260-rest-u.t:260-u.h;
   var c=PALETTE[u.color].fill;
+  var extraW=Math.max(0,bw-240);
+  el.side.setAttribute('viewBox','-34 -30 '+(320+extraW)+' 345');
   var s='<rect class="interior" x="0" y="0" width="240" height="260"/>';
   if(lie) s+='<rect x="0" y="'+(260-rest)+'" width="'+bw+'" height="'+rest+'" fill="none" stroke="#8a95a0" stroke-width="1.2" stroke-dasharray="5 4"/>';
   s+='<rect x="0" y="'+by+'" width="'+bw+'" height="'+bh+'" fill="'+c+'" stroke="#fff" stroke-width="1"/>';
   s+='<path d="M0 0H240V260" fill="none" stroke="#34404b" stroke-width="1.6"/><rect x="-6" y="260" width="252" height="8" fill="#e3e8ed" stroke="#34404b" stroke-width="1.2"/>';
   var rx=bw+12;
+  if(extraW>0) s+='<path d="M240 '+(by-4)+'V'+(by+bh+4)+'" stroke="#d9822b" stroke-width="1.2" stroke-dasharray="4 3" fill="none"/>';
   s+='<g class="side-d">'+
      '<path d="M0 290H240M0 285V295M240 285V295"/><text x="120" y="308" text-anchor="middle">глубина 240 мм</text>'+
      '<path d="M-14 0V260M-19 0H-9M-19 260H-9"/><text transform="translate(-22 130) rotate(-90)" text-anchor="middle">260 мм</text>'+
@@ -1786,10 +2309,10 @@ function armTest(placed){
 }
 function armGhost(){
   var u=arm.u,placed=placedList(),mode=armMode(),w=mode==='lie'?u.h:u.t;
-  if(!fits(u)) return {ok:false,x:arm.x,mode:mode,w:w,why:'не помещается'};
+  if(isClosed(NAV.cur)) return {ok:false,x:arm.x,mode:mode,w:w,why:'шкаф закрыт: откройте створки'};
   var ok=armTest(placed)(arm.x),g={ok:ok,x:arm.x,mode:mode,w:w};
-  if(ok){if(mode==='lie'){var info=lieInfo(arm.x,u.h,placed);g.rest=info?info.rest:u.h;}}
-  else g.why=mode==='lie'?'нет опоры':standWhy(placed,u,arm.x);
+  if(ok){if(mode==='lie') g.rest=restFor(u,arm.x,placed);}
+  else g.why=mode==='lie'?lieWhy(placed,u,arm.x):standWhy(placed,u,arm.x);
   return g;
 }
 function armCenter(g){
@@ -1849,15 +2372,17 @@ function updateDock(){
   el.dkOk.disabled=!g.ok;
   el.dkLie.textContent=arm.lie?'Поставить стоя':'Положить';
   el.dkTake.hidden=arm.from!=='shelf';
+  el.dkMove.hidden=shelfIdsSorted().length<2;
 }
 
 function armBook(u){
   var placed=placedList(),fromShelf=u.where==='shelf';
+  if(fromShelf&&isClosed(NAV.cur)){closedNote();return false;}
   if(fromShelf){
     var idx=placed.findIndex(function(q){return q.u===u;});
     if(!canRemove(placed,idx)){statusNote=lockWhy(placed,idx);renderAll();return false;}
   }
-  arm={u:u,from:fromShelf?'shelf':'stock',fx:u.x,fmode:u.mode,prev:snap(),lie:fromShelf&&u.mode==='lie',x:fromShelf?u.x:0,g:null};
+  arm={u:u,from:fromShelf?'shelf':'stock',fx:u.x,fmode:u.mode,fz:u.z||0,prev:snap(),lie:fromShelf&&u.mode==='lie',x:fromShelf?u.x:0,g:null};
   u.where='arm';
   if(!fromShelf){
     var sp=firstSpot(placedList(),u,'stand');
@@ -1879,7 +2404,7 @@ function disarm(restore){
   var a=arm,u=a.u;
   arm=null;
   if(restore){
-    if(a.from==='shelf'){u.where='shelf';u.x=a.fx;u.mode=a.fmode;}else u.where='stock';
+    if(a.from==='shelf'){u.where='shelf';u.x=a.fx;u.mode=a.fmode;u.z=a.fz||0;}else u.where='stock';
   }
   el.float.innerHTML='';el.float.removeAttribute('transform');el.float.classList.remove('armed');
   setGhost(null,null);hideDock();
@@ -1889,7 +2414,7 @@ function armCommit(keep){
   if(!arm) return false;
   var a=arm,u=a.u,g=armGhost();
   if(!g.ok){updateDock();return false;}
-  u.where='shelf';u.x=a.x;u.mode=a.lie?'lie':'stand';
+  putOnShelf(u,a.x,a.lie?'lie':'stand');
   commit(a.prev);
   flashId=u.id;
   arm=null;
@@ -1989,14 +2514,18 @@ function swipeEnd(e){
 /* ===== Действия над расстановкой (меню, кнопки, клавиши) ===== */
 function doUndo(){
   if(float) return;
+  if(isClosed(NAV.cur)&&undoStack.length){closedNote();toast('Шкаф закрыт створками: сначала откройте их.',3500);return;}
   if(arm) disarm(true);
   if(!undoStack.length) return;
-  restore(undoStack.pop());
+  var last=undoStack.pop();
+  if(last.charAt(0)==='M'){undoMove(JSON.parse(last.slice(2)));return;}
+  restore(last);
   flashId=null;statusNote='';
   renderAll();syncButtons();
 }
 function doClear(){
   if(float) return;
+  if(isClosed(NAV.cur)){closedNote();toast('Шкаф закрыт створками: сначала откройте их.',3500);return;}
   if(arm) disarm(true);
   var prev=snap();
   UNITS.forEach(function(u){u.where='stock';});
@@ -2007,6 +2536,7 @@ function doClear(){
 }
 function doAuto(){
   if(float||!UNITS.length) return;
+  if(isClosed(NAV.cur)){closedNote();toast('Шкаф закрыт створками: сначала откройте их.',3500);return;}
   if(arm) disarm(true);
   var prev=snap();
   autoArrange();
@@ -2043,8 +2573,8 @@ var reduce=!!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: red
 var undoStack=[],float=null,activeId=null,touch=false,cli={x:0,y:0},ptr={x:0,y:0},ghostKey='';
 var raf=0,last=0,noteT=0;
 
-function snap(){return JSON.stringify(UNITS.map(function(u){return [u.id,u.where,u.x,u.mode];}));}
-function restore(s){JSON.parse(s).forEach(function(a){var u=byId(a[0]);u.where=a[1];u.x=a[2];u.mode=a[3];});}
+function snap(){return JSON.stringify(UNITS.map(function(u){return [u.id,u.where,u.x,u.mode,u.z||0];}));}
+function restore(s){JSON.parse(s).forEach(function(a){var u=byId(a[0]);if(!u) return;u.where=a[1];u.x=a[2];u.mode=a[3];u.z=a[4]||0;});}
 function commit(prev){
   if(prev!==snap()){
     undoStack.push(prev);
@@ -2052,6 +2582,7 @@ function commit(prev){
   }
 }
 function syncButtons(){
+  updateRackFill();
   el.undo.disabled=!undoStack.length;
   el.clear.disabled=!UNITS.some(function(u){return u.where==='shelf';});
   afterChange();
@@ -2091,11 +2622,11 @@ function overShelf(cx,cy){return cx>=SX-60&&cx<=SX+SHELF.W+60&&cy>=SY-30&&cy<=FL
 
 function computeGhost(f){
   var placed=placedList(),u=f.u,d,x;
-  if(!fits(u)) return {ok:false,x:0,mode:f.lie?'lie':'stand',w:f.lie?u.h:u.t,why:'не помещается'};
+  if(isClosed(NAV.cur)) return {ok:false,x:0,mode:f.lie?'lie':'stand',w:f.lie?u.h:u.t,why:'шкаф закрыт: откройте створки'};
   if(f.lie){
     d=f.cx-SX-u.h/2;x=findLie(placed,u,d);
-    if(x!==null) return {ok:true,x:x,mode:'lie',w:u.h,rest:shelfCenter(u,x,'lie',placed).rest};
-    return {ok:false,x:Math.max(0,Math.min(SHELF.W-u.h,snap5(d))),mode:'lie',w:u.h,why:'нет опоры'};
+    if(x!==null) return {ok:true,x:x,mode:'lie',w:u.h,rest:restFor(u,x,placed)};
+    return {ok:false,x:Math.max(0,Math.min(SHELF.W-u.h,snap5(d))),mode:'lie',w:u.h,why:lieWhy(placed,u,d)};
   }
   d=f.cx-SX-u.t/2;x=findStand(placed,u,d);
   if(x!==null) return {ok:true,x:x,mode:'stand',w:u.t};
@@ -2109,7 +2640,7 @@ function setGhost(g,u){
   if(!g){el.ghost.innerHTML='';return;}
   var c=g.ok?'ok':'bad',lie=g.mode==='lie';
   var h=lie?u.t:u.h,y=lie?FLOOR-(g.rest||u.h)-u.t:FLOOR-u.h;
-  var label=g.ok?(g.x+'–'+(g.x+g.w)+' мм'+(lie?' · сверху':'')):g.why;
+  var label=g.ok?(g.x+'–'+(g.x+g.w)+' мм'+(lie?(g.rest>0?' · на '+Math.round(g.rest)+' мм от пола':' · на полу'):'')):g.why;
   el.ghost.innerHTML=
     '<rect class="ghr '+c+'" x="'+(SX+g.x)+'" y="'+FLOOR+'" width="'+g.w+'" height="'+WALL+'"/>'+
     '<rect class="gh '+c+'" x="'+(SX+g.x)+'" y="'+y+'" width="'+g.w+'" height="'+h+'"/>'+
@@ -2141,7 +2672,11 @@ function loop(ts){
 
     /* над полкой книга ложится горизонтально, когда её поднимают выше вершин (около 0,84 высоты) */
     var over=overShelf(float.cx,float.cy),wantLie=false,hh=float.u.h;
-    if(over) wantLie=float.lie?float.cy<FLOOR-hh*0.71:float.cy<FLOOR-hh*0.84;
+    if(over){
+      var nat=float.nat?float.cy<FLOOR-hh*0.71:float.cy<FLOOR-hh*0.84;
+      float.nat=nat;
+      wantLie=float.flip?!nat:nat;
+    }
     float.lie=wantLie;
     float.target=wantLie?0:90;
     setSpineRot(wantLie);
@@ -2173,6 +2708,7 @@ function tweenTo(cx,cy,angle,dur,done){
 }
 
 function endDrag(){
+  mvHide();
   float=null;activeId=null;
   el.float.innerHTML='';el.float.removeAttribute('transform');
   setGhost(null,null);
@@ -2196,7 +2732,14 @@ function onDown(e){
   sel={id:u.id};
   statusNote='';
   flashId=null;
-  if(h.kind==='shelf'&&u.mode==='stand'){
+  if(h.kind==='shelf'&&isClosed(NAV.cur)){
+    /* шкаф закрыт: книгу можно посмотреть (карточка), но не взять */
+    e.preventDefault();
+    closedNote();
+    renderAll();
+    return;
+  }
+  if(h.kind==='shelf'){
     var placed=placedList(),idx=placed.findIndex(function(q){return q.u===u;});
     if(!canRemove(placed,idx)){
       e.preventDefault();
@@ -2211,15 +2754,16 @@ function onDown(e){
   var prev=snap(),c;
   if(h.kind==='stock'){
     c=pileLayout()[u.id];
-    float={u:u,source:'stock',prev:prev,lie:false,angle:0,target:90,cx:c.cx,cy:c.cy,
+    float={u:u,source:'stock',prev:prev,lie:false,nat:false,flip:false,angle:0,target:90,cx:c.cx,cy:c.cy,
       ox:c.cx-p.x,oy:c.cy-p.y,tox:0,toy:-lift,mode:'drag'};
   }else{
     c=shelfCenter(u,u.x,u.mode);
     var lie=u.mode==='lie';
-    float={u:u,source:'shelf',prev:prev,fromX:u.x,fromMode:u.mode,lie:lie,angle:lie?0:90,target:lie?0:90,cx:c.cx,cy:c.cy,
+    float={u:u,source:'shelf',prev:prev,fromX:u.x,fromMode:u.mode,fromZ:u.z||0,lie:lie,nat:lie,flip:false,angle:lie?0:90,target:lie?0:90,cx:c.cx,cy:c.cy,
       ox:c.cx-p.x,oy:c.cy-p.y,tox:c.cx-p.x,toy:c.cy-p.y-lift,mode:'drag'};
   }
   float.startX=e.clientX;float.startY=e.clientY;float.t0=performance.now();
+  mvShow();
   u.where='float';
   el.float.innerHTML=unitShape(u,{lie:float.target===0});
   drawFloat();
@@ -2235,6 +2779,7 @@ function onMove(e){
   if(float){
     if(e.pointerId!==activeId) return;
     cli={x:e.clientX,y:e.clientY};
+    mvHover(e.clientX,e.clientY);
     return;
   }
   if(e.pointerType==='mouse'){
@@ -2259,17 +2804,26 @@ function release(cancel){
   try{el.scene.releasePointerCapture(activeId);}catch(_){}
   if(!cancel&&Math.hypot(cli.x-f.startX,cli.y-f.startY)<10&&performance.now()-f.t0<600){
     setGhost(null,null);
-    if(f.source==='shelf'){u.where='shelf';u.x=f.fromX;u.mode=f.fromMode;}else u.where='stock';
+    if(f.source==='shelf'){u.where='shelf';u.x=f.fromX;u.mode=f.fromMode;u.z=f.fromZ||0;}else u.where='stock';
     endDrag();
     tapBook(u);
     return;
   }
 
+  var mt=cancel?null:mvTargetAt(cli.x,cli.y);
+  if(mt){
+    setGhost(null,null);
+    if(f.source==='shelf'){u.where='shelf';u.x=f.fromX;u.mode=f.fromMode;u.z=f.fromZ||0;}else u.where='stock';
+    endDrag();
+    if(mt.id==='*') openMoveDialog(u);
+    else moveUnitTo(u,mt.id);
+    return;
+  }
   if(!cancel&&g&&g.ok){
     setGhost(g,u);
     var c=shelfCenter(u,g.x,g.mode);
     tweenTo(c.cx,c.cy,g.mode==='lie'?0:90,170,function(){
-      u.where='shelf';u.x=g.x;u.mode=g.mode;
+      putOnShelf(u,g.x,g.mode);
       flashId=u.id;
       commit(f.prev);
       endDrag();
@@ -2280,7 +2834,7 @@ function release(cancel){
   if(f.source==='shelf'&&(over||cancel)){
     var o=shelfCenter(u,f.fromX,f.fromMode);
     tweenTo(o.cx,o.cy,f.fromMode==='lie'?0:90,220,function(){
-      u.where='shelf';u.x=f.fromX;u.mode=f.fromMode;
+      u.where='shelf';u.x=f.fromX;u.mode=f.fromMode;u.z=f.fromZ||0;
       commit(f.prev);
       endDrag();
     });
@@ -2692,16 +3246,19 @@ function widthsOf(table){
 async function exportXlsx(){
   if(typeof JSZip==='undefined'){note('Не загрузилась библиотека записи Excel (vendor/jszip.min.js). Положите папку vendor рядом с index.html.',8000);return;}
   if(!DS||!UNITS.length){note('Нечего выгружать: на экране нет книг.');return;}
-  var APPCOLS={where:1,px:1,orient:1,copy:1};
+  var APPCOLS={where:1,px:1,orient:1,copy:1,lvl:1},guests=UNITS.filter(function(u){return u.home;}).length;
   var keep=[];
   DS.columns.forEach(function(c,i){if(!APPCOLS[DS.colRole[i]]) keep.push(i);});
-  var head=keep.map(function(i){return DS.columns[i].label;}).concat(['Положение','Позиция, мм','Ориентация','Экземпляр']);
+  var head=keep.map(function(i){return DS.columns[i].label;}).concat(['Положение','Позиция, мм','Ориентация','Ярус','Экземпляр']);
   var table=[head];
-  UNITS.forEach(function(u){
-    var r=DS.rows[u.ri],row=keep.map(function(i){return r[i]==null?null:r[i];});
+  UNITS.concat(AWAY.map(function(a){return a.u;})).forEach(function(u){
+    if(u.home) return;
+    var r=DS.rows[u.ri],row=keep.map(function(i){return r[i]==null?null:r[i];}),aw=AWAY.filter(function(a){return a.u===u;})[0];
+    if(aw){row.push('перенесена на полку '+aw.to);row.push(null);row.push(null);row.push(null);row.push(u.copyI+' из '+u.copyN);table.push(row);return;}
     row.push(u.where==='shelf'?'на полке':'в стопке');
     row.push(u.where==='shelf'?u.x:null);
     row.push(u.where==='shelf'?(u.mode==='lie'?'лёжа':'стоя'):null);
+    row.push(u.where==='shelf'&&u.mode==='lie'?(u.z||0):null);
     row.push(u.copyI+' из '+u.copyN);
     table.push(row);
   });
@@ -2712,7 +3269,8 @@ async function exportXlsx(){
     ['Параметр','Значение'],
     ['Проект',APP.name],['Версия',APP.version],['Дата выгрузки',stamp],['Лист-источник',DS.sheet],['Источник данных',DS.src==='google'?'Google Таблица':(DS.src==='excel'?'Файл Excel':(DS.src==='test'?'Тестовая полка':'Демо-данные'))],
     ['Полка, мм (длина × высота × глубина)',SHELF.W+' × '+SHELF.H+' × '+SHELF.D],
-    ['Книг на полке',on+' из '+UNITS.length],['Свободно на полу, мм',freeFloor(placedList())]
+    ['Книг на полке',on+' из '+UNITS.length],['Свободно на полу, мм',freeFloor(placedList())],
+    ['Пришло с других полок (в эту выгрузку не входят)',guests],['Перенесено на другие полки',AWAY.length]
   ];
   var zip=new JSZip(),NS='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"',RN='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
   var HD='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
@@ -2770,15 +3328,24 @@ function helpUse(){
   showInfo('Как пользоваться',
     '<ol class="how">'+
     '<li><b>Перетаскивание.</b> Возьмите книгу мышью или пальцем и отпустите над полкой. Выше вершин книг она ляжет сверху.</li>'+
+    '<li><b>Стопки и книги шире полки.</b> Книгу можно положить плашмя на другую лежащую или на стоящие книги: так собираются стопки. Они подчиняются физике: стопка стоит, пока центр тяжести над опорой, иначе программа не даст так положить и объяснит почему. Книга глубже полки (ширина больше 240 мм) выступает вперёд за раму, на картинке она в оранжевой пунктирной рамке; такая держится, пока её центр над полкой. Слишком высокая книга (выше 260 мм) только лежит.</li>'+
     '<li><b>Нажатие.</b> Нажмите на книгу в стопке или на полке: внизу появится панель. Нажмите на место на полке, и книга встанет туда.</li>'+
     '<li><b>Кнопки и свайп.</b> Кнопки ‹ › сдвигают книгу на шаг, « » прыгают до ближайшей книги или края. Можно провести пальцем по полупрозрачной книге вправо или влево. «Поставить» или «Готово» подтверждает, «Отмена» возвращает назад.</li>'+
     '<li><b>Клавиши.</b> ← → сдвиг, Shift+← → прыжок, Enter подтвердить, Esc отмена, L положить или поставить, Delete снять с полки, Ctrl+Z отменить.</li>'+
     '<li><b>Падают ли книги.</b> Мягкая и тонкая твёрдая книга (тоньше порога в настройках) стоит только вплотную к толстой твёрдой. Без опоры она упадёт, и программа не даст её так поставить.</li>'+
     '<li><b>Новая полка</b> расставляется автоматически слева направо. Что не влезло по длине, ложится сверху, остальное лежит пачкой под полкой.</li>'+
-    '<li><b>Масштаб и перемещение.</b> Под полкой: ползунок и кнопки масштаба, «Вписать», кнопки ‹ › и ползунок положения. Щипок двумя пальцами, Ctrl и колесо мыши меняют масштаб, мышью можно тащить пустое место. Клавиши: + − 0, стрелки, Home, End.</li>'+
-    '<li><b>Поиск.</b> Строка под полкой ищет по номеру, названию, автору и другим столбцам. Найденные книги подсвечиваются, остальные тускнеют. Enter или кнопки ‹ › переходят к следующей.</li>'+
+    '<li><b>Боковые кнопки</b> справа от полки: «Поиск», «Масштаб», «Рамка», «Створки». Каждая открывает небольшое окошко рядом и закрывается по Esc или щелчку в стороне.</li>'+
+    '<li><b>Масштаб и положение</b> (кнопка «Масштаб»): ползунок и кнопки масштаба, «Вписать», кнопки ‹ › и ползунок положения. Щипок двумя пальцами, Ctrl и колесо мыши меняют масштаб, мышью можно тащить пустое место. Клавиши: + − 0, стрелки, Home, End.</li>'+
+    '<li><b>Поиск</b> (кнопка «Поиск» или клавиша /): ищет по номеру, названию, автору и другим столбцам. Найденные книги подсвечиваются, остальные тускнеют. Enter или кнопки ‹ › переходят к следующей.</li>'+
+    '<li><b>Рамка.</b> Кнопка «Рамка» даёт 7 спокойных пастельных цветов рамки полки. Цвет запоминается для каждой полки.</li>'+
+    '<li><b>Створки.</b> Кнопка «Створки» закрывает шкаф невидимыми створками: это та же полка, но за стеклом. Пока створки закрыты, книги видны, но двигать их нельзя. Нажмите ещё раз, и шкаф откроется. Каждую полку можно закрыть или открыть как вам нужно.</li>'+
+    '<li><b>Заполненность.</b> В левом нижнем углу каждой полки значок с процентом: какую долю пола полки занимают книги. Полная полка отмечена галочкой. Такой же значок у стеллажа (внизу в полосе стеллажей и в общем виде).</li>'+
+    '<li><b>Книги между полками.</b> Книгу можно перетащить с одной полки на другую: в общем виде на нужную полку, а на обычном экране на соседнюю полку сверху или снизу. Есть и кнопка «Перенести…» в карточке книги: выберите полку из списка. Книга встанет на свободное место или ляжет пачкой под полкой. «Отменить» возвращает её на прежнюю полку. В закрытый шкаф книгу положить нельзя.</li>'+
     '<li><b>Другие полки.</b> Над основной полкой нарисована нижняя часть верхней полки, под ней верхняя часть нижней. Нажмите на неё или на стрелку посередине, и полка сдвинется с анимацией (Alt+↑ и Alt+↓). Название полки и дата последней правки написаны на табличке на раме слева сверху.</li>'+
-    '<li><b>Стеллажи.</b> Стеллаж это до 6 полок вместе. Маленькие стрелки под полками слева и справа (Alt+← и Alt+→) переходят на соседний стеллаж. Сейчас полки 225–227 и 229–236 тестовые.</li>'+
+    '<li><b>Стеллажи.</b> В стеллаже от 2 до 6 полок. Маленькие стрелки под полками слева и справа (Alt+← и Alt+→) переходят на соседний стеллаж. Сейчас полки 225–227 и 229–236 тестовые.</li>'+
+    '<li><b>Общий вид стеллажей.</b> Кнопка «Общий вид» в полосе стеллажей (или меню Вид) показывает сразу три стеллажа. Полки можно менять местами и ставить в любом порядке: перетащите полку мышью за ручку или нажмите полку и затем другую (на телефоне). Можно вынести полку в другой стеллаж или в новый. В каждом стеллаже остаётся от 2 до 6 полок; расстановка запоминается на устройстве. Там же цвет рамки и створки для выбранной полки.</li>'+
+    '<li><b>Кнопки «Расставить автоматически» и «Обновить из Google Таблицы»</b> теперь в меню сверху: «Правка» и «Файл» (на телефоне кнопка ≡).</li>'+
+    '<li><b>Листы из Google Таблицы.</b> Файл → «Выбрать листы из Google Таблицы…»: отметьте галочками нужные листы-полки, можно сразу несколько, и нажмите «Загрузить». Первый лист откроется, остальные станут полками рядом. Полный список листов виден после входа в Google или с ключом API; в режиме «по ссылке» названия вкладок вписываются один раз и запоминаются.</li>'+
     '<li><b>Фото.</b> В меню «Фото» подключается папка с компьютера или выгрузка Telegram. Фото сохраняются на устройстве и показываются сразу.</li>'+
     '<li><b>Фото из Google Диска.</b> Настройки, блок «Фото из Google Диска»: укажите папку, выберите бесплатную нейросеть и нажмите «Импортировать». Программа найдёт книги и корешки, обрежет и покажет список. Проверьте и нажмите «Применить». Инструкции свёрнуты в самом низу настроек.</li>'+
     '</ol>');
@@ -2800,8 +3367,9 @@ function buildMenuDefs(){
       {l:'Загрузить лист из Excel…',a:function(){el.file.click();}},
       {l:'Выгрузить лист в Excel',a:doExport},
       {sep:1},
-      {l:'Загрузить лист из Google Таблицы…',a:openGoogleImport},
-      {l:'Обновить из Google Таблицы',k:'Ctrl+R',a:function(){gsRefresh({});}},
+      {l:'Выбрать листы из Google Таблицы…',a:openTabsDialog},
+      {l:'Один лист из Google с выбором столбцов…',a:openGoogleImport},
+      {l:'Обновить из Google Таблицы',k:'Ctrl+R',a:function(){gsRefreshAll({});}},
       {sep:1},
       {l:'Настройки…',a:openSettings}
     ]},
@@ -2822,6 +3390,9 @@ function buildMenuDefs(){
       {l:'Стеллаж слева',k:'Alt+←',a:function(){goRack(-1);}},
       {l:'Стеллаж справа',k:'Alt+→',a:function(){goRack(1);}},
       {l:'Поиск по полке',k:'/',a:searchFocus},
+      {l:'Общий вид стеллажей',a:function(){if(OV.open) closeOverview();else openOverview();},chk:function(){return OV.open;}},
+      {l:'Цвет рамки…',a:function(){popOpen('pColor');}},
+      {l:'Шкаф закрыт створками',a:function(){toggleDoors();},chk:function(){return isClosed(NAV.cur);}},
       {sep:1},
       {l:'Фото обложек',a:function(){CFG.covers=!CFG.covers;saveCfg();renderInfo();},chk:function(){return CFG.covers;}},
       {l:'Фото корешков',a:function(){CFG.spines=CFG.spines===false;saveCfg();renderAll();},chk:function(){return CFG.spines!==false;}},
@@ -2999,13 +3570,14 @@ function updateSource(){
 function applyGMode(){
   Array.prototype.forEach.call(el.gMode.querySelectorAll('button'),function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-m')===CFG.gs.mode));});
   el.gOauth.hidden=CFG.gs.mode!=='oauth';
+  el.gKeyL.hidden=CFG.gs.mode==='oauth';
   if(CFG.gs.mode==='oauth') loadGis().catch(function(){});
 }
 function gStat(msg,err){el.gStat.textContent=msg||'';el.gStat.className='dstat'+(err?' err':'');}
 function fillSettings(){
   el.sFalls.checked=!!CFG.falls;el.sThin.value=CFG.thin;el.sLean.value=CFG.lean;
   el.sCovers.checked=!!CFG.covers;el.sSpines.checked=CFG.spines!==false;el.sShDir.value=CFG.shDir==='up'?'up':'down';el.sLog.checked=!!CFG.log;el.sBig.value=CFG.big;el.sStep.value=String(CFG.step);
-  el.gUrl.value=CFG.gs.url;el.gTabs.value=CFG.gs.tabs;el.gGen.value=CFG.gs.gen;el.gCid.value=CFG.gs.cid;el.gAuto.value=String(CFG.gs.auto);
+  el.gUrl.value=CFG.gs.url;el.gTabs.value=CFG.gs.tabs;el.gGen.value=CFG.gs.gen;el.gCid.value=CFG.gs.cid;el.gKey.value=CFG.gs.key||'';el.gAuto.value=String(CFG.gs.auto);
   applyGMode();updateAcct();gStat('');
   el.sRack.value=String(rackSize());drvFill();
   el.setReset.textContent='Сбросить настройки';el.setReset._arm=false;
@@ -3021,7 +3593,7 @@ function initSettings(){
   el.sCovers.addEventListener('change',function(){CFG.covers=el.sCovers.checked;saveCfg();renderInfo();});
   el.sSpines.addEventListener('change',function(){CFG.spines=el.sSpines.checked;saveCfg();renderAll();});
   el.sShDir.addEventListener('change',function(){CFG.shDir=el.sShDir.value;saveCfg();updateShelfNav();drawPlate();});
-  el.sRack.addEventListener('change',function(){CFG.rack=+el.sRack.value||RACK_MAX;saveCfg();updateShelfNav();drawPlate();});
+  el.sRack.addEventListener('change',function(){CFG.rack=+el.sRack.value||RACK_MAX;saveCfg();updateShelfNav();drawPlate();ovRedraw();});
   el.sLog.addEventListener('change',function(){CFG.log=el.sLog.checked;saveCfg();applyLog();renderLog();});
   el.sBig.addEventListener('change',function(){CFG.big=el.sBig.value;saveCfg();applyBig();});
   el.sStep.addEventListener('change',function(){CFG.step=+el.sStep.value||10;saveCfg();});
@@ -3029,6 +3601,8 @@ function initSettings(){
   el.gTabs.addEventListener('change',function(){CFG.gs.tabs=el.gTabs.value.trim();saveCfg();});
   el.gGen.addEventListener('change',function(){CFG.gs.gen=el.gGen.value.trim();saveCfg();});
   el.gCid.addEventListener('change',function(){CFG.gs.cid=el.gCid.value.trim();saveCfg();});
+  el.gKey.addEventListener('change',function(){CFG.gs.key=el.gKey.value.trim();saveCfg();});
+  el.gForget.addEventListener('click',function(){gsForget();});
   el.gAuto.addEventListener('change',function(){CFG.gs.auto=+el.gAuto.value||0;saveCfg();gsTimer();});
   el.gMode.addEventListener('click',function(e){
     var b=e.target.closest?e.target.closest('button'):null;
@@ -3041,7 +3615,7 @@ function initSettings(){
   });
   el.gOut.addEventListener('click',function(){gsSignOut();updateAcct();gStat('Вы вышли из аккаунта.');updateSource();});
   el.gTest.addEventListener('click',function(){gsTest();});
-  el.gLoad.addEventListener('click',function(){hideSet();setTimeout(openGoogleImport,0);});
+  el.gLoad.addEventListener('click',function(){hideSet();setTimeout(openTabsDialog,0);});
   el.gHelp.addEventListener('click',function(){helpGoogle();});
   el.setOk.addEventListener('click',function(){hideSet();});
   el.setReset.addEventListener('click',function(){
@@ -3204,10 +3778,19 @@ function gvizRowsFixed(id,name,tq){
 function codeKey(c){return typeof c==='number'?String(Math.round(c)):(/^\d+$/.test(String(c||'').trim())?String(+c):'');}
 var GSAPI={
   listTabs:function(){
-    var id=parseSheetId(CFG.gs.url);
-    return ensureToken().then(function(){return apiGet(SHEETS+id+'?fields=sheets.properties.title');}).then(function(j){
-      return (j.sheets||[]).map(function(s){return s.properties.title;});
-    });
+    var id=parseSheetId(CFG.gs.url),key=String(CFG.gs.key||'').trim();
+    var pick=function(j){return (j.sheets||[]).map(function(s){return s.properties.title;});};
+    if(CFG.gs.mode!=='oauth'){
+      if(!key) return Promise.reject(new Error('KEY'));
+      return fetch(SHEETS+id+'?fields=sheets.properties.title&key='+encodeURIComponent(key)).then(function(r){
+        if(r.status===400) throw new Error('ключ API не подходит: проверьте, что он скопирован целиком');
+        if(r.status===403) throw new Error('доступ закрыт: у таблицы должен быть доступ «Все, у кого есть ссылка», а у ключа включён Google Sheets API');
+        if(r.status===404) throw new Error('таблица не найдена (404)');
+        if(!r.ok) throw new Error('Google ответил '+r.status);
+        return r.json();
+      }).then(pick);
+    }
+    return ensureToken().then(function(){return apiGet(SHEETS+id+'?fields=sheets.properties.title');}).then(pick);
   },
   tabRows:function(name){
     var id=parseSheetId(CFG.gs.url);
@@ -3322,6 +3905,7 @@ async function gsRefresh(o){
     if(DS) saveLayout();
     var res=loadDataset(raw,{sync:true});
     DS.hash=h;raw.hash=h;CFG.gs.last=raw.sheet;saveCfg();
+    NAV.real[NAV.cur]=raw;MODEL={};dsPut(NAV.cur,raw);
     var msg;
     if(res&&(res.added||res.removed||res.changed||res.moved||res.reput)){
       msg='Обновлено из Google: добавлено '+res.added+', убрано '+res.removed+', изменено '+res.changed+(res.reput?', переставлено '+res.reput:'')+(res.moved?', перенесено в стопку '+res.moved:'')+'.';
@@ -3357,6 +3941,196 @@ function gsTest(){
     p=GSAPI.tabRows(tabs[0]||'').then(function(rows){return 'Подключено: прочитано строк '+rows.length+(tabs[0]?' на листе «'+tabs[0]+'»':' на первом листе')+'.';});
   }
   p.then(function(m){gStat(m);updateAcct();}).catch(function(err){gStat('Не получилось: '+(err&&err.message?err.message:err),true);updateAcct();});
+}
+
+/* ----- Загруженные листы запоминаются на устройстве (IndexedDB), чтобы после перезапуска полки были на месте ----- */
+var DSDB='gp-data',DSST='ds',dsP=null;
+function dsdb(){
+  if(dsP) return dsP;
+  dsP=new Promise(function(res,rej){
+    var r;
+    try{r=indexedDB.open(DSDB,1);}catch(e){rej(e);return;}
+    r.onupgradeneeded=function(){if(!r.result.objectStoreNames.contains(DSST)) r.result.createObjectStore(DSST);};
+    r.onsuccess=function(){res(r.result);};
+    r.onerror=function(){rej(r.error);};
+  });
+  dsP.catch(function(){dsP=null;});
+  return dsP;
+}
+function dsRun(mode,fn){
+  return dsdb().then(function(db){return new Promise(function(res,rej){
+    var tx=db.transaction(DSST,mode),req=fn(tx.objectStore(DSST));
+    tx.oncomplete=function(){res(req&&req.result);};
+    tx.onerror=tx.onabort=function(){rej(tx.error);};
+  });});
+}
+function dsPut(id,raw){
+  return dsRun('readwrite',function(st){return st.put({id:id,raw:{sheet:raw.sheet,columns:raw.columns,rows:raw.rows,src:raw.src,hash:raw.hash,trunc:raw.trunc,missing:raw.missing,test:raw.test}},id);}).catch(function(){});
+}
+function dsAll(){return dsRun('readonly',function(st){return st.getAll();}).then(function(a){return a||[];}).catch(function(){return [];});}
+function dsClear(){return dsRun('readwrite',function(st){return st.clear();}).catch(function(){});}
+/* Положить загруженный лист в список полок, не показывая его. Возвращает номер полки. */
+function registerRaw(raw,keepCache){
+  var D=analyzeRaw(raw);
+  var id=shelfIdOf({sheet:raw.sheet,rows:raw.rows,roles:D.roles});
+  if(!raw.hash) raw.hash=JSON.stringify([raw.columns,raw.rows]);
+  NAV.real[id]=raw;delete MODEL[id];
+  if(!keepCache) dsPut(id,raw);
+  return id;
+}
+function gsForget(){
+  var cur=NAV.cur;
+  Object.keys(NAV.real).forEach(function(id){if(id!==cur) delete NAV.real[id];});
+  MODEL={};
+  dsClear().then(function(){if(DS&&DS.src==='google') dsPut(cur,NAV.real[cur]||{sheet:DS.sheet,columns:DS.columns,rows:DS.rows,src:'google',hash:DS.hash});});
+  CFG.gs.known=[];saveCfg();
+  updateShelfNav();ovRedraw();
+  gStat('Загруженные листы забыты. Расстановка книг на полках сохранена.');
+  toast('Загруженные листы забыты на этом устройстве.',3500);
+}
+
+/* ----- Окно выбора листов: щелчком, сразу несколько ----- */
+var TB={names:[],picked:{},manual:false,busy:false};
+function tbShow(){if(el.dlgTabs.open) return;if(typeof el.dlgTabs.showModal==='function') el.dlgTabs.showModal();else el.dlgTabs.setAttribute('open','');}
+function tbHide(){if(typeof el.dlgTabs.close==='function'&&el.dlgTabs.open) el.dlgTabs.close();else el.dlgTabs.removeAttribute('open');}
+function tbSay(m,err){el.tbStat.textContent=m||'';el.tbStat.className='dstat'+(err?' err':'');}
+function tbLoadedMap(){
+  var m={};
+  Object.keys(NAV.real).forEach(function(id){m[NAV.real[id].sheet]=id;});
+  return m;
+}
+function tbCount(){return TB.names.filter(function(n){return TB.picked[n];}).length;}
+function tbGen(){return String(CFG.gs.gen||'').trim();}
+function renderTabs(){
+  var q=normQ(el.tbQ.value),loaded=tbLoadedMap(),gen=tbGen(),h='';
+  TB.names.forEach(function(n){
+    if(q&&normQ(n).indexOf(q)<0) return;
+    var isGen=n===gen,tag=isGen?'общий список, не полка':(loaded[n]?'загружена · полка '+loaded[n]:'');
+    h+='<label class="tbrow'+(isGen?' off':'')+'"><input type="checkbox" data-n="'+esc(n)+'"'+(TB.picked[n]&&!isGen?' checked':'')+(isGen||TB.busy?' disabled':'')+'><span class="tbn">'+esc(n)+'</span><small>'+esc(tag)+'</small></label>';
+  });
+  el.tbList.innerHTML=h;
+  var k=tbCount();
+  el.tbGo.disabled=TB.busy||!k;
+  el.tbGo.textContent=k>1?'Загрузить '+k+' '+plural(k,'лист','листа','листов'):'Загрузить';
+  el.tbAll.disabled=el.tbNone.disabled=TB.busy;
+}
+async function openTabsDialog(){
+  if(!gsConfigured()){openSettings();gStat('Сначала укажите ссылку на Google Таблицу.',true);return;}
+  TB={names:[],picked:{},manual:false,busy:false};
+  el.tbList.innerHTML='';el.tbQ.value='';el.tbAdd.hidden=true;el.tbProg.hidden=true;el.tbGo.disabled=true;
+  tbSay('Читаю список листов…');
+  tbShow();
+  var names=null,why='';
+  try{names=await GSAPI.listTabs();}catch(err){why=(err&&err.message&&err.message!=='KEY')?err.message:'';}
+  var pre=gsTabs();
+  if(!names){
+    TB.manual=true;
+    names=pre.concat(CFG.gs.known||[]).filter(function(x,i,a){return x&&a.indexOf(x)===i;});
+    el.tbAdd.hidden=false;
+    tbSay(why?('Список листов получить не удалось: '+why+'. Впишите названия вкладок ниже.'):
+      'В режиме «по ссылке» Google не отдаёт список листов. Впишите названия вкладок ниже — один раз, они запомнятся. Чтобы выбирать из полного списка щелчком, подключите вход в Google или ключ API в настройках.',!!why);
+  }else{
+    CFG.gs.known=names.slice(0,300);saveCfg();
+    tbSay(names.length?'Листов в таблице: '+names.length+'.':'В таблице нет листов.');
+  }
+  TB.names=names;
+  names.forEach(function(n){if(pre.indexOf(n)>=0&&n!==tbGen()) TB.picked[n]=true;});
+  el.tbQ.parentNode.hidden=false;
+  renderTabs();
+  if(TB.manual&&el.tbName) el.tbName.focus();
+}
+async function tbLoad(){
+  var picks=TB.names.filter(function(n){return TB.picked[n]&&n!==tbGen();});
+  if(!picks.length||TB.busy) return;
+  TB.busy=true;renderTabs();
+  el.tbProg.hidden=false;el.tbBar.style.width='0';
+  GS.busy=true;GS.err='';updateSource();
+  var raws=[],errs=[],i;
+  try{
+    if(CFG.gs.mode==='oauth'&&!tokenOk()){tbSay('Нужен вход в Google…');await ensureToken();updateAcct();}
+    for(i=0;i<picks.length;i++){
+      tbSay('Загружаю '+(i+1)+' из '+picks.length+': «'+picks[i]+'»…');
+      try{
+        var raw=await gsBuild(picks[i]);
+        raw.hash=JSON.stringify([raw.columns,raw.rows]);
+        raws.push(raw);
+      }catch(err){errs.push('«'+picks[i]+'»: '+((err&&err.message)?err.message:err));}
+      el.tbBar.style.width=Math.round((i+1)/picks.length*100)+'%';
+    }
+  }catch(err){errs.push((err&&err.message)?err.message:String(err));}
+  GS.busy=false;
+  TB.busy=false;
+  if(!raws.length){
+    GS.err=errs[0]||'';updateSource();
+    tbSay('Не загрузилось: '+errs.join('; '),true);renderTabs();
+    return;
+  }
+  /* первый лист показываем, остальные становятся полками рядом */
+  if(DS) saveLayout();
+  var ids=[];
+  raws.slice(1).forEach(function(r){ids.push(registerRaw(r));});
+  loadDataset(raws[0],{sync:true});
+  DS.hash=raws[0].hash;
+  ids.unshift(NAV.cur);
+  dsPut(NAV.cur,raws[0]);
+  CFG.gs.tabs=picks.join(', ');CFG.gs.last=raws[0].sheet;saveCfg();
+  MODEL={};updateShelfNav();ovRedraw();updateSource();
+  tbHide();
+  var m='Загружено листов: '+raws.length+(raws.length>1?' (полки '+ids.join(', ')+')':'')+'. '+(raws.length>1?'Показана полка '+NAV.cur+', остальные — рядом: стрелки вверх, вниз и «Общий вид».':'');
+  if(errs.length) m+=' Не загрузилось: '+errs.join('; ');
+  note(m,9000);
+}
+function initTabsDialog(){
+  el.tbList.addEventListener('change',function(e){
+    var n=e.target&&e.target.getAttribute?e.target.getAttribute('data-n'):null;
+    if(n==null) return;
+    if(e.target.checked) TB.picked[n]=true;else delete TB.picked[n];
+    renderTabs();
+  });
+  el.tbQ.addEventListener('input',renderTabs);
+  el.tbAll.addEventListener('click',function(){
+    var q=normQ(el.tbQ.value);
+    TB.names.forEach(function(n){if(n!==tbGen()&&(!q||normQ(n).indexOf(q)>=0)) TB.picked[n]=true;});
+    renderTabs();
+  });
+  el.tbNone.addEventListener('click',function(){TB.picked={};renderTabs();});
+  function addName(){
+    var n=el.tbName.value.trim();
+    if(!n) return;
+    if(TB.names.indexOf(n)<0) TB.names.push(n);
+    TB.picked[n]=true;
+    CFG.gs.known=TB.names.slice(0,300);saveCfg();
+    el.tbName.value='';
+    renderTabs();el.tbName.focus();
+  }
+  el.tbAddBtn.addEventListener('click',addName);
+  el.tbName.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addName();}});
+  el.tbGo.addEventListener('click',tbLoad);
+  el.tbCancel.addEventListener('click',function(){if(!TB.busy) tbHide();});
+  el.tbCols.addEventListener('click',function(){tbHide();setTimeout(openGoogleImport,0);});
+}
+
+/* Обновить из Google: открытая полка и все остальные загруженные из Google */
+async function gsRefreshAll(o){
+  o=o||{};
+  if(GS.busy) return;
+  await gsRefresh(o);
+  if(GS.busy||(CFG.gs.mode==='oauth'&&!tokenOk())||!gsConfigured()) return;
+  var others=Object.keys(NAV.real).filter(function(id){return id!==NAV.cur&&NAV.real[id].src==='google';});
+  if(!others.length) return;
+  GS.busy=true;updateSource();
+  var changed=0,fail=0;
+  for(var i=0;i<others.length;i++){
+    var id=others[i],old=NAV.real[id];
+    try{
+      var raw=await gsBuild(old.sheet);
+      raw.hash=JSON.stringify([raw.columns,raw.rows]);
+      if(raw.hash!==old.hash){NAV.real[id]=raw;delete MODEL[id];dsPut(id,raw);changed++;}
+    }catch(_){fail++;}
+  }
+  GS.busy=false;updateSource();
+  MODEL={};ovRedraw();updateRackFill();
+  if(!o.silent) toast('Остальные полки: изменилось '+changed+(fail?', не удалось обновить '+fail:'')+'. Изменения появятся при открытии полки.',5000);
 }
 
 /* Окно «Загрузить лист из Google Таблицы»: тот же выбор листа и столбцов, что и для Excel. */
@@ -3835,7 +4609,7 @@ async function phOneChosen(files){
 
 /* Telegram по ссылкам из таблицы: нужен свой адрес-посредник (Cloudflare Worker), потому что t.me не отдаёт картинки другим сайтам. */
 function tgLinkOf(u){
-  var row=DS.rows[u.ri],i,v;
+  var row=dsOf(u).rows[u.ri],i,v;
   for(i=0;i<row.length;i++){
     v=row[i];
     if(typeof v==='string'){var m=/^https?:\/\/t\.me\/(?:s\/)?([A-Za-z0-9_]+)\/(\d+)/.exec(v.trim());if(m) return {ch:m[1],id:m[2]};}
@@ -4135,7 +4909,7 @@ var SR={q:'',ids:{},list:[],i:-1},srT=0;
 function normQ(s){return str(s).toLowerCase().replace(/ё/g,'е');}
 function unitHay(u){
   if(u._hay) return u._hay;
-  var row=DS.rows[u.ri]||[];
+  var row=dsOf(u).rows[u.ri]||[];
   u._hay=normQ([u.code,u.title,u.author].concat(row.filter(function(v){return v!=null&&typeof v!=='object';})).join(' '));
   return u._hay;
 }
@@ -4160,6 +4934,8 @@ function searchRender(){
   el.srPrev.disabled=el.srNext.disabled=n<2;
   el.srPrev.hidden=el.srNext.hidden=el.srCnt.hidden=!has;
   el.srClear.hidden=!SR.q;
+  var dot=el.rbSearch&&el.rbSearch.querySelector('.dot');
+  if(dot) dot.hidden=!has;
   if(!n){el.srList.hidden=true;el.srList.innerHTML='';return;}
   el.srList.hidden=false;
   el.srList.innerHTML=SR.list.slice(0,10).map(function(u,i){
@@ -4198,10 +4974,7 @@ function scrollToUnit(u){
   var q=pt.matrixTransform(m),mb=el.menubar?el.menubar.offsetHeight:0;
   if(q.y<mb+30||q.y>window.innerHeight-170) window.scrollBy({top:q.y-window.innerHeight*0.4,behavior:reduce?'auto':'smooth'});
 }
-function searchFocus(){
-  el.srQ.focus();
-  if(el.srQ.scrollIntoView) el.srQ.scrollIntoView({block:'nearest',behavior:reduce?'auto':'smooth'});
-}
+function searchFocus(){popOpen('pSearch');}
 function initSearch(){
   el.srQ.addEventListener('input',function(){
     clearTimeout(srT);
@@ -4213,7 +4986,9 @@ function initSearch(){
       if(SR.q!==el.srQ.value) searchRun(el.srQ.value,true);
       else searchGo(SR.i+(e.shiftKey?-1:1));
     }else if(e.key==='Escape'){
-      el.srQ.value='';searchRun('',false);el.srQ.blur();
+      e.preventDefault();
+      if(el.srQ.value){el.srQ.value='';searchRun('',false);}
+      else popClose();
     }
   });
   el.srNext.addEventListener('click',function(){searchGo(SR.i+1);});
@@ -4225,12 +5000,128 @@ function initSearch(){
   });
 }
 
+/* ===== Боковая панель: окошки поиска, положения и масштаба, цвета рамки ===== */
+var POPS={pSearch:'rbSearch',pView:'rbView',pColor:'rbColor'};
+function popIsOpen(){return Object.keys(POPS).some(function(id){return !el[id].hidden;});}
+function popClose(){
+  Object.keys(POPS).forEach(function(id){
+    var pp=el[id],b=el[POPS[id]];
+    if(pp.hidden) return;
+    pp.hidden=true;b.setAttribute('aria-expanded','false');
+  });
+}
+function popOpen(id){
+  if(!el[id]) return;
+  if(OV.open) closeOverview();
+  popClose();
+  el[id].hidden=false;el[POPS[id]].setAttribute('aria-expanded','true');
+  if(id==='pSearch'){el.srQ.focus();el.srQ.select();}
+  else if(id==='pView') syncViewbar();
+  else if(id==='pColor') drawColorPop();
+}
+function popToggle(id){if(el[id].hidden) popOpen(id);else popClose();}
+function initRail(){
+  Object.keys(POPS).forEach(function(id){
+    el[POPS[id]].addEventListener('click',function(e){e.stopPropagation();popToggle(id);});
+  });
+  document.addEventListener('pointerdown',function(e){
+    Object.keys(POPS).forEach(function(id){
+      if(!el[id].hidden&&!el[id].parentNode.contains(e.target)){el[id].hidden=true;el[POPS[id]].setAttribute('aria-expanded','false');}
+    });
+  });
+  el.rbDoors.addEventListener('click',function(){toggleDoors();});
+  el.pColor.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.sw'):null;
+    if(b) setFrame(+b.getAttribute('data-i'));
+  });
+  el.pColor.addEventListener('change',function(e){
+    if(e.target&&e.target.id==='fcAll') popColorAll=e.target.checked;
+  });
+  el.rkOv.addEventListener('click',function(){openOverview();});
+}
+
 /* ===== Полки выше и ниже, стеллажи =====
    Стеллаж: до 6 полок подряд (по возрастанию номеров). Вверх и вниз листаем внутри стеллажа,
    влево и вправо переходим на соседний стеллаж. Название полки пишется только на табличке на раме. */
 var NAV={cur:'',real:{},test:{}},navBusy=false,plateAnim=false;
 var TEST_IDS=['225','226','227','229','230','231','232','233','234','235','236'];
-var RACK_MAX=6,NB_H={up:112,down:100};
+var NB_H={up:112,down:100};
+/* Свойства полок: цвет рамки и закрытый шкаф (полка с невидимыми створками, книги на ней не переставить, пока створки закрыты).
+   Хранятся в браузере по номеру полки. */
+var META_KEY='gp.shelfmeta.v1',META={fr:{},doors:{}};
+function loadMeta(){
+  try{var r=JSON.parse(localStorage.getItem(META_KEY)||'null');if(r){META.fr=r.fr||{};META.doors=r.doors||{};}}catch(_){}
+}
+function saveMeta(){try{localStorage.setItem(META_KEY,JSON.stringify(META));}catch(_){}}
+function isClosed(id){return !!META.doors[id];}
+function closedNote(){statusNote='Шкаф закрыт створками. Откройте их кнопкой «Створки» справа от полки.';updateStatus();}
+function frameIdx(id){var k=META.fr[id];return (k>=0&&k<FRAMES.length)?k:0;}
+function frameFill(id){return FRAMES[frameIdx(id)].fill;}
+function applyFrameColor(){if(el.frameMain) el.frameMain.style.fill=frameFill(NAV.cur);}
+function doorsSvg(){
+  var L=SX,T=SY,W=SHELF.W,H=SHELF.H,half=W/2,s='';
+  [0,1].forEach(function(i){
+    var x=L+i*half+(i?1.5:0),w=half-1.5;
+    s+='<rect class="dr-leaf" x="'+x+'" y="'+(T+1.5)+'" width="'+w+'" height="'+(H-3)+'" rx="2"/>'+
+       '<path class="dr-glint" d="M'+(x+w*0.18).toFixed(1)+' '+(T+H-10)+'L'+(x+w*0.44).toFixed(1)+' '+(T+10)+'M'+(x+w*0.3).toFixed(1)+' '+(T+H-10)+'L'+(x+w*0.56).toFixed(1)+' '+(T+10)+'"/>'+
+       '<rect class="dr-handle" x="'+(i?x+9:x+w-14)+'" y="'+(T+H/2-24)+'" width="5" height="48" rx="2.5"/>';
+  });
+  return s;
+}
+function updateRail(){
+  if(!el.rbDoors) return;
+  var c=isClosed(NAV.cur);
+  el.rbDoors.setAttribute('aria-pressed',String(c));
+  el.rbDoors.title=c?'Открыть створки: книги снова можно переставлять':'Закрыть шкаф створками: книги нельзя переставлять';
+  el.rbDoors.querySelector('span').textContent=c?'Открыть':'Створки';
+}
+function toggleDoors(){
+  if(float||!DS) return;
+  if(arm) disarm(true);
+  var id=NAV.cur,on=!isClosed(id);
+  if(on) META.doors[id]=1;else delete META.doors[id];
+  saveMeta();
+  addLog([{type:'inf',t:on?'Шкаф закрыт створками':'Створки открыты',c:'',n:''}]);
+  drawPlate();renderAll();renderLog();updateShelfNav();
+  note(on?'Створки закрыты: книги на этой полке не переставить. Чтобы изменить расстановку, откройте их.':'Створки открыты: книги можно переставлять.',4500);
+}
+function drawColorPop(){
+  var cur=frameIdx(NAV.cur),h='<h3>Цвет рамки · полка '+esc(NAV.cur)+'</h3><div class="swatches">';
+  FRAMES.forEach(function(f,i){
+    h+='<button type="button" class="sw" data-i="'+i+'" style="background:'+f.fill+'" aria-pressed="'+(i===cur)+'" aria-label="'+esc(f.name)+'" title="'+esc(f.name)+'"></button>';
+  });
+  h+='</div><label class="chk"><input type="checkbox" id="fcAll"'+(popColorAll?' checked':'')+'><span>Покрасить весь стеллаж</span></label>';
+  el.pColor.innerHTML=h;
+}
+var popColorAll=false;
+function setFrame(i){
+  var ids=popColorAll?rackInfo(NAV.cur).list:[NAV.cur];
+  ids.forEach(function(id){if(i===0) delete META.fr[id];else META.fr[id]=i;});
+  saveMeta();
+  applyFrameColor();updateShelfNav();drawColorPop();
+  if(typeof ovRedraw==='function') ovRedraw();
+}
+function fillPillSvg(x,y,st,title){
+  var full=st.full,pct=Math.round(st.pct*100),w=full?66:62;
+  var s='<g class="fp'+(full?' full':'')+'" transform="translate('+x+' '+y+')"><title>'+esc(title)+'</title><rect class="fp-bg" width="'+w+'" height="20" rx="10"/>';
+  if(full) s+='<path class="fp-ck" d="M9 10.5l3.2 3.2 6-7"/><text class="fp-t" x="22" y="14.2">полная</text>';
+  else s+='<rect class="fp-tr" x="9" y="7" width="24" height="6" rx="3"/><rect class="fp-fg" x="9" y="7" width="'+Math.max(2,24*st.pct).toFixed(1)+'" height="6" rx="3"/><text class="fp-t" x="37" y="14.2">'+pct+'%</text>';
+  return s+'</g>';
+}
+function fillTitle(st,n,total){
+  return (st.full?'Полка заполнена':'Заполнено '+Math.round(st.pct*100)+' %')+': занято '+Math.round(st.pct*SHELF.W)+' из '+SHELF.W+' мм пола, свободно '+st.free+' мм. На полке '+n+' из '+total+' книг.';
+}
+function minThin(){
+  var m=Infinity;
+  UNITS.forEach(function(u){if(u.where!=='shelf'&&u.t<m) m=u.t;});
+  return isFinite(m)?m:0;
+}
+function drawShelfExtras(){
+  el.doors.innerHTML=isClosed(NAV.cur)?doorsSvg():'';
+  updateRail();
+  var placed=placedList(),st=fillStats(placed,minThin()),n=placed.length;
+  el.fill.innerHTML=fillPillSvg(8,FLOOR+WALL+8,st,fillTitle(st,n,UNITS.length));
+}
 function shelfIdOf(ds){
   var best='',cnt=0,places={};
   if(ds.roles.place!=null) ds.rows.forEach(function(r){
@@ -4253,7 +5144,7 @@ function testRaw(id){
   NAV.test[id]=raw;
   return raw;
 }
-function rackSize(){var n=Math.round(+CFG.rack);return (n>=1&&n<=RACK_MAX)?n:RACK_MAX;}
+function rackSize(){var n=Math.round(+CFG.rack);return (n>=RACK_MIN&&n<=RACK_MAX)?n:RACK_MAX;}
 function shelfIdsSorted(){
   var ids={};
   TEST_IDS.concat(['228']).forEach(function(i){ids[i]=1;});
@@ -4265,13 +5156,47 @@ function shelfIdsSorted(){
     return String(x)<String(y)?-1:1;
   });
 }
-function racksList(){
-  var a=shelfIdsSorted(),n=rackSize(),out=[];
-  for(var i=0;i<a.length;i+=n) out.push(a.slice(i,i+n));
+/* Стеллажи. По умолчанию — полки по номерам, по rackSize() в стеллаже, в последнем не меньше двух.
+   Свой порядок (общий вид стеллажей) хранится в браузере: списки номеров сверху вниз. */
+var RK={custom:false,racks:[]},RK_KEY='gp.racks.v1';
+function loadRacks(){
+  try{
+    var r=JSON.parse(localStorage.getItem(RK_KEY)||'null');
+    if(r&&r.c&&Array.isArray(r.r)){RK.custom=true;RK.racks=r.r.map(function(a){return a.map(String);});}
+  }catch(_){}
+}
+function saveRacks(){
+  try{
+    if(RK.custom) localStorage.setItem(RK_KEY,JSON.stringify({c:1,r:RK.racks}));
+    else localStorage.removeItem(RK_KEY);
+  }catch(_){}
+}
+function autoRacks(){
+  var a=shelfIdsSorted(),n=rackSize(),out=[],i;
+  for(i=0;i<a.length;i+=n) out.push(a.slice(i,i+n));
+  if(out.length>1&&out[out.length-1].length<RACK_MIN){
+    var last=out[out.length-1],prev=out[out.length-2];
+    while(last.length<RACK_MIN&&prev.length>RACK_MIN) last.unshift(prev.pop());
+  }
+  if(CFG.shDir==='up') out=out.map(function(l){return l.slice().reverse();});
   return out;
 }
-/* порядок полок стеллажа сверху вниз: номера растут вниз или вверх (настройка) */
-function rackDisp(list){return CFG.shDir==='up'?list.slice().reverse():list;}
+function racksList(){
+  if(!RK.custom) return autoRacks();
+  var known={},seen={},out=[];
+  shelfIdsSorted().forEach(function(i){known[i]=1;});
+  RK.racks.forEach(function(l){
+    var k=l.filter(function(i){if(!known[i]||seen[i]) return false;seen[i]=1;return true;});
+    if(k.length) out.push(k);
+  });
+  shelfIdsSorted().forEach(function(i){
+    if(seen[i]) return;
+    var last=out[out.length-1];
+    if(last&&last.length<RACK_MAX) last.push(i);else out.push([i]);
+  });
+  return out;
+}
+function rackDisp(list){return list;}
 function rackInfo(id){
   var R=racksList();
   for(var i=0;i<R.length;i++){
@@ -4300,7 +5225,7 @@ function getEdited(sheet){
   return (L.length&&L[0].ts)?L[0].ts:0;
 }
 function touchEdited(){
-  if(!DS) return;
+  if(!DS||TEMP) return;
   try{localStorage.setItem(editKey(DS.sheet),String(Date.now()));}catch(_){}
   drawPlate();
 }
@@ -4311,7 +5236,7 @@ function fmtDate(ts){
 }
 function shelfSheet(id){return NAV.real[id]?NAV.real[id].sheet:'Тест · '+id;}
 function shelfTitle(id,sheet){return (id&&String(id).length<=14)?'Полка '+id:'Лист '+sheet;}
-function plateSub(sheet,test,rackN){return (test?'тест · ':'')+'стеллаж '+rackN+' · изм. '+fmtDate(getEdited(sheet));}
+function plateSub(sheet,test,rackN,closed){return (test?'тест · ':'')+'стеллаж '+rackN+(closed?' · закрыт':'')+' · изм. '+fmtDate(getEdited(sheet));}
 
 /* ----- табличка на раме, слева сверху ----- */
 function plateSvg(x,y,title,sub){
@@ -4327,7 +5252,7 @@ function plateSvg(x,y,title,sub){
 function drawPlate(){
   if(!DS||!el.plate) return;
   var r=rackInfo(NAV.cur);
-  el.plate.innerHTML=plateSvg(SX+8,SY-RAIL_T+5,shelfTitle(NAV.cur,DS.sheet),plateSub(DS.sheet,DS.src==='test',r.n+1));
+  el.plate.innerHTML=plateSvg(SX+8,SY-RAIL_T+5,shelfTitle(NAV.cur,DS.sheet),plateSub(DS.sheet,DS.src==='test',r.n+1,isClosed(NAV.cur)));
 }
 
 /* ----- соседние полки: схематичный рисунок, видна только часть ----- */
@@ -4363,11 +5288,11 @@ function nbSvg(kind,id){
     x+=w;
   }
   if(up){
-    s+='<path class="frame" d="M'+(SX-WALL)+' 0V'+(H-6)+'H'+(SX+SHELF.W+WALL)+'V0H'+(SX+SHELF.W)+'V'+yF+'H'+SX+'V0Z"/>';
+    s+='<path class="frame" style="fill:'+frameFill(id)+'" d="M'+(SX-WALL)+' 0V'+(H-6)+'H'+(SX+SHELF.W+WALL)+'V0H'+(SX+SHELF.W)+'V'+yF+'H'+SX+'V0Z"/>';
   }else{
-    s+='<path class="frame" d="M'+(SX-WALL)+' '+H+'V6H'+(SX+SHELF.W+WALL)+'V'+H+'H'+(SX+SHELF.W)+'V'+(6+RAIL_T)+'H'+SX+'V'+H+'Z"/>';
+    s+='<path class="frame" style="fill:'+frameFill(id)+'" d="M'+(SX-WALL)+' '+H+'V6H'+(SX+SHELF.W+WALL)+'V'+H+'H'+(SX+SHELF.W)+'V'+(6+RAIL_T)+'H'+SX+'V'+H+'Z"/>';
     var sid=String(id),r=rackInfo(sid);
-    s+=plateSvg(SX+8,11,shelfTitle(sid,shelfSheet(sid)),plateSub(shelfSheet(sid),!NAV.real[sid],r.n+1));
+    s+=plateSvg(SX+8,11,shelfTitle(sid,shelfSheet(sid)),plateSub(shelfSheet(sid),!NAV.real[sid],r.n+1,isClosed(sid)));
   }
   return s;
 }
@@ -4400,6 +5325,7 @@ function updateRackNav(){
   el.rkL.title=a?'Стеллаж слева (Alt+←)':'';
   el.rkR.title=b?'Стеллаж справа (Alt+→)':'';
   el.rkCap.textContent='Стеллаж '+(r.n+1)+' из '+r.total+' · полка '+(r.pos+1)+' из '+r.list.length;
+  updateRackFill();
 }
 function updateShelfNav(){
   if(!el.nbUp) return;
@@ -4426,7 +5352,7 @@ function slideShelf(dir,swap,done){
   setTimeout(end,1700);
 }
 function showShelf(id,dy,dx){
-  if(navBusy||float||!DS||!id||id===NAV.cur) return;
+  if(navBusy||float||OV.open||!DS||!id||id===NAV.cur) return;
   if(arm) disarm(true);
   saveLayout();
   var raw=NAV.real[id]||testRaw(id);
@@ -4467,6 +5393,410 @@ function initShelfNav(){
   wire(el.nbDown,el.shDown,1);
   el.rkL.addEventListener('click',function(){goRack(-1);});
   el.rkR.addEventListener('click',function(){goRack(1);});
+}
+
+/* ===== Перенос книг на другую полку =====
+   Книгу можно перетащить на соседнюю полку над или под текущей, на плашку номера полки внизу экрана (пока тянете),
+   или выбрать полку из списка кнопкой «Перенести…». На новой полке книга встаёт на свободное место,
+   а если места нет — ложится пачкой под полкой. Вернуть можно кнопкой «Вернуть на свою полку» или «Отменить». */
+function shelfAvailable(id){return !!(NAV.real[id]||NAV.test[id]||TEST_IDS.indexOf(id)>=0||id==='228');}
+function moveTargets(){
+  /* полки того же стеллажа, кроме текущей */
+  var r=rackInfo(NAV.cur);
+  return r.list.filter(function(id){return id!==NAV.cur&&shelfAvailable(id);});
+}
+function moveCan(u,dest){
+  dest=String(dest);
+  if(!u||!DS||!dest||dest===NAV.cur) return 'Это та же полка.';
+  if(isClosed(NAV.cur)) return 'Шкаф закрыт створками: сначала откройте их.';
+  if(isClosed(dest)) return 'Шкаф '+dest+' закрыт створками: книгу туда не положить. Откройте створки на той полке.';
+  if(!shelfAvailable(dest)) return 'Полка '+dest+' ещё не загружена.';
+  return '';
+}
+function moveUnitTo(u,dest){
+  dest=String(dest);
+  var why=moveCan(u,dest);
+  if(why){note(why,4500);return false;}
+  if(arm) disarm(true);
+  var home=u.home||NAV.cur,key=baseKey(u),mk=home+'|'+key,had=MOVES.m[mk]?MOVES.m[mk].to:null;
+  if(!u.home&&!MOVES.cols[NAV.cur]) MOVES.cols[NAV.cur]=DS.columns;
+  if(dest===home) delete MOVES.m[mk];
+  else{
+    var row=u.home?(MOVES.m[mk]?MOVES.m[mk].row:null):DS.rows[u.ri];
+    if(!row){note('Не удалось перенести: нет данных книги.',4000);return false;}
+    MOVES.m[mk]={to:dest,row:row};
+  }
+  saveMoves();MODEL={};
+  addLog([{type:'del',t:bookTitle(u),c:u.code,n:'перенесена на полку '+dest}]);
+  var i=UNITS.indexOf(u);
+  if(i>=0) UNITS.splice(i,1);
+  if(sel.id===u.id) sel={id:UNITS.length?UNITS[0].id:0};
+  undoStack.push('M:'+JSON.stringify({mk:mk,had:had,from:NAV.cur}));
+  if(undoStack.length>100) undoStack.shift();
+  pileSig='#';flashId=null;statusNote='';
+  saveLayout();
+  renderAll();syncButtons();renderLog();updateShelfNav();
+  toast('Книга «'+u.title+'» перенесена на полку '+dest+'. Отменить: Ctrl+Z.',5000);
+  return true;
+}
+function undoMove(o){
+  var keep=undoStack.slice();
+  if(o.had) MOVES.m[o.mk].to=o.had;
+  else delete MOVES.m[o.mk];
+  saveMoves();MODEL={};
+  var raw=NAV.real[NAV.cur]||NAV.test[NAV.cur];
+  if(!raw) return;
+  saveLayout();
+  loadDataset(raw,{sync:true,nav:true});
+  undoStack=keep;
+  syncButtons();
+  note('Перенос отменён: книга вернулась на эту полку.',4000);
+}
+/* список полок для выбора */
+function openMoveDialog(u){
+  if(!u||!DS) return;
+  var why=isClosed(NAV.cur)?'Шкаф закрыт створками: сначала откройте их.':'';
+  if(why){note(why,4000);return;}
+  if(arm) disarm(true);
+  var R=racksList(),h='';
+  el.mvT.textContent='Перенести на полку';
+  el.mvSub.textContent='«'+u.title+'». Книга встанет на свободное место на выбранной полке, а если места нет — ляжет пачкой под ней.';
+  R.forEach(function(L,ri){
+    h+='<div class="mvrk">Стеллаж '+(ri+1)+'</div>';
+    L.forEach(function(id){
+      var cur=id===NAV.cur,cl=isClosed(id),ok=!cur&&!cl&&shelfAvailable(id),m=cur?null:shelfModel(id);
+      var tag=cur?'эта полка':(cl?'шкаф закрыт':(!shelfAvailable(id)?'не загружена':(m?(m.fill.full?'полная':Math.round(m.fill.pct*100)+'%'):'')));
+      h+='<button type="button" class="mvrow" data-id="'+esc(id)+'"'+(ok?'':' disabled')+'><span class="mvn">Полка '+esc(id)+(u.home===id||(!u.home&&false)?' · своя':'')+'</span><small>'+esc(tag)+'</small></button>';
+    });
+  });
+  el.mvList.innerHTML=h;
+  el.dlgMv._u=u;
+  if(el.dlgMv.showModal) el.dlgMv.showModal();else el.dlgMv.setAttribute('open','');
+}
+function mvChipsHtml(){
+  var ids=moveTargets(),h='<span class="mvl">Перенести на полку:</span>';
+  ids.forEach(function(id){
+    var m=shelfModel(id),cl=isClosed(id);
+    h+='<button type="button" class="mvchip'+(cl?' closed':'')+'" data-mv="'+esc(id)+'" tabindex="-1">'+esc(id)+'<small>'+(cl?'закрыт':(m?(m.fill.full?'полная':Math.round(m.fill.pct*100)+'%'):''))+'</small></button>';
+  });
+  h+='<button type="button" class="mvchip" data-mv="*" tabindex="-1">Другие…</button>';
+  return h;
+}
+function mvShow(){
+  if(!DS) return;
+  el.mvBar.innerHTML=mvChipsHtml();el.mvBar.hidden=false;
+  var nb=moveNeighbors();
+  [['nbUp',nb.up],['nbDown',nb.down]].forEach(function(a){
+    var b=el[a[0]];
+    if(a[1]&&!b.hidden){b.classList.add('mvdrop');b.setAttribute('data-mv',a[1]);}
+  });
+}
+function moveNeighbors(){var n=shelfNeighbors();return {up:n.up,down:n.down};}
+function mvHide(){
+  el.mvBar.hidden=true;el.mvBar.innerHTML='';
+  ['nbUp','nbDown'].forEach(function(k){el[k].classList.remove('mvdrop','hot');el[k].removeAttribute('data-mv');});
+}
+function mvTargetAt(x,y){
+  var n=document.elementFromPoint(x,y);
+  if(!n||!n.closest) return null;
+  var c=n.closest('[data-mv]');
+  return c?{id:c.getAttribute('data-mv'),el:c}:null;
+}
+function mvHover(x,y){
+  Array.prototype.forEach.call(document.querySelectorAll('.mvchip.hot,.nb.hot'),function(n){n.classList.remove('hot');});
+  var t=mvTargetAt(x,y);
+  if(t) t.el.classList.add('hot');
+}
+function initMove(){
+  el.bkMove.addEventListener('click',function(){var u=byId(sel.id);if(u) openMoveDialog(u);});
+  el.bkHome.addEventListener('click',function(){var u=byId(sel.id);if(u&&u.home) moveUnitTo(u,u.home);});
+  el.dkMove.addEventListener('click',function(){if(arm) openMoveDialog(arm.u);});
+  el.mvClose.addEventListener('click',function(){el.dlgMv.close?el.dlgMv.close():el.dlgMv.removeAttribute('open');});
+  el.mvList.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('.mvrow'):null;
+    if(!b||b.disabled) return;
+    var u=el.dlgMv._u,id=b.getAttribute('data-id');
+    if(el.dlgMv.close) el.dlgMv.close();else el.dlgMv.removeAttribute('open');
+    if(u) moveUnitTo(u,id);
+  });
+}
+
+/* ===== Общий вид стеллажей: три стеллажа на экране, полки можно менять местами и переставлять =====
+   Полку перетаскивают мышью за любое место или за значок в углу (пальцем только за значок):
+   на другую полку — они меняются местами, на светлую полосу между полками — полка встаёт туда.
+   В стеллаже от 2 до 6 полок. Нажатие: выбрать полку; нажатие на другую полку меняет их местами. */
+var OV={open:false,page:0,sel:'',undo:[],drag:null,noClick:0,edgeT:0,lastCap:''};
+function ovPill(st,label,cls){
+  var pct=Math.round(st.pct*100);
+  return '<span class="fillpill'+(st.full?' full':'')+(cls?' '+cls:'')+'"><i class="fbar"><b style="width:'+pct+'%"></b></i><span>'+(st.full?label.full:label.part+pct+'%')+'</span></span>';
+}
+function miniShelfSvg(id){
+  var m=shelfModel(id),s='<svg viewBox="70 50 1040 320" preserveAspectRatio="xMidYMid meet" aria-hidden="true">';
+  s+='<rect x="90" y="90" width="1000" height="260" fill="#f5f7f9"/>';
+  if(m) m.books.forEach(function(b){
+    var c=PALETTE[b.c%PALETTE.length].fill,x=SX+b.x,y=b.lie?FLOOR-b.rest-b.t:FLOOR-b.h,w=b.w,h=b.lie?b.t:b.h;
+    s+='<rect x="'+x+'" y="'+y.toFixed(1)+'" width="'+w+'" height="'+h+'" fill="'+c+'" stroke="#fff" stroke-width="1.6"'+(b.ov?' stroke-dasharray="6 3"':'')+'/>';
+  });
+  if(isClosed(id)) s+=doorsSvg();
+  s+='<path class="frame" style="fill:'+frameFill(id)+'" fill-rule="evenodd" d="M70 50H1110V370H70Z M90 90V350H1090V90Z"/>';
+  var t=String(id);if(t.length>12) t=t.slice(0,11)+'…';
+  s+='<text class="ov-id" x="100" y="80">'+esc(t)+'</text>';
+  return s+'</svg>';
+}
+function ovShelfCell(id){
+  var m=shelfModel(id),st=m?m.fill:{pct:0,full:false,free:SHELF.W},cls='ovshelf'+(id===NAV.cur?' cur':'')+(id===OV.sel?' sel':'')+(OV.drag&&OV.drag.on&&OV.drag.id===id?' drag':'');
+  var lab='Полка '+id+(isClosed(id)?', шкаф закрыт':'')+(st.full?', заполнена':', заполнено '+Math.round(st.pct*100)+'%')+(id===NAV.cur?', сейчас открыта':'');
+  return '<div class="'+cls+'" data-id="'+esc(id)+'" tabindex="0" role="button" aria-label="'+esc(lab)+'" title="'+esc(lab)+'">'+miniShelfSvg(id)+
+    ovPill(st,{full:'полная',part:''},'')+
+    '<span class="ovgrip" aria-hidden="true" title="Перетащить полку"><svg viewBox="0 0 14 14"><circle cx="4" cy="3" r="1.3"/><circle cx="10" cy="3" r="1.3"/><circle cx="4" cy="7" r="1.3"/><circle cx="10" cy="7" r="1.3"/><circle cx="4" cy="11" r="1.3"/><circle cx="10" cy="11" r="1.3"/></svg></span></div>';
+}
+function ovCurPage(R){
+  var n=rackInfo(NAV.cur).n,N=R.length;
+  return Math.max(0,Math.min(n-1,Math.max(0,N-SHOW_RACKS)));
+}
+function renderOverview(){
+  if(!OV.open) return;
+  var R=racksList(),N=R.length,maxP=Math.max(0,N-SHOW_RACKS),h='',k;
+  OV.page=Math.max(0,Math.min(maxP,OV.page));
+  for(k=0;k<SHOW_RACKS;k++){
+    var ri=OV.page+k,L=R[ri];
+    if(!L){h+='<div class="ovrack empty" data-new="1">Свободное место для стеллажа</div>';continue;}
+    var st=rackFillStats(L),inc=L.length<RACK_MIN;
+    h+='<div class="ovrack'+(inc?' inc':'')+'" data-r="'+ri+'"><div class="ovh"><b>Стеллаж '+(ri+1)+'</b><span class="'+(inc?'warn':'')+'">'+L.length+' '+plural(L.length,'полка','полки','полок')+(inc?' · нужно от '+RACK_MIN+' до '+RACK_MAX:'')+'</span></div>';
+    L.forEach(function(id,i){h+='<div class="ovgap" data-r="'+ri+'" data-p="'+i+'"></div>'+ovShelfCell(id);});
+    h+='<div class="ovgap" data-r="'+ri+'" data-p="'+L.length+'"></div><div class="ovfoot">'+ovPill(st,{full:'стеллаж полон',part:'стеллаж '},'')+'</div></div>';
+  }
+  el.ovGrid.innerHTML=h;
+  el.ovPrev.disabled=OV.page<=0;el.ovNext.disabled=OV.page>=maxP;
+  var a=OV.page+1,b=Math.min(N,OV.page+SHOW_RACKS);
+  el.ovCap.textContent=OV.lastCap||('Стеллажи '+(a===b?a:a+'–'+b)+' из '+N+(RK.custom?' · порядок свой':' · порядок по номерам'));
+  el.ovUndo.disabled=!OV.undo.length;
+  el.ovAuto.disabled=!RK.custom;
+  el.ovNote.textContent='Перетащите полку на другую — они поменяются местами; на светлую полосу между полками — полка встанет туда. В стеллаже от '+RACK_MIN+' до '+RACK_MAX+' полок. Нажмите полку, затем другую — тоже поменяются; нажмите выбранную ещё раз — откроется.';
+  renderOvSel();
+}
+function renderOvSel(){
+  var id=OV.sel;
+  if(!id){el.ovSel.hidden=true;el.ovSel.innerHTML='';return;}
+  var cur=frameIdx(id),h='<b>Полка '+esc(id)+'</b><button type="button" class="btn" data-a="open">Открыть полку</button><button type="button" class="btn" data-a="doors">'+(isClosed(id)?'Открыть створки':'Закрыть створки')+'</button><span class="swatches" role="group" aria-label="Цвет рамки">';
+  FRAMES.forEach(function(f,i){h+='<button type="button" class="sw" data-i="'+i+'" style="background:'+f.fill+'" aria-pressed="'+(i===cur)+'" aria-label="Цвет рамки: '+esc(f.name)+'" title="'+esc(f.name)+'"></button>';});
+  h+='</span><button type="button" class="btn" data-a="rackcolor">Весь стеллаж</button><button type="button" class="btn" data-a="clear">Снять выбор</button>';
+  el.ovSel.hidden=false;el.ovSel.innerHTML=h;
+}
+function ovRedraw(){if(OV.open) renderOverview();}
+function openOverview(){
+  if(!DS||OV.open||navBusy||float) return;
+  if(arm) disarm(true);
+  popClose();
+  saveLayout();
+  var R=racksList();
+  OV.open=true;OV.sel='';OV.lastCap='';OV.page=ovCurPage(R);
+  el.stage.hidden=true;el.overview.hidden=false;
+  document.body.classList.add('ovmode');
+  el.rkOv.setAttribute('aria-pressed','true');
+  renderOverview();
+  window.scrollTo(0,0);
+}
+function closeOverview(openId){
+  if(!OV.open) return;
+  OV.open=false;OV.drag=null;
+  el.overview.hidden=true;el.stage.hidden=false;
+  document.body.classList.remove('ovmode');
+  el.rkOv.setAttribute('aria-pressed','false');
+  if(openId&&openId!==NAV.cur) showShelf(openId,0,0);
+  else{renderAll();updateShelfNav();}
+}
+function ovPos(R,id){
+  for(var r=0;r<R.length;r++){var i=R[r].indexOf(id);if(i>=0) return {r:r,i:i};}
+  return null;
+}
+/* что получится, если полку src бросить на цель t; ok:false — нельзя (why — почему), same — ничего не изменится */
+function ovPlan(src,t){
+  var R=racksList().map(function(l){return l.slice();}),sp=ovPos(R,src);
+  if(!sp||!t) return null;
+  if(t.type==='swap'){
+    if(t.id===src) return {same:true};
+    var tp=ovPos(R,t.id);if(!tp) return null;
+    R[sp.r][sp.i]=t.id;R[tp.r][tp.i]=src;
+    return {ok:true,R:R,msg:'Полки '+src+' и '+t.id+' поменялись местами.'};
+  }
+  var srcLen=R[sp.r].length,tr=t.type==='new'?-1:t.r,ti=t.type==='new'?0:t.p;
+  if(t.type==='new'){
+    if(srcLen===1) return {same:true};
+    if(srcLen-1<RACK_MIN) return {ok:false,why:'В стеллаже должно остаться не меньше '+RACK_MIN+' полок.'};
+    R[sp.r].splice(sp.i,1);R.push([src]);
+    return {ok:true,R:R,msg:'Полка '+src+' начала новый стеллаж. Добавьте в него ещё полки: в стеллаже от '+RACK_MIN+' до '+RACK_MAX+'.'};
+  }
+  if(tr===sp.r){
+    var L=R[tr];
+    L.splice(sp.i,1);if(sp.i<ti) ti--;
+    if(ti===sp.i) return {same:true};
+    L.splice(ti,0,src);
+    return {ok:true,R:R,msg:'Полка '+src+' переставлена внутри стеллажа.'};
+  }
+  if(srcLen>1&&srcLen-1<RACK_MIN) return {ok:false,why:'В стеллаже должно остаться не меньше '+RACK_MIN+' полок.'};
+  if(R[tr].length+1>RACK_MAX) return {ok:false,why:'В стеллаже не больше '+RACK_MAX+' полок.'};
+  R[sp.r].splice(sp.i,1);
+  R[tr].splice(ti,0,src);
+  return {ok:true,R:R.filter(function(l){return l.length;}),msg:'Полка '+src+' перенесена в другой стеллаж.'};
+}
+function ovApply(plan){
+  OV.undo.push(JSON.stringify({c:RK.custom,r:racksList()}));
+  if(OV.undo.length>60) OV.undo.shift();
+  RK.custom=true;RK.racks=plan.R;saveRacks();
+  OV.lastCap='';
+  updateShelfNav();renderOverview();
+  note(plan.msg,4500);
+}
+function ovUndoDo(){
+  if(!OV.undo.length) return;
+  var o=JSON.parse(OV.undo.pop());
+  RK.custom=!!o.c;RK.racks=o.c?o.r:[];saveRacks();
+  OV.lastCap='';
+  updateShelfNav();renderOverview();
+}
+function ovTap(id){
+  if(OV.sel===id){closeOverview(id);return;}
+  if(OV.sel){
+    var pl=ovPlan(OV.sel,{type:'swap',id:id});
+    OV.sel='';
+    if(pl&&pl.ok){ovApply(pl);return;}
+    renderOverview();return;
+  }
+  OV.sel=id;renderOverview();
+  var c=el.ovGrid.querySelector('.ovshelf[data-id="'+id+'"]');if(c) c.focus({preventScroll:true});
+}
+function ovTargetAt(x,y){
+  var n=document.elementFromPoint(x,y),c;
+  if(!n||!n.closest) return null;
+  if((c=n.closest('.ovshelf'))) return {type:'swap',id:c.getAttribute('data-id'),el:c};
+  if((c=n.closest('.ovgap'))) return {type:'ins',r:+c.getAttribute('data-r'),p:+c.getAttribute('data-p'),el:c};
+  if((c=n.closest('.ovnew'))||(c=n.closest('.ovrack[data-new]'))) return {type:'new',el:c};
+  return null;
+}
+function ovClearMarks(){
+  Array.prototype.forEach.call(el.overview.querySelectorAll('.tgt,.bad'),function(n){n.classList.remove('tgt');n.classList.remove('bad');});
+}
+function ovEndDrag(){
+  var d=OV.drag;
+  window.removeEventListener('pointermove',ovMove);window.removeEventListener('pointerup',ovUp);window.removeEventListener('pointercancel',ovUp);
+  clearTimeout(OV.edgeT);OV.edgeT=0;
+  if(d&&d.ghost&&d.ghost.parentNode) d.ghost.parentNode.removeChild(d.ghost);
+  el.overview.classList.remove('ovdragging');
+  el.ovNew.hidden=true;ovClearMarks();
+  OV.drag=null;
+}
+function ovDown(e){
+  var cell=e.target.closest?e.target.closest('.ovshelf'):null;
+  if(!cell||OV.drag) return;
+  var grip=!!e.target.closest('.ovgrip');
+  if(e.pointerType==='mouse'&&e.button!==0) return;
+  if(e.pointerType!=='mouse'&&!grip) return;
+  OV.drag={id:cell.getAttribute('data-id'),x0:e.clientX,y0:e.clientY,on:false,ghost:null,plan:null,w:cell.offsetWidth,h:cell.offsetHeight};
+  window.addEventListener('pointermove',ovMove);window.addEventListener('pointerup',ovUp);window.addEventListener('pointercancel',ovUp);
+  if(grip) e.preventDefault();
+}
+function ovMove(e){
+  var d=OV.drag;
+  if(!d) return;
+  if(!d.on){
+    if(Math.hypot(e.clientX-d.x0,e.clientY-d.y0)<7) return;
+    d.on=true;
+    var src=el.ovGrid.querySelector('.ovshelf[data-id="'+d.id+'"]');
+    var g=document.createElement('div');g.className='ovghost';g.style.width=(d.w*0.92)+'px';
+    g.innerHTML=src?src.querySelector('svg').outerHTML:'';
+    document.body.appendChild(g);d.ghost=g;
+    if(src) src.classList.add('drag');
+    el.overview.classList.add('ovdragging');
+    el.ovNew.hidden=false;
+    OV.sel='';renderOvSel();
+  }
+  if(e.cancelable) e.preventDefault();
+  var gw=d.w*0.92;
+  d.ghost.style.left=(e.clientX-gw/2)+'px';d.ghost.style.top=(e.clientY-d.h*0.35)+'px';
+  ovClearMarks();
+  var t=ovTargetAt(e.clientX,e.clientY),pl=t?ovPlan(d.id,t):null;
+  d.plan=pl&&pl.ok?pl:null;
+  if(t&&pl&&!pl.same){
+    t.el.classList.add(pl.ok?'tgt':'bad');
+    el.ovCap.textContent=pl.ok?pl.msg:pl.why;
+  }else{
+    el.ovCap.textContent='Бросьте полку на другую полку или на светлую полосу между полками.';
+  }
+  var gr=el.ovGrid.getBoundingClientRect(),dir=e.clientX<gr.left+36?-1:(e.clientX>gr.right-36?1:0);
+  if(dir&&!OV.edgeT){
+    OV.edgeT=setTimeout(function(){
+      OV.edgeT=0;
+      if(!OV.drag) return;
+      var np=OV.page+dir;
+      if(np<0||np>Math.max(0,racksList().length-SHOW_RACKS)) return;
+      OV.page=np;renderOverview();
+      var s2=el.ovGrid.querySelector('.ovshelf[data-id="'+OV.drag.id+'"]');if(s2) s2.classList.add('drag');
+    },650);
+  }else if(!dir&&OV.edgeT){clearTimeout(OV.edgeT);OV.edgeT=0;}
+}
+function ovUp(e){
+  var d=OV.drag;
+  if(!d){ovEndDrag();return;}
+  var was=d.on,plan=d.plan,t=null,pl=null;
+  if(was&&e&&e.type!=='pointercancel'){t=ovTargetAt(e.clientX,e.clientY);pl=t?ovPlan(d.id,t):null;}
+  ovEndDrag();
+  if(was){
+    OV.noClick=performance.now()+350;
+    OV.lastCap='';
+    if(pl&&pl.ok) ovApply(pl);
+    else{
+      if(pl&&pl.ok===false) note(pl.why,4000);
+      renderOverview();
+    }
+  }
+}
+function initOverview(){
+  el.ovBack.addEventListener('click',function(){closeOverview();});
+  el.ovUndo.addEventListener('click',ovUndoDo);
+  el.ovAuto.addEventListener('click',function(){
+    if(!RK.custom) return;
+    OV.undo.push(JSON.stringify({c:RK.custom,r:racksList()}));
+    RK.custom=false;RK.racks=[];saveRacks();OV.lastCap='';
+    updateShelfNav();renderOverview();
+    note('Полки снова разложены по номерам.',3500);
+  });
+  el.ovPrev.addEventListener('click',function(){OV.page--;OV.lastCap='';renderOverview();});
+  el.ovNext.addEventListener('click',function(){OV.page++;OV.lastCap='';renderOverview();});
+  el.ovGrid.addEventListener('pointerdown',ovDown);
+  el.ovGrid.addEventListener('click',function(e){
+    if(performance.now()<OV.noClick) return;
+    var c=e.target.closest?e.target.closest('.ovshelf'):null;
+    if(c) ovTap(c.getAttribute('data-id'));
+    else if(OV.sel){OV.sel='';renderOverview();}
+  });
+  el.ovGrid.addEventListener('dblclick',function(e){
+    var c=e.target.closest?e.target.closest('.ovshelf'):null;
+    if(c) closeOverview(c.getAttribute('data-id'));
+  });
+  el.ovGrid.addEventListener('keydown',function(e){
+    var c=e.target.closest?e.target.closest('.ovshelf'):null;
+    if(c&&(e.key==='Enter'||e.key===' ')){e.preventDefault();ovTap(c.getAttribute('data-id'));}
+  });
+  el.ovSel.addEventListener('click',function(e){
+    var id=OV.sel,b=e.target.closest?e.target.closest('button'):null;
+    if(!b||!id) return;
+    var a=b.getAttribute('data-a');
+    if(a==='open') closeOverview(id);
+    else if(a==='clear'){OV.sel='';renderOverview();}
+    else if(a==='doors'){
+      if(isClosed(id)) delete META.doors[id];else META.doors[id]=1;
+      saveMeta();renderOverview();updateShelfNav();
+    }else if(a==='rackcolor'){
+      var i=frameIdx(id);
+      rackInfo(id).list.forEach(function(x){if(i===0) delete META.fr[x];else META.fr[x]=i;});
+      saveMeta();applyFrameColor();renderOverview();updateShelfNav();
+    }else if(b.classList.contains('sw')){
+      var k=+b.getAttribute('data-i');
+      if(k===0) delete META.fr[id];else META.fr[id]=k;
+      saveMeta();applyFrameColor();renderOverview();updateShelfNav();
+    }
+  });
 }
 
 /* ======================================================================
@@ -5218,6 +6548,9 @@ function initDrive(){
 function init(){
   initEls();
   loadCfg();
+  loadMeta();
+  loadRacks();
+  loadMoves();
   loadGsSession();
   applyBig();
   applyLog();
@@ -5235,13 +6568,15 @@ function init(){
   initPhotos();
   initView();
   initSearch();
+  initRail();
   initShelfNav();
+  initOverview();
+  initMove();
+  initTabsDialog();
   initDrive();
 
   el.undo.addEventListener('click',doUndo);
   el.clear.addEventListener('click',doClear);
-  el.auto.addEventListener('click',doAuto);
-  el.gsync.addEventListener('click',function(){if(gsConfigured()) gsRefresh({});else openSettings();});
 
   el.dkL.addEventListener('click',function(){armStep(-1,false);});
   el.dkR.addEventListener('click',function(){armStep(1,false);});
@@ -5263,15 +6598,18 @@ function init(){
     var k=e.key,ctrl=e.ctrlKey||e.metaKey,tg=e.target,tag=tg&&tg.tagName?tg.tagName.toLowerCase():'';
     if(document.querySelector('dialog[open]')) return;
     if(menuIsOpen()&&k==='Escape'){closeMenus();return;}
+    if(k==='Escape'&&popIsOpen()){popClose();return;}
+    if(k==='Escape'&&OV.open){e.preventDefault();closeOverview();return;}
     if(tag==='input'||tag==='select'||tag==='textarea') return;
     if(ctrl&&(k==='z'||k==='Z'||k==='я'||k==='Я')){e.preventDefault();doUndo();return;}
     if(ctrl&&k===','){e.preventDefault();openSettings();return;}
-    if(ctrl&&(k==='r'||k==='R'||k==='к'||k==='К')&&gsConfigured()){e.preventDefault();gsRefresh({});return;}
+    if(ctrl&&(k==='r'||k==='R'||k==='к'||k==='К')&&gsConfigured()){e.preventDefault();gsRefreshAll({});return;}
     if(e.altKey&&!ctrl&&(k==='ArrowUp'||k==='ArrowDown')){e.preventDefault();goShelf(k==='ArrowUp'?-1:1);return;}
     if(e.altKey&&!ctrl&&(k==='ArrowLeft'||k==='ArrowRight')){e.preventDefault();goRack(k==='ArrowLeft'?-1:1);return;}
     if(ctrl&&(k==='k'||k==='K'||k==='л'||k==='Л')){e.preventDefault();searchFocus();return;}
     if(ctrl||e.altKey) return;
     if(k==='/'){e.preventDefault();searchFocus();return;}
+    if(float&&(k==='l'||k==='L'||k==='д'||k==='Д')){e.preventDefault();float.flip=!float.flip;return;}
     if(!arm){
       if(k==='+'||k==='='){e.preventDefault();zoomStep(1.25);return;}
       if(k==='-'||k==='_'||k==='−'){e.preventDefault();zoomStep(0.8);return;}
@@ -5327,8 +6665,15 @@ function init(){
   /* Картинки из памяти устройства поднимаются до первого показа полки (не дольше 0,45 с), поэтому книги сразу со своими корешками. */
   var ready=imgInit().catch(function(){return 0;});
   var wait=new Promise(function(r){setTimeout(r,450);});
-  Promise.race([ready,wait]).then(function(){
-    loadDataset({
+  Promise.race([ready,wait]).then(function(){return dsAll();}).then(function(list){
+    var startRaw=null;
+    list.forEach(function(r){
+      if(!r||!r.raw||!r.raw.columns||!r.raw.rows) return;
+      NAV.real[r.id]=r.raw;
+      if(CFG.gs.last&&r.raw.sheet===CFG.gs.last) startRaw=r.raw;
+    });
+    if(startRaw) loadDataset(startRaw,{sync:true});
+    else loadDataset({
       sheet:'Демо · '+SEED.sheet,
       columns:SEED.columns,
       rows:SEED.rows,
