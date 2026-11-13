@@ -947,7 +947,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.10.2</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.11.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1131,7 +1131,7 @@ body.pgwall main.app{display:none}
   </div>
 </main>
 
-<section class="phpage" id="phPage" hidden aria-label="Стеллажи: пять стеллажей с учебными книгами. Нажмите на книгу, чтобы вытащить её и покрутить в 3D">
+<section class="phpage" id="phPage" hidden aria-label="Стеллажи: на центральном стеллаже 100 настоящих книг с oldbook.kz. Нажмите на книгу, чтобы вытащить её и покрутить в 3D">
   <div class="phview" id="phView" tabindex="0" role="application" aria-label="Пять стеллажей. Кнопки со стрелками и клавиши влево и вправо переключают стеллажи, колесо мыши приближает до уровня полки, перетаскивание двигает, нажатие на книгу вытаскивает её.">
     <canvas class="phgl" id="phGL"></canvas>
     <div class="phnogl" id="phNoGL" hidden><b>Не удалось включить 3D</b>Для этой страницы нужен браузер с WebGL 2 (Chrome, Edge, Firefox, Safari 15 и новее). Включите аппаратное ускорение в настройках браузера или откройте страницу в другом браузере. Страница «Полка — конструктор» работает как обычно.<small id="phNoGLWhy"></small></div>
@@ -1431,7 +1431,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.10.2'};
+var APP={name:'Геометрия Полки',version:'1.11.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -3600,7 +3600,7 @@ function helpUse(){
     '<li><b>Листы из Google Таблицы.</b> Файл → «Выбрать листы из Google Таблицы…»: отметьте галочками нужные листы-полки, можно сразу несколько, и нажмите «Загрузить». Первый лист откроется, остальные станут полками рядом. Полный список листов виден после входа в Google или с ключом API; в режиме «по ссылке» названия вкладок вписываются один раз и запоминаются.</li>'+
     '<li><b>Страница «Стеллажи».</b> Меню «Страницы» → «Стеллажи — 3D-книги». Это настоящая 3D-сцена: пять одинаковых деревянных стеллажей стоят в ряд, на экране сразу три. '+
       'Доски, стойки, карниз и задняя стенка объёмные, дерево взято с присланной картинки. Стрелки по бокам (и клавиши ← →) сдвигают ряд на один стеллаж, точки внизу слева показывают, какие стеллажи видны. '+
-      'На средней полке среднего стеллажа стоят 10 настоящих книг с сайта oldbook.kz (размеры взяты с сайта), на остальных полках придуманные учебные книги. '+
+      'На центральном стеллаже стоят 100 настоящих книг с сайта oldbook.kz (артикулы 15201–15300; размеры, переплёт, описание и фото взяты с сайта). Высокие книги стоят внизу, у каждого ряда последней стоит книга в твёрдом переплёте, мягкие книги стоят только с опорой, тонкие брошюры и слишком высокая книга лежат стопками. Книгу с фото страниц можно открыть кнопкой «Открыть». '+
       'Колесо мыши плавно приближает, но только до уровня полки. Перетаскивайте, чтобы двигать вид, на телефоне работает щипок. '+
       'Чтобы наклонить вид и посмотреть на полки сбоку или сверху, тяните правой кнопкой мыши (или включите кнопку с кольцом справа внизу, клавиша O). '+
       'Кнопка «Ровный вид» слева внизу (клавиша L) ставит угол обзора строго прямо, без наклона и поворота, приближение остаётся. '+
@@ -7812,6 +7812,7 @@ function bkBack(b){
    Десять книг лежат в файле books3d/oldbook.js (название, описание, размеры, цена и три фото: обложка, корешок, задняя сторона).
    Файл подгружается отдельно и только когда открыта страница «Стеллажи». Если файла нет, на средней полке стоят учебные книги, как раньше. */
 var OB={list:null,state:0,img:{},cbs:[],ROW:[2,3]};
+/* картинка книги: путь к файлу (books3d/img/…) или готовые данные */
 function obLoad(cb){
   if(OB.state===2||OB.state===3){if(cb) cb();return;}
   if(cb) OB.cbs.push(cb);
@@ -7841,15 +7842,16 @@ function obImg(o,k,cb){
   im.src=o[k];
 }
 /* десять книг на полку: настоящие размеры (мм → пиксели картинки), стоят вплотную, посередине полки */
-function wbReal(r,k){
-  var L=OB.list,out=[],tot=0,x,i;
-  L.forEach(function(o){tot+=o.t/WR.mm;});
-  x=Math.round(((WR.xa+WR.xb)/2-tot/2)*10)/10;
-  L.forEach(function(o,ix){
-    var d=bkR(o.t/WR.mm),b={x:x,d:d,h:bkR(o.h/WR.mm),c:o.c,st:0,cs:0,tilt:0,ob:o,q:1.6};
-    x=bkR(x+d);
+/* 1.11.0: 100 настоящих книг с oldbook.kz на центральном стеллаже. Где стоит каждая книга (полка, место, стоя или лёжа), посчитано заранее
+   и лежит в books3d/oldbook.js: lx — от левой стенки до книги, ly — для лежащих, на сколько книга выше доски (в точках картинки, 1 точка = 2,2 мм). */
+function wbCentral(r,k){
+  var out=[];
+  (OB.list||[]).forEach(function(o,ix){
+    if(o.k!==k) return;
+    var d=bkR(o.t/WR.mm),h=bkR(o.h/WR.mm),b={x:bkR(WR.xa+o.lx),d:d,h:h,c:o.c||'#7a6a55',st:0,cs:0,tilt:o.tilt||0,ob:o,q:1.6};
     b.w=bkR(o.w/WR.mm);
-    b.id=r+'.'+k+'.'+ix;b.r=r;b.k=k;b.lie=false;
+    b.id=r+'.'+k+'.'+ix;b.r=r;b.k=k;b.lie=!!o.lie;
+    if(b.lie) b.y=bkR(wrBase(k)-(o.ly||0));
     b.tc=bkLum(b.c)>150?'#2a1d12':'#f3e7c9';b.gd=bkLum(b.c)>150?'#6b4a1a':'#dcbc66';
     b.title=o.title;b.author=o.author;b.pages=o.pages;
     WB[b.id]=b;out.push(b);
@@ -7947,8 +7949,8 @@ function glPaintSpines(done){
   });
   glUpload();
   /* полосы по ~300 пикселей высоты */
-  var real=G.tiles.filter(function(q){return !!q.b.ob;});
-  G.tiles.filter(function(q){return !q.b.ob;}).sort(function(a,b){return a.y-b.y||a.x-b.x;}).forEach(function(q){
+  var real=G.tiles.filter(function(q){return !!(q.b.ob&&q.b.ob.spine);});
+  G.tiles.filter(function(q){return !(q.b.ob&&q.b.ob.spine);}).sort(function(a,b){return a.y-b.y||a.x-b.x;}).forEach(function(q){
     if(!cur||q.y+q.ch-cur.y0>300){cur={y0:q.y,y1:q.y+q.ch,tiles:[]};chunks.push(cur);}
     cur.tiles.push(q);if(q.y+q.ch>cur.y1) cur.y1=q.y+q.ch;
   });
@@ -8047,7 +8049,8 @@ function wbAll(){
   var r,k,a;
   WBL.length=0;Object.keys(WB).forEach(function(i){delete WB[i];});
   for(r=0;r<WR.n;r++)for(k=0;k<WR.k;k++){
-    a=(OB.list&&r===OB.ROW[0]&&k===OB.ROW[1])?wbReal(r,k):wbShelf(r,k);
+    /* учебные (придуманные) книги убраны: остальные стеллажи пустые */
+    a=(OB.list&&r===OB.ROW[0])?wbCentral(r,k):[];
     WSH[r+'.'+k]=a;a.forEach(function(b){WBL.push(b);});
   }
   G.shelvesOB=!!OB.list;
@@ -8426,7 +8429,7 @@ function camDots(){
   if(t) t.textContent=f<0?'Стеллажи':(f===l?'Стеллаж '+(f+1)+' из '+WR.n:'Стеллажи '+(f+1)+'–'+(l+1)+' из '+WR.n);
 }
 function wpHud(){
-  var h='<b>Стеллажи</b><div class="sub">Почти все книги придуманные. На средней полке среднего стеллажа стоят 10 настоящих книг с oldbook.kz. Нажмите на книгу: она выедет из полки, её можно покрутить в 3D.</div><div class="phdots" aria-hidden="true">',i;
+  var h='<b>Стеллажи</b><div class="sub">На центральном стеллаже 100 настоящих книг с oldbook.kz. Нажмите на книгу: она выедет из полки, её можно покрутить в 3D и открыть.</div><div class="phdots" aria-hidden="true">',i;
   for(i=0;i<WR.n;i++) h+='<i></i>';
   el.phHud.innerHTML=h+'</div>';
   CAM.dotKey='';
@@ -8644,7 +8647,7 @@ function bkAtlasNew(b){
       fin();
     });
   }
-  if(real){photo('cover','front');photo('back','back');photo('spine','spine');}
+  if(real){photo('cover','front');if(o.back) photo('back','back');else load('back',bkBack(b),b.w,b.h);if(o.spine) photo('spine','spine');else load('spine',bkSpine(b),b.d,b.h);}
   else{load('cover',bkCover(b),b.w,b.h);load('back',bkBack(b),b.w,b.h);load('spine',bkSpine(b),b.d,b.h);}
   return rec;
 }
@@ -9071,8 +9074,8 @@ function initBook(){
    Раскрытая книга рисуется поверх 3D-сцены обычной вёрсткой с 3D-поворотами (CSS): на время чтения 3D-книга прячется,
    а в начале и в конце бумажная книга ровно ложится на её обложку, поэтому переход не заметен. ===== */
 var RD={on:false,busy:false,flip:false,cur:0,leaves:[],b:null,o:null,pw:0,ph:0,W:0,H:0,top:0,r0:null,sx:0,sy:0,pid:null,tok:0};
-var RD_N=5;
-function rdHas(b){return !!(b&&b.ob&&b.ob.sku);}
+function rdN(o){return o?(o.pg===undefined?5:o.pg):0;}
+function rdHas(b){return !!(b&&b.ob&&b.ob.sku&&rdN(b.ob)>0);}
 function rdSrc(o,n){return 'books3d/pages/'+o.sku+'-'+n+'.webp';}
 function rdDur(ms){return reduce?1:ms;}
 /* точка книги (в её собственных осях) → пиксель на странице */
@@ -9165,13 +9168,14 @@ function rdBuild(){
   var base=document.createElement('div');base.className='rdbase';
   base.appendChild(rdFace('r endp',''));bk.appendChild(base);
   var bind=/^тв/i.test(o.binding)?'твёрдый переплёт':/^мя/i.test(o.binding)?'мягкая обложка':String(o.binding||'').toLowerCase();
-  var faces=[
-    [rdFace('r cover',rdImg(o.front)),rdFace('l endp','<div class="lb"><b>'+esc(o.title)+'</b>'+esc(o.author)+'<br>'+esc(o.publisher)+', '+esc(o.year)+'</div>')],
-    [rdFace('r',rdImg(rdSrc(o,1))),rdFace('l',rdImg(rdSrc(o,2)))],
-    [rdFace('r',rdImg(rdSrc(o,3))),rdFace('l',rdImg(rdSrc(o,4)))],
-    [rdFace('r',rdImg(rdSrc(o,5))),rdFace('l endp','<div class="lb"><b>Дальше — в самой книге</b>'+o.pages+' стр. · '+esc(bind)+
-      '<span class="pr">'+Number(o.price).toLocaleString('ru-RU')+' ₸</span><a href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">oldbook.kz</a><br><small>Фото страниц с сайта магазина</small></div>')]
-  ];
+  /* листы: обложка (с форзацем на обороте), затем фото страниц парами, на обороте последнего — цена и ссылка; страниц у книг разное число */
+  var seq=[],n=rdN(o),q;
+  for(q=1;q<=n;q++) seq.push(rdFace('',rdImg(rdSrc(o,q))));
+  seq.push(rdFace('endp','<div class="lb"><b>Дальше — в самой книге</b>'+o.pages+' стр. · '+esc(bind)+
+      '<span class="pr">'+Number(o.price).toLocaleString('ru-RU')+' ₸</span><a href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">oldbook.kz</a><br><small>Фото страниц с сайта магазина</small></div>'));
+  if(seq.length%2) seq.push(rdFace('endp',''));
+  var faces=[[rdFace('r cover',rdImg(o.front)),rdFace('l endp','<div class="lb"><b>'+esc(o.title)+'</b>'+esc(o.author)+'<br>'+esc(o.publisher)+', '+esc(o.year)+'</div>')]];
+  for(q=0;q<seq.length;q+=2){seq[q].classList.add('r');seq[q+1].classList.add('l');faces.push([seq[q],seq[q+1]]);}
   RD.leaves=[];
   for(i=0;i<faces.length;i++){
     var lf=document.createElement('div');lf.className='rdleaf';
@@ -9185,7 +9189,7 @@ function rdBuild(){
 /* картинки страниц грузим заранее (пока книга поворачивается обложкой к нам), не дольше 5 секунд */
 function rdPreload(o){
   var L=[o.front],i;
-  for(i=1;i<=RD_N;i++) L.push(rdSrc(o,i));
+  for(i=1;i<=rdN(o);i++) L.push(rdSrc(o,i));
   return Promise.race([Promise.all(L.map(function(u){
     return new Promise(function(r){var im=new Image();im.onload=im.onerror=function(){r();};im.src=u;});
   })),rdWait(5000)]);
