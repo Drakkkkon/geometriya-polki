@@ -745,13 +745,65 @@ details.how ol.how{margin:0 0 10px}
   .chlog{padding:8px 10px 10px}
   .rail{padding-top:2px}
 }
+
+/* ===== 1.5.0: страница «Шкаф» (фото стеллажа, книги на полке, плавное приближение до уровня полки) ===== */
+body.pgwall{padding-block:0;overflow:hidden}
+body.pgwall main.app{display:none}
+.phpage{position:fixed;left:0;right:0;bottom:0;top:var(--phtop,37px);background:#eceef0;overflow:hidden;z-index:5;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+.phview{position:absolute;inset:0;overflow:hidden;touch-action:none;cursor:grab;outline:none}
+.phview.drag{cursor:grabbing}
+.phview:focus-visible{box-shadow:inset 0 0 0 3px var(--info)}
+.phworld{position:absolute;left:0;top:0;width:1024px;height:1024px;transform-origin:0 0;box-shadow:0 0 0 1px rgba(20,30,40,.12),0 10px 40px rgba(20,30,40,.25)}
+.phworld img{display:block;width:1024px;height:1024px;pointer-events:none;-webkit-user-drag:none}
+.phworld svg{position:absolute;left:0;top:0;width:1024px;height:1024px;overflow:visible}
+.phworld .wpb{cursor:pointer}
+.phworld .wpb:hover{filter:brightness(1.28)}
+.phworld .wplab{cursor:pointer}
+.phworld .wplab rect{fill:rgba(28,38,48,.9);stroke:rgba(255,255,255,.55);stroke-width:1}
+.phworld .wplab text{fill:#fff;font:500 12px var(--font-ui)}
+.phworld .wplab:hover rect{fill:#000}
+.phhint{position:absolute;left:12px;top:10px;z-index:3;max-width:calc(100% - 24px);padding:5px 10px;border-radius:999px;
+  background:rgba(255,255,255,.94);border:1px solid var(--rule);font:12.5px/1.35 var(--font-ui);color:var(--muted);pointer-events:none}
+.phhint .touch{display:none}
+@media (pointer:coarse){.phhint .mouse{display:none}.phhint .touch{display:inline}}
+.phhud{position:absolute;left:12px;bottom:12px;z-index:3;width:min(330px,calc(100% - 84px));padding:10px 12px;border-radius:10px;
+  background:rgba(255,255,255,.96);border:1px solid var(--rule);box-shadow:0 6px 22px rgba(20,30,40,.2);font:13px/1.4 var(--font-ui)}
+.phhud b{display:block;font:600 15px var(--font-ui)}
+.phhud .sub{color:var(--muted);margin:2px 0 8px}
+.phhud .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.phtools{position:absolute;right:12px;bottom:12px;z-index:3;display:flex;flex-direction:column;gap:6px}
+.phtools button{width:44px;height:44px;display:flex;align-items:center;justify-content:center;padding:0;border-radius:8px;
+  border:1px solid var(--grid-2);background:rgba(255,255,255,.96);color:var(--ink);font:500 22px/1 var(--font-ui);cursor:pointer;
+  box-shadow:0 3px 12px rgba(20,30,40,.18)}
+.phtools button:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+.phtools button:disabled{opacity:.4;cursor:default;background:rgba(255,255,255,.96);color:var(--ink)}
+.phtools svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.phzoom{position:absolute;right:12px;top:10px;z-index:3;padding:4px 9px;border-radius:999px;background:rgba(255,255,255,.94);
+  border:1px solid var(--rule);font:12px var(--font-mono);color:var(--muted);pointer-events:none}
+.phtip{position:absolute;z-index:4;pointer-events:none;max-width:300px;padding:6px 9px;border-radius:6px;background:var(--ink);color:#fff;
+  font:12.5px/1.35 var(--font-ui);box-shadow:0 4px 14px rgba(0,0,0,.3)}
+.phtip small{display:block;opacity:.75;font:11.5px var(--font-mono)}
+@media (max-width:760px){
+  .phhud{bottom:10px;left:10px;width:calc(100% - 76px)}
+  .phtools{right:10px;bottom:10px}
+  .phtools button{width:48px;height:48px}
+  .phhint{font-size:12px}
+}
+@media (max-width:760px),(max-height:560px){
+  .phhud{width:auto;max-width:calc(100% - 84px);padding:8px 10px}
+  .phhud .sub{display:none}
+  .phhud b{font-size:14px;margin-bottom:6px}
+  .phhud .btn{min-height:40px;padding:6px 12px;font-size:14px}
+  .phhint{max-width:calc(100% - 100px);font-size:12px}
+}
 </style>
 </head>
 <body>
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.4.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.5.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -934,6 +986,25 @@ details.how ol.how{margin:0 0 10px}
   <p class="foot" id="foot"></p>
   </div>
 </main>
+
+<section class="phpage" id="phPage" hidden aria-label="Шкаф: фото стеллажа с книгами на полке">
+  <div class="phview" id="phView" tabindex="0" role="application" aria-label="Фото шкафа. Колесо мыши приближает до уровня полки, перетаскивание двигает фото, стрелки двигают, плюс и минус меняют масштаб.">
+    <div class="phworld" id="phWorld">
+      <img id="phImg" src="wall/shkaf.jpg" width="1024" height="1024" alt="Шкаф со стеклянными дверцами и открытыми полками" draggable="false">
+      <svg id="phOv" viewBox="0 0 1024 1024" aria-hidden="false"></svg>
+    </div>
+  </div>
+  <p class="phhint"><span class="mouse">Колесо мыши — плавно приблизить до полки · перетаскивайте, чтобы двигать · двойной щелчок — к полке</span><span class="touch">Щипок двумя пальцами — приблизить до полки · перетаскивайте, чтобы двигать</span></p>
+  <span class="phzoom" id="phZoom" aria-live="off">×1.0</span>
+  <div class="phhud" id="phHud"></div>
+  <div class="phtools" role="group" aria-label="Масштаб фото">
+    <button type="button" id="phIn" aria-label="Приблизить" title="Приблизить">+</button>
+    <button type="button" id="phOut" aria-label="Отдалить" title="Отдалить">−</button>
+    <button type="button" id="phShelf" aria-label="К средней полке" title="К средней полке"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8V4h4M21 8V4h-4M3 16v4h4M21 16v4h-4"/><circle cx="12" cy="12" r="3"/></svg></button>
+    <button type="button" id="phFit" aria-label="Весь шкаф" title="Весь шкаф ( 0 )"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM4 12h16M12 4v16"/></svg></button>
+  </div>
+  <div class="phtip" id="phTip" hidden></div>
+</section>
 
 <div class="dock" id="dock" hidden role="region" aria-label="Действия с книгой">
   <div class="dt" id="dockT"><b id="dockName"></b><span id="dockInfo"></span></div>
@@ -1181,7 +1252,7 @@ details.how ol.how{margin:0 0 10px}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.4.0'};
+var APP={name:'Геометрия Полки',version:'1.5.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -1213,6 +1284,8 @@ var FRAMES=[
 ];
 
 var SEED={"sheet":"228 С 15.10","columns":[{"label":"Код книги","origin":"sheet"},{"label":"Автор","origin":"sheet"},{"label":"Название","origin":"sheet"},{"label":"Год","origin":"sheet"},{"label":"Цена","origin":"sheet"},{"label":"Место хр новое","origin":"sheet"},{"label":"Количество на складе","origin":"sheet"},{"label":"Формат","origin":"sheet"},{"label":"Высота (Длина)","origin":"sheet"},{"label":"Ширина","origin":"sheet"},{"label":"Корешок","origin":"sheet"},{"label":"Вес","origin":"sheet"},{"label":"Состояние","origin":"sheet"},{"label":"Состояние - примечание","origin":"sheet"},{"label":"Примечание","origin":"sheet"},{"label":"Кол-во страниц","origin":"general"},{"label":"Если нет формата НОВЫЙ ставить сюда","origin":"general"},{"label":"Бумага","origin":"general"},{"label":"Переплет","origin":"general"},{"label":"Формат размера","origin":"general"},{"label":"Формат в мм","origin":"general"},{"label":"Telegram пост","origin":"general"}],"rows":[[11070,"Қамбаров Қапан","Алтай аясында",1959,7000,228,1,null,205,135,12,166,"Хорошее","Замечания по обложке",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12030"],[11155,"Токмагамбетов Аскар","Әке мен бала",1961,4000,228,1,null,205,135,14,227,"Хорошее","Замечания по обложке, Отметки ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12116"],[10065,"Момыш-улы Баурджан","Психология войны",1990,2300,228,1,null,200,135,15,230,"Удовлетворительное","Замечания по обложке, Раскол форзаца, Раскол блока, Замечания по уголкам, Штамп на форзаце, Порваны страницы",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/10997"],[1993,"Тутыбаев К. Жолдыбаев О. Естаев Е.","Ислам",1988,3000,228,1,"70×90/32",165,107,15,164,"Хорошее","Замечания по обложке, Пятна на страницах",null,null,null,null,null,null,"Малый | 165×107 мм","https://t.me/oldbookkz/2251"],[11064,"Қайырбеков Ғафу","Дала қоңырауы",1957,3500,228,1,null,170,135,15,180,"Хорошее","Замечания по обложке",null,null,null,null,"Твердый переплет","Уменьшенный",null,"https://t.me/oldbookkz/12024"],[11068,"Молдагалиев Жубан","Жесір тағдыры",1961,7000,228,1,null,170,130,10,140,"Хорошее","Замечания по обложке, Надписи карандашом, Надписи ручкой, Замечания по корешку",null,null,null,null,"Твердый переплет","Уменьшенный",null,"https://t.me/oldbookkz/12028"],[12641,"Хасуй Ацуси","Техника напыления",1975,5000,228,2,null,221,148,16,420,"Очень хорошее","Замечания по обложке, Отметки ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/13631"],[4065,"Борн Макс","Моя жизнь и взгляды",1973,4000,228,1,null,200,127,10,175,"Очень хорошее","Замечания по суперобложке",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/4452"],[4909,"Борисов Трофим","Камчатские сказки",1950,6000,228,1,null,205,150,10,95,"Удовлетворительное","Замечания по обложке, Надписи ручкой, Надписи карандашом, Раскол блока, Замечания по форзацу, Пятна на страницах, Следы залития",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/5371"],[2716,"Алексин Анатолий","Hеобычайные поxождeния Сeвы Koтлoвa",1958,12000,228,1,"84×108/32",200,130,15,174,"Хорошее","Замечания по обложке, Замечания по уголкам, Замечания по корешку",null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/3061"],[9233,"Филлис Гэйлд","Исцеление кристаллами",2006,18200,228,1,"84×108/32",200,130,10,140,"Очень хорошее",null,null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/10099"],[14113,"Минц З.Г.","Ученые записки Тартуского государственного университета. Л. БЛОК И РЕВОЛЮЦИЯ 1905 года. Блоковский сборник 8",1988,10000,228,1,"70×90/16",215,170,17,444,"Очень хорошее",null,null,null,null,null,null,null,"Увеличенный | 215×170 мм","https://t.me/oldbookkz/15110"],[4167,"Моргенштерн Илья","Психографология",1994,3000,228,1,"84×108/32",200,130,25,412,"Хорошее","Скос блока",null,null,null,null,"Мягкий переплет","Стандартный","Стандартный | 200×130 мм","https://t.me/oldbookkz/4555"],[5958,"Турлугуров Тотай","Рассказы по истории Казахской ССР",1991,500,228,1,"70×90/16",215,170,5,78,"Очень хорошее",null,null,null,null,null,"Мягкий переплет","Увеличенный","Увеличенный | 215×170 мм","https://t.me/oldbookkz/6523"],[7527,"Цойгнер Герхард","Учение о цвете",1971,8000,228,1,null,220,172,18,545,"Хорошее","Замечания по обложке, Надписи ручкой, Штампы",null,null,null,null,"Твердый переплет","Увеличенный",null,"https://t.me/oldbookkz/8250"],[6744,"Бандас Лев","Производство и ремонт щипковых музыкальных инструментов",1983,15000,228,1,"60×90/16",215,145,25,349,"Удовлетворительное","Следы залития, Замечания по обложке, Пятна на страницах",null,null,null,null,"Твердый переплет","Стандартный","Стандартный | 215×145 мм","https://t.me/oldbookkz/7423"],[10670,"Көбеев Спандияр","Орындалған арман",1954,5000,228,1,null,208,135,10,204,"Хорошее","Замечания по обложке, Замечания по корешку, Надписи ручкой",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/11617"],[9236,"Кастанеда Карлос","Безмолвное знание",1996,3200,228,2,null,205,145,5,71,"Хорошее","Надписи карандашом, Замечания по титулу, Замечания по обложке",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/10102"],[11069,"Ковпак С. А.","Путивль-Карпат жорығы",1950,5000,228,1,null,205,135,12,192,"Хорошее","Замечания по обложке, Надписи карандашом, Скос блока",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12029"],[8953,"Бабақов Болат","Алтын алқа",1981,2000,228,1,"70×108/32",165,130,10,96,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Уменьшенный","Уменьшенный | 165×130 мм","https://t.me/oldbookkz/9801"],[9073,"Джунусов М. Утепов Ш","Нигмет Сыргабеков",1975,4000,228,1,"70×108/32",165,130,5,43,"Очень хорошее","Замечания по обложке, Отметки ручкой, Замечания по уголкам","С автографом",null,null,null,"Мягкий переплет","Уменьшенный","Уменьшенный | 165×130 мм","https://t.me/oldbookkz/9925"],[2646,"Аль-Фараби","Социально-этические трактаты",1973,6000,228,1,"70×90/32",165,107,25,310,"Очень хорошее","Замечания по суперобложке, Надписи ручкой, Пятна на страницах",null,null,null,null,"Твердый переплет","Уменьшенный","Малый | 165×107 мм",null],[2645,"Аль-Фараби","Математические трактаты",1972,6000,228,1,"70×90/32",165,107,20,267,"Очень хорошее","Замечания по суперобложке, Отметки ручкой",null,null,null,null,"Твердый пер. супероб","Уменьшенный","Малый | 165×107 мм",null],[2644,"Аль-Фараби","Философские трактаты",1970,8000,228,1,"70×90/32",165,107,30,367,"Очень хорошее","Замечания по суперобложке, Отметки ручкой",null,null,null,null,"Твердый пер. супероб","Уменьшенный","Малый | 165×107 мм","https://t.me/oldbookkz/2986"],[10737,"Клюн Иван","Мой путь в искусстве. Воспоминания. Статьи. Дневники",1999,49000,228,1,null,215,165,40,983,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/11686"],[10838,"Удальцова Надежда","Жизнь Русской Кубистки. Дневники, статьи, воспоминания",1994,25000,228,1,null,215,165,15,423,"Очень хорошее","Замечания по корешку, Замечания по уголкам",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11788"],[11036,"Харджиев Николай","Статьи об авангарде в 2-х томах",1997,48000,228,1,null,215,160,65,1500,"Очень хорошее","Замечания по обложке",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11994"],[10937,"Пунин Николай","О Татлине",1994,25000,228,1,null,215,165,10,278,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/11890"],[11240,"Крученых Алексей","Наш выход. К истории русского футуризма",1996,25000,228,1,null,215,165,23,520,"Очень хорошее","Замечания по корешку",null,null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/12204"],[11139,"Митурич Петр","Записки сурового реалиста эпохи авангарда. Дневники. Письма. Воспоминания. Статьи",1997,30000,228,1,null,215,165,25,668,"Хорошее","Замечания по корешку, Пятна на обложке, Замечания по обложке",null,null,null,null,"Твердый переплет","Увеличенный",null,"https://t.me/oldbookkz/12100"],[13527,"Егоров Б.Ф.","Труды по русской и славянской филологии. XV: Литературоведение",1970,7000,228,1,null,170,112,15,131,"Удовлетворительное","Замечания по обложке, Раскол блока, Замечания по корешку",null,176,null,null,null,null,null,"https://t.me/oldbookkz/14523"],[12034,"Лотман Ю.","Труды по знаковым системам. Выпуск III",1967,10000,228,1,null,215,142,20,445,"Хорошее","Замечания по суперобложке",null,null,null,null,"Твердый пер. супероб","Стандартный",null,"https://t.me/oldbookkz/13018"],[12139,"Лотман Ю.","Труды по знаковым системам. IV",1969,12000,228,1,null,215,142,20,522,"Хорошее","Отметки ручкой, Замечания по корешку",null,null,null,null,null,null,null,"https://t.me/oldbookkz/13123"],[10938,"Катаев В.Б.","Университетский пушкинский сборник",1999,2000,228,1,null,212,142,22,635,"Очень хорошее","Замечания по уголкам",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/11891"]]};
+/* Полка 227: книги из таблицы (лист «Генеральная», место хранения 227). Встроены, пока полка не загружена из Google. */
+var RAW227={"sheet":"227","columns":[{"label":"Код книги","origin":"sheet"},{"label":"Автор","origin":"sheet"},{"label":"Название","origin":"sheet"},{"label":"Год","origin":"sheet"},{"label":"Цена","origin":"sheet"},{"label":"Место хр новое","origin":"sheet"},{"label":"Количество на складе","origin":"sheet"},{"label":"Формат","origin":"sheet"},{"label":"Высота (Длина)","origin":"sheet"},{"label":"Ширина","origin":"sheet"},{"label":"Корешок","origin":"sheet"},{"label":"Вес","origin":"sheet"},{"label":"Состояние","origin":"sheet"},{"label":"Состояние - примечание","origin":"sheet"},{"label":"Кол-во страниц","origin":"sheet"},{"label":"Если нет формата НОВЫЙ ставить сюда","origin":"sheet"},{"label":"Бумага","origin":"sheet"},{"label":"Переплет","origin":"sheet"},{"label":"Формат размера","origin":"sheet"},{"label":"Формат в мм","origin":"sheet"},{"label":"Telegram пост","origin":"sheet"}],"rows":[[6840,"Кроссли Мишель","Нарративная психология. Самость, психологическая травма и конструирование смыслов",2013,25000,227,1,null,215,145,15,330,"Хорошее","Небольшое замечание по уголкам",null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/7524"],[11730,"Орлов Владимир","Психофизиологическая проблема",1966,14000,"227",1,null,205,135,25,448,"Хорошее","Надписи ручкой на обложке",null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12710"],[11777,"Хармс Даниил","Случаи",null,3000,"227",1,null,140,115,5,30,"Очень хорошее",null,null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/12757"],[11782,"Керли Стивен А.","В моих руках. Захватывающие истории хирурга-онколога и его пациентов, борющихся с раком",2021,8800,"227",1,null,215,145,20,370,"Очень хорошее",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/12762"],[11822,"Чазов Евгений","Здоровье и власть. Воспоминания «кремлевского врача»",1992,10500,227,1,null,200,125,15,191,"Очень хорошее","Замечания по обложке",null,null,null,"Мягкий переплет","Стандартный",null,"https://t.me/oldbookkz/12806"],[11877,"Аркадин Леонид","Индикатор таланта",1968,7000,227,1,null,160,125,15,141,"Удовлетворительное","Многочисленные замечания, см. фото",null,null,null,"Мягкий переплет","Уменьшенный",null,"https://t.me/oldbookkz/12861"],[12128,null,"Наставление по стрелковому делу — 7,62-мм автомат Калашникова (АК)",1968,4000,227,1,null,170,115,10,130,"Очень хорошее",null,null,null,null,null,null,null,"https://t.me/oldbookkz/13112"],[12129,null,"Наставление по стрелковому делу, 7,62-мм ручной пулемет Дегтярева (РПД)",1969,5000,227,1,null,170,115,10,125,"Очень хорошее",null,null,null,null,null,null,null,"https://t.me/oldbookkz/13113"],[12133,"Микалко Майкл","Взлом креатива. Как увидеть то, что не видят другие",2017,9000,227,1,null,225,180,20,553,"Очень хорошее","Замечания по обложке",null,null,null,"Мягкий переплет","Увеличенный",null,"https://t.me/oldbookkz/13117"],[12139,null,"Труды по знаковым системам. IV",1969,12000,227,1,null,215,142,20,522,"Хорошее","Замечания по обложке",null,null,null,null,null,null,"https://t.me/oldbookkz/13123"],[12382,"Уитмен Уолт","Листья травы",1955,15000,227,1,null,225,150,25,563,"Отличное",null,null,null,null,"Твердый переплет","Стандартный",null,"https://t.me/oldbookkz/13367"]],"src":"sheet","builtin":true};
 
 
 /* ===== Настройки (хранятся в браузере) ===== */
@@ -1837,8 +1910,8 @@ function loadDataset(raw,opts){
 var MODEL={};
 function modelNow(){
   var placed=placedList(),S=solveLevels(placed),books=[];
-  S.stands.forEach(function(p){books.push({x:p.x,w:p.w,h:p.u.h,t:p.u.t,lie:0,rest:0,c:p.u.color,id:p.u.id});});
-  S.recs.forEach(function(r){books.push({x:r.p.x,w:r.len,h:r.p.u.h,t:r.p.u.t,lie:1,rest:r.rest,c:r.p.u.color,id:r.p.u.id,ov:overhang(r.p.u)});});
+  S.stands.forEach(function(p){books.push({x:p.x,w:p.w,h:p.u.h,t:p.u.t,lie:0,rest:0,c:p.u.color,id:p.u.id,u:p.u});});
+  S.recs.forEach(function(r){books.push({x:r.p.x,w:r.len,h:r.p.u.h,t:r.p.u.t,lie:1,rest:r.rest,c:r.p.u.color,id:r.p.u.id,ov:overhang(r.p.u),u:r.p.u});});
   return {books:books,fill:fillStats(placed,minThin()),n:placed.length,total:UNITS.length};
 }
 function modelSig(id,raw){
@@ -3267,7 +3340,7 @@ async function exportXlsx(){
   var stamp=d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate())+' '+pad2(d.getHours())+':'+pad2(d.getMinutes());
   var info=[
     ['Параметр','Значение'],
-    ['Проект',APP.name],['Версия',APP.version],['Дата выгрузки',stamp],['Лист-источник',DS.sheet],['Источник данных',DS.src==='google'?'Google Таблица':(DS.src==='excel'?'Файл Excel':(DS.src==='test'?'Тестовая полка':'Демо-данные'))],
+    ['Проект',APP.name],['Версия',APP.version],['Дата выгрузки',stamp],['Лист-источник',DS.sheet],['Источник данных',DS.src==='google'?'Google Таблица':(DS.src==='excel'?'Файл Excel':(DS.src==='test'?'Тестовая полка':(DS.src==='sheet'?'Таблица (лист Генеральная)':'Демо-данные')))],
     ['Полка, мм (длина × высота × глубина)',SHELF.W+' × '+SHELF.H+' × '+SHELF.D],
     ['Книг на полке',on+' из '+UNITS.length],['Свободно на полу, мм',freeFloor(placedList())],
     ['Пришло с других полок (в эту выгрузку не входят)',guests],['Перенесено на другие полки',AWAY.length]
@@ -3342,10 +3415,11 @@ function helpUse(){
     '<li><b>Заполненность.</b> В левом нижнем углу каждой полки значок с процентом: какую долю пола полки занимают книги. Полная полка отмечена галочкой. Такой же значок у стеллажа (внизу в полосе стеллажей и в общем виде).</li>'+
     '<li><b>Книги между полками.</b> Книгу можно перетащить с одной полки на другую: в общем виде на нужную полку, а на обычном экране на соседнюю полку сверху или снизу. Есть и кнопка «Перенести…» в карточке книги: выберите полку из списка. Книга встанет на свободное место или ляжет пачкой под полкой. «Отменить» возвращает её на прежнюю полку. В закрытый шкаф книгу положить нельзя.</li>'+
     '<li><b>Другие полки.</b> Над основной полкой нарисована нижняя часть верхней полки, под ней верхняя часть нижней. Нажмите на неё или на стрелку посередине, и полка сдвинется с анимацией (Alt+↑ и Alt+↓). Название полки и дата последней правки написаны на табличке на раме слева сверху.</li>'+
-    '<li><b>Стеллажи.</b> В стеллаже от 2 до 6 полок. Маленькие стрелки под полками слева и справа (Alt+← и Alt+→) переходят на соседний стеллаж. Сейчас полки 225–227 и 229–236 тестовые.</li>'+
+    '<li><b>Стеллажи.</b> В стеллаже от 2 до 6 полок. Маленькие стрелки под полками слева и справа (Alt+← и Alt+→) переходят на соседний стеллаж. Полка 227 настоящая (книги из вашей таблицы), полки 225, 226 и 229–236 пока тестовые.</li>'+
     '<li><b>Общий вид стеллажей.</b> Кнопка «Общий вид» в полосе стеллажей (или меню Вид) показывает сразу три стеллажа. Полки можно менять местами и ставить в любом порядке: перетащите полку мышью за ручку или нажмите полку и затем другую (на телефоне). Можно вынести полку в другой стеллаж или в новый. В каждом стеллаже остаётся от 2 до 6 полок; расстановка запоминается на устройстве. Там же цвет рамки и створки для выбранной полки.</li>'+
     '<li><b>Кнопки «Расставить автоматически» и «Обновить из Google Таблицы»</b> теперь в меню сверху: «Правка» и «Файл» (на телефоне кнопка ≡).</li>'+
     '<li><b>Листы из Google Таблицы.</b> Файл → «Выбрать листы из Google Таблицы…»: отметьте галочками нужные листы-полки, можно сразу несколько, и нажмите «Загрузить». Первый лист откроется, остальные станут полками рядом. Полный список листов виден после входа в Google или с ключом API; в режиме «по ссылке» названия вкладок вписываются один раз и запоминаются.</li>'+
+    '<li><b>Страница «Шкаф».</b> Меню «Страницы» → «Шкаф — фото стеллажа» открывает фото шкафа. На средней полке стоят книги полки 227. Колесо мыши плавно приближает фото, но только до уровня полки: дальше она занимает весь экран и приближение останавливается. Перетаскивайте фото, чтобы двигать. Двойной щелчок по полке приближает к ней, ещё один отдаляет. На телефоне работает щипок двумя пальцами. Кнопки справа внизу: «+», «−», «К средней полке», «Весь шкаф». Наведите на книгу, чтобы увидеть название и автора. «Открыть полку 227» возвращает на страницу «Полка».</li>'+
     '<li><b>Фото.</b> В меню «Фото» подключается папка с компьютера или выгрузка Telegram. Фото сохраняются на устройстве и показываются сразу.</li>'+
     '<li><b>Фото из Google Диска.</b> Настройки, блок «Фото из Google Диска»: укажите папку, выберите бесплатную нейросеть и нажмите «Импортировать». Программа найдёт книги и корешки, обрежет и покажет список. Проверьте и нажмите «Применить». Инструкции свёрнуты в самом низу настроек.</li>'+
     '</ol>');
@@ -3358,10 +3432,14 @@ function zNear(n){return Math.abs(Z-n)<0.03;}
 function buildMenuDefs(){
   MENUS=[
     {id:'app',label:'Геометрия Полки',ver:true,items:[
-      {l:'О программе',a:aboutDlg},
+      {l:'О программе',a:aboutDlg,keep:1},
       {sep:1},
-      {l:'Настройки…',k:'Ctrl+,',a:openSettings},
-      {l:'Журнал изменений полки',a:function(){CFG.log=true;saveCfg();applyLog();renderLog();if(el.chlog.scrollIntoView) el.chlog.scrollIntoView({block:'nearest'});}}
+      {l:'Настройки…',k:'Ctrl+,',a:openSettings,keep:1},
+      {l:'Журнал изменений полки',sh:1,a:function(){CFG.log=true;saveCfg();applyLog();renderLog();if(el.chlog.scrollIntoView) el.chlog.scrollIntoView({block:'nearest'});}}
+    ]},
+    {id:'pages',label:'Страницы',items:[
+      {l:'Полка — конструктор',a:function(){showPage('shelf');},chk:function(){return PAGE==='shelf';}},
+      {l:'Шкаф — фото стеллажа',a:function(){showPage('wall');},chk:function(){return PAGE==='wall';}}
     ]},
     {id:'file',label:'Файл',items:[
       {l:'Загрузить лист из Excel…',a:function(){el.file.click();}},
@@ -3371,7 +3449,7 @@ function buildMenuDefs(){
       {l:'Один лист из Google с выбором столбцов…',a:openGoogleImport},
       {l:'Обновить из Google Таблицы',k:'Ctrl+R',a:function(){gsRefreshAll({});}},
       {sep:1},
-      {l:'Настройки…',a:openSettings}
+      {l:'Настройки…',a:openSettings,keep:1}
     ]},
     {id:'edit',label:'Правка',items:[
       {l:'Отменить',k:'Ctrl+Z',a:doUndo,dis:function(){return !undoStack.length;}},
@@ -3467,7 +3545,11 @@ function initMenus(){
     if(it){
       var def=menuActs[it.getAttribute('data-k')];
       closeMenus();setMobileMenu(false);
-      if(def&&!it.disabled) setTimeout(def.a,0);
+      if(def&&!it.disabled){
+        var mk=it.getAttribute('data-k').split(':')[0];
+        if(PAGE==='wall'&&!def.keep&&(def.sh||mk==='file'||mk==='edit'||mk==='view'||mk==='photos')) showPage('shelf');
+        setTimeout(def.a,0);
+      }
       return;
     }
     if(top){
@@ -3548,6 +3630,10 @@ function updateSource(){
   }else if(DS.src==='excel'){
     txt='Excel · '+DS.sheet;
     note='Источник: файл Excel, лист «'+DS.sheet+'».';
+    btn=gsConfigured()?'<button type="button" data-act="refresh">Взять из Google Таблицы</button>':'<button type="button" data-act="settings">Подключить Google Таблицу</button>';
+  }else if(DS.src==='sheet'){
+    txt='Таблица · полка '+DS.shelf;
+    note='Полка '+DS.shelf+': книги из вашей таблицы (лист «Генеральная», место хранения '+DS.shelf+'), они встроены в программу. Свежие данные берутся из Google Таблицы.';
     btn=gsConfigured()?'<button type="button" data-act="refresh">Взять из Google Таблицы</button>':'<button type="button" data-act="settings">Подключить Google Таблицу</button>';
   }else if(DS.src==='test'){
     txt='Тест · полка '+DS.shelf;
@@ -3981,6 +4067,7 @@ function registerRaw(raw,keepCache){
 function gsForget(){
   var cur=NAV.cur;
   Object.keys(NAV.real).forEach(function(id){if(id!==cur) delete NAV.real[id];});
+  ensureBuiltin();
   MODEL={};
   dsClear().then(function(){if(DS&&DS.src==='google') dsPut(cur,NAV.real[cur]||{sheet:DS.sheet,columns:DS.columns,rows:DS.rows,src:'google',hash:DS.hash});});
   CFG.gs.known=[];saveCfg();
@@ -6545,6 +6632,330 @@ function initDrive(){
 }
 
 /* ===== Запуск ===== */
+
+/* ===== Страница «Шкаф»: фото стеллажа, книги на средней полке, плавное приближение до уровня полки =====
+   Книги рисуются поверх фото теми же функциями, что и на странице «Полка» (unitShape), в масштабе: 1000 мм полки = ширина проёма.
+   Приближение плавное (без ступеней), нижний предел — всё фото, верхний — средняя полка во весь экран. */
+var PAGE='shelf',PAGE_KEY='gp.page.v1';
+var WPIC={w:1024,h:1024,slot:{shelf:'227',x0:346,x1:678,top:571,floor:686}};
+var WP={s:0.5,tx:0,ty:0,T:0.5,ax:0,ay:0,wx:0,wy:0,vw:0,vh:0,sMin:0.4,sMax:3,raf:0,last:0,pts:{},drag:null,pinch:null,seen:false,bk:[],lab:null,pan:null,panRaf:0,idle:0};
+
+function ensureBuiltin(){if(!NAV.real[RAW227.sheet]) NAV.real[RAW227.sheet]=RAW227;}
+function wpK(){return (WPIC.slot.x1-WPIC.slot.x0)/SHELF.W;}
+function wpFocus(){var s=WPIC.slot;return {x0:s.x0-12,y0:s.top-10,x1:s.x1+12,y1:s.floor+14};}
+function wpMeasure(){
+  var r=el.phView.getBoundingClientRect(),f=wpFocus();
+  WP.vw=r.width;WP.vh=r.height;
+  WP.sMin=Math.min(WP.vw/WPIC.w,WP.vh/WPIC.h);
+  WP.sMax=Math.max(WP.sMin*1.5,Math.min(WP.vw*0.94/(f.x1-f.x0),WP.vh*0.94/(f.y1-f.y0)));
+}
+function wpClamp(){
+  var cw=WPIC.w*WP.s,ch=WPIC.h*WP.s;
+  WP.tx=cw<=WP.vw?(WP.vw-cw)/2:Math.min(0,Math.max(WP.vw-cw,WP.tx));
+  WP.ty=ch<=WP.vh?(WP.vh-ch)/2:Math.min(0,Math.max(WP.vh-ch,WP.ty));
+}
+function wpApply(){
+  el.phWorld.style.transform='translate('+WP.tx.toFixed(2)+'px,'+WP.ty.toFixed(2)+'px) scale('+WP.s.toFixed(5)+')';
+  el.phZoom.textContent='×'+(WP.s/WP.sMin).toFixed(1);
+  el.phIn.disabled=WP.T>=WP.sMax*0.999;
+  el.phOut.disabled=WP.T<=WP.sMin*1.001;
+  wpLabel();
+}
+/* табличка «Полка 227» над проёмом: размер на экране постоянный, исчезает, когда полка уже во весь экран */
+function wpLabel(){
+  if(!WP.lab) return;
+  var sl=WPIC.slot,s=WP.s,a=(WP.sMax*0.82-s)/(WP.sMax*0.22);
+  a=Math.max(0,Math.min(1,a));
+  WP.lab.setAttribute('transform','translate('+((sl.x0+sl.x1)/2).toFixed(2)+' '+(sl.top+7/s).toFixed(2)+') scale('+(1/s).toFixed(5)+')');
+  WP.lab.style.opacity=a.toFixed(2);
+  WP.lab.style.pointerEvents=a<0.15?'none':'auto';
+}
+function wpKick(){
+  if(reduce){
+    WP.s=WP.T;WP.tx=WP.ax-WP.wx*WP.s;WP.ty=WP.ay-WP.wy*WP.s;wpClamp();wpApply();return;
+  }
+  if(!WP.raf){WP.last=performance.now();WP.raf=requestAnimationFrame(wpTick);}
+}
+function wpTick(now){
+  WP.raf=0;
+  var dt=Math.min(50,Math.max(1,now-WP.last)),ls,lt,done=false;
+  WP.last=now;
+  ls=Math.log(WP.s);lt=Math.log(WP.T);
+  if(Math.abs(lt-ls)<0.0007){WP.s=WP.T;done=true;}
+  else WP.s=Math.exp(ls+(lt-ls)*(1-Math.exp(-dt/115)));
+  WP.tx=WP.ax-WP.wx*WP.s;WP.ty=WP.ay-WP.wy*WP.s;
+  wpClamp();wpApply();
+  if(!done) WP.raf=requestAnimationFrame(wpTick);
+}
+function wpStop(){
+  if(WP.raf){cancelAnimationFrame(WP.raf);WP.raf=0;}
+  if(WP.panRaf){cancelAnimationFrame(WP.panRaf);WP.panRaf=0;}
+  WP.pan=null;clearTimeout(WP.idle);WP.idle=0;
+  WP.T=WP.s;
+}
+/* плавный сдвиг без смены масштаба */
+function wpPanTo(tx1,ty1){
+  if(reduce){WP.tx=tx1;WP.ty=ty1;wpClamp();wpApply();return;}
+  WP.pan={x0:WP.tx,y0:WP.ty,x1:tx1,y1:ty1,t0:performance.now(),d:380};
+  if(!WP.panRaf) WP.panRaf=requestAnimationFrame(wpPanTick);
+}
+function wpPanTick(now){
+  WP.panRaf=0;
+  var p=WP.pan;
+  if(!p) return;
+  var k=Math.min(1,(now-p.t0)/p.d),e=1-Math.pow(1-k,3);
+  WP.tx=p.x0+(p.x1-p.x0)*e;WP.ty=p.y0+(p.y1-p.y0)*e;
+  wpClamp();wpApply();
+  if(k<1) WP.panRaf=requestAnimationFrame(wpPanTick);else WP.pan=null;
+}
+/* колесо остановилось на уровне полки рядом с ней: полка плавно становится по центру */
+function wpSettle(){
+  WP.idle=0;
+  if(WP.drag||Object.keys(WP.pts).length||WP.s<WP.sMax*0.97) return;
+  var f=wpFocus(),ex=(f.x1-f.x0)*0.45,ey=(f.y1-f.y0)*0.45;
+  if(WP.wx>=f.x0-ex&&WP.wx<=f.x1+ex&&WP.wy>=f.y0-ey&&WP.wy<=f.y1+ey) wpGoShelf();
+}
+/* приблизить или отдалить до масштаба T, точка (ax,ay) на экране остаётся на месте */
+function wpZoomAt(T,ax,ay){
+  WP.pan=null;
+  WP.T=Math.max(WP.sMin,Math.min(WP.sMax,T));
+  WP.ax=ax;WP.ay=ay;WP.wx=(ax-WP.tx)/WP.s;WP.wy=(ay-WP.ty)/WP.s;
+  wpKick();
+}
+/* перелёт: масштаб T, в центре экрана точка фото (cx,cy). Любое такое движение — это приближение к одной неподвижной точке. */
+function wpFlyTo(T,cx,cy){
+  T=Math.max(WP.sMin,Math.min(WP.sMax,T));
+  var s0=WP.s,tx1=WP.vw/2-cx*T,ty1=WP.vh/2-cy*T;
+  if(Math.abs(T-s0)<0.01*s0||reduce){
+    WP.T=T;WP.s=T;
+    if(reduce){WP.tx=tx1;WP.ty=ty1;wpClamp();wpApply();}
+    else{wpApply();wpPanTo(tx1,ty1);}
+    return;
+  }
+  WP.pan=null;
+  WP.T=T;
+  WP.wx=(tx1-WP.tx)/(s0-T);WP.wy=(ty1-WP.ty)/(s0-T);
+  WP.ax=WP.wx*s0+WP.tx;WP.ay=WP.wy*s0+WP.ty;
+  wpKick();
+}
+function wpGoShelf(){var f=wpFocus();wpFlyTo(WP.sMax,(f.x0+f.x1)/2,(f.y0+f.y1)/2);}
+function wpFit(){wpFlyTo(WP.sMin,WPIC.w/2,WPIC.h/2);}
+function wpInShelf(cx,cy){
+  var r=el.phView.getBoundingClientRect(),f=wpFocus(),x=(cx-r.left-WP.tx)/WP.s,y=(cy-r.top-WP.ty)/WP.s;
+  return x>=f.x0&&x<=f.x1&&y>=f.y0&&y<=f.y1;
+}
+
+function wpWheel(e){
+  e.preventDefault();
+  var dy=e.deltaY;
+  if(e.deltaMode===1) dy*=16;else if(e.deltaMode===2) dy*=420;
+  dy=Math.max(-400,Math.min(400,dy));
+  var r=el.phView.getBoundingClientRect();
+  wpZoomAt(WP.T*Math.exp(-dy*(e.ctrlKey?0.012:0.0018)),e.clientX-r.left,e.clientY-r.top);
+  clearTimeout(WP.idle);WP.idle=setTimeout(wpSettle,450);
+}
+function wpTwo(){
+  var k=Object.keys(WP.pts),a=WP.pts[k[0]],b=WP.pts[k[1]];
+  return {d:Math.hypot(a.x-b.x,a.y-b.y)||1,x:(a.x+b.x)/2,y:(a.y+b.y)/2};
+}
+function wpDown(e){
+  if(e.pointerType==='mouse'&&e.button!==0) return;
+  wpTip(null);
+  WP.pts[e.pointerId]={x:e.clientX,y:e.clientY};
+  try{el.phView.setPointerCapture(e.pointerId);}catch(_){}
+  wpStop();
+  var n=Object.keys(WP.pts).length;
+  if(n===1) WP.drag={id:e.pointerId,x0:e.clientX,y0:e.clientY,tx:WP.tx,ty:WP.ty,moved:false,type:e.pointerType};
+  else if(n===2){
+    var p=wpTwo(),r=el.phView.getBoundingClientRect();
+    WP.drag=null;
+    WP.pinch={d0:p.d,s0:WP.s,wx:(p.x-r.left-WP.tx)/WP.s,wy:(p.y-r.top-WP.ty)/WP.s};
+    el.phView.classList.add('drag');
+  }
+}
+function wpMove(e){
+  var p=WP.pts[e.pointerId];
+  if(p){p.x=e.clientX;p.y=e.clientY;}
+  if(WP.pinch&&Object.keys(WP.pts).length>=2){
+    var t=wpTwo(),r=el.phView.getBoundingClientRect();
+    WP.s=WP.T=Math.max(WP.sMin,Math.min(WP.sMax,WP.pinch.s0*t.d/WP.pinch.d0));
+    WP.tx=t.x-r.left-WP.pinch.wx*WP.s;WP.ty=t.y-r.top-WP.pinch.wy*WP.s;
+    wpClamp();wpApply();
+  }else if(WP.drag&&WP.drag.id===e.pointerId){
+    var dx=e.clientX-WP.drag.x0,dy=e.clientY-WP.drag.y0;
+    if(!WP.drag.moved&&Math.hypot(dx,dy)>5){WP.drag.moved=true;el.phView.classList.add('drag');}
+    if(WP.drag.moved){WP.tx=WP.drag.tx+dx;WP.ty=WP.drag.ty+dy;wpClamp();wpApply();}
+  }else if(e.pointerType==='mouse'&&!p) wpHover(e);
+}
+function wpUp(e){
+  var d=WP.drag,had=!!WP.pts[e.pointerId];
+  delete WP.pts[e.pointerId];
+  try{el.phView.releasePointerCapture(e.pointerId);}catch(_){}
+  if(!Object.keys(WP.pts).length){WP.pinch=null;el.phView.classList.remove('drag');}
+  if(WP.pinch&&Object.keys(WP.pts).length<2) WP.pinch=null;
+  if(d&&d.id===e.pointerId&&had){
+    WP.drag=null;el.phView.classList.remove('drag');
+    if(!d.moved&&e.type==='pointerup'){
+      var n=document.elementFromPoint(e.clientX,e.clientY),o=n&&n.closest?n.closest('[data-open]'):null;
+      if(o) wpOpenShelf(o.getAttribute('data-open'));
+      else if(d.type!=='mouse') wpHover(e);
+    }
+  }
+}
+function wpHover(e){
+  var n=document.elementFromPoint(e.clientX,e.clientY),b=n&&n.closest?n.closest('[data-bi]'):null;
+  if(!b){wpTip(null);return;}
+  var u=WP.bk[+b.getAttribute('data-bi')];
+  if(!u){wpTip(null);return;}
+  var r=el.phPage.getBoundingClientRect();
+  wpTip(u,e.clientX-r.left,e.clientY-r.top,r.width);
+}
+function wpTip(u,x,y,W){
+  if(!u){el.phTip.hidden=true;return;}
+  el.phTip.innerHTML='<b>'+esc(u.title)+'</b>'+(u.author?'<br>'+esc(u.author):'')+'<small>'+(u.code?'№ '+esc(u.code)+' · ':'')+u.h+'×'+u.w+'×'+u.t+' мм</small>';
+  el.phTip.hidden=false;
+  var w=el.phTip.offsetWidth;
+  el.phTip.style.left=Math.max(6,Math.min((W||800)-w-6,x+14))+'px';
+  el.phTip.style.top=Math.max(40,y+16)+'px';
+}
+function wpOpenShelf(id){
+  showPage('shelf');
+  if(DS&&id&&id!==NAV.cur) showShelf(id,0,0);
+}
+function wpKey(e){
+  var k=e.key,r=WP.vw/2,b=WP.vh/2,st=e.shiftKey?220:80;
+  if(k==='+'||k==='='){e.preventDefault();wpZoomAt(WP.T*1.5,r,b);}
+  else if(k==='-'||k==='_'||k==='−'){e.preventDefault();wpZoomAt(WP.T/1.5,r,b);}
+  else if(k==='0'){e.preventDefault();wpFit();}
+  else if(k==='f'||k==='F'||k==='а'||k==='А'||k==='Enter'){e.preventDefault();wpGoShelf();}
+  else if(k==='ArrowLeft'||k==='ArrowRight'||k==='ArrowUp'||k==='ArrowDown'){
+    e.preventDefault();wpStop();
+    WP.tx+=(k==='ArrowLeft'?st:(k==='ArrowRight'?-st:0));WP.ty+=(k==='ArrowUp'?st:(k==='ArrowDown'?-st:0));
+    wpClamp();wpApply();
+  }
+}
+
+/* ----- книги на полке ----- */
+function wpRender(){
+  if(!el.phOv||!DS) return;
+  var sl=WPIC.slot,m=null,k=wpK(),i,h;
+  try{m=shelfModel(sl.shelf);}catch(err){if(window.console) console.warn('Шкаф: не удалось взять полку '+sl.shelf,err);}
+  var cw=sl.x1-sl.x0;
+  h='<defs>'+
+    '<clipPath id="wpClip"><rect x="'+sl.x0+'" y="'+sl.top+'" width="'+cw+'" height="'+(sl.floor-sl.top+3)+'"/></clipPath>'+
+    '<linearGradient id="wpShade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1a0d05" stop-opacity=".5"/><stop offset=".55" stop-color="#1a0d05" stop-opacity=".28"/><stop offset="1" stop-color="#1a0d05" stop-opacity=".12"/></linearGradient>'+
+    '<linearGradient id="wpSide" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1a0d05" stop-opacity=".35"/><stop offset=".12" stop-color="#1a0d05" stop-opacity="0"/><stop offset=".9" stop-color="#1a0d05" stop-opacity="0"/><stop offset="1" stop-color="#1a0d05" stop-opacity=".25"/></linearGradient>'+
+    '<filter id="wpBlur" x="-10%" y="-200%" width="120%" height="500%"><feGaussianBlur stdDeviation="1.4"/></filter>'+
+    '</defs>';
+  WP.bk=[];
+  var bs='';
+  if(m){
+    m.books.forEach(function(b){
+      var u=b.u;if(!u) return;
+      var idx=WP.bk.push(u)-1;
+      if(b.lie) bs+='<g class="wpb" data-bi="'+idx+'" transform="translate('+(b.x+u.h/2)+' '+(-b.rest-u.t/2)+')">'+unitShape(u,{lie:true})+'</g>';
+      else bs+='<g class="wpb" data-bi="'+idx+'" transform="translate('+(b.x+u.t/2)+' '+(-u.h/2)+') rotate(90)">'+unitShape(u,{lie:false})+'</g>';
+    });
+  }
+  h+='<g clip-path="url(#wpClip)">'+
+     '<rect x="'+sl.x0+'" y="'+(sl.floor-1.5)+'" width="'+cw+'" height="3.2" fill="#000" opacity=".55" filter="url(#wpBlur)"/>'+
+     '<g transform="translate('+sl.x0+' '+sl.floor+') scale('+k.toFixed(5)+')">'+bs+'</g>'+
+     '<rect x="'+sl.x0+'" y="'+sl.top+'" width="'+cw+'" height="'+(sl.floor-sl.top+3)+'" fill="url(#wpShade)" style="mix-blend-mode:multiply;pointer-events:none"/>'+
+     '<rect x="'+sl.x0+'" y="'+sl.top+'" width="'+cw+'" height="'+(sl.floor-sl.top+3)+'" fill="url(#wpSide)" style="mix-blend-mode:multiply;pointer-events:none"/>'+
+     '</g>';
+  var n=m?m.n:0,tot=m?m.total:0,txt='Полка '+sl.shelf+' · '+tot+' '+plural(tot,'книга','книги','книг');
+  var lw=Math.round(txt.length*7+22);
+  h+='<g class="wplab" id="wpLab" data-open="'+esc(sl.shelf)+'"><rect x="'+(-lw/2)+'" y="0" width="'+lw+'" height="24" rx="12"/><text x="0" y="16" text-anchor="middle">'+esc(txt)+'</text></g>';
+  el.phOv.innerHTML=h;
+  WP.lab=document.getElementById('wpLab');
+  wpHud(m);
+  if(WP.vw) wpApply();
+}
+function wpHud(m){
+  var sl=WPIC.slot,pct=m?Math.round(m.fill.pct*100):0,full=m&&m.fill.full;
+  el.phHud.innerHTML='<b>Средняя полка · полка '+esc(sl.shelf)+'</b>'+
+    '<div class="sub">'+(m?('На полке '+m.n+' из '+m.total+' книг · '+(full?'полная':'заполнена на '+pct+'%')+'. Наведите или нажмите на книгу: название и автор.'):'Книги загружаются…')+'</div>'+
+    '<div class="row"><button type="button" class="btn" data-open="'+esc(sl.shelf)+'">Открыть полку '+esc(sl.shelf)+'</button></div>';
+}
+
+/* ----- переключение страниц ----- */
+function wpPlace(){
+  var r=el.menubar.getBoundingClientRect();
+  el.phPage.style.setProperty('--phtop',Math.max(0,Math.round(r.bottom))+'px');
+}
+function showPage(p,quiet){
+  if(p!=='wall') p='shelf';
+  if(p===PAGE) return;
+  if(p==='wall'){
+    if(OV.open) closeOverview();
+    popClose();
+    if(arm) disarm(true);
+    PAGE='wall';
+    document.body.classList.add('pgwall');
+    el.phPage.hidden=false;
+    window.scrollTo(0,0);
+    wpPlace();wpMeasure();
+    if(!WP.seen){WP.seen=true;WP.s=WP.T=WP.sMin;WP.tx=WP.ty=0;}
+    else{WP.s=WP.T=Math.max(WP.sMin,Math.min(WP.sMax,WP.s));}
+    wpClamp();
+    wpRender();wpApply();
+    if(el.phView.focus) el.phView.focus({preventScroll:true});
+  }else{
+    PAGE='shelf';
+    wpStop();wpTip(null);
+    document.body.classList.remove('pgwall');
+    el.phPage.hidden=true;
+    window.scrollTo(0,0);
+    if(DS){renderAll();updateShelfNav();}
+  }
+  try{localStorage.setItem(PAGE_KEY,PAGE);}catch(_){}
+  try{if(history.replaceState) history.replaceState(null,'',PAGE==='wall'?'#shkaf':location.pathname+location.search);}catch(_){}
+  closeMenus();setMobileMenu(false);
+}
+function initWall(){
+  el.phPage=document.getElementById('phPage');el.phView=document.getElementById('phView');el.phWorld=document.getElementById('phWorld');
+  el.phOv=document.getElementById('phOv');el.phHud=document.getElementById('phHud');el.phTip=document.getElementById('phTip');
+  el.phZoom=document.getElementById('phZoom');el.phIn=document.getElementById('phIn');el.phOut=document.getElementById('phOut');
+  el.phShelf=document.getElementById('phShelf');el.phFit=document.getElementById('phFit');
+  el.phView.addEventListener('wheel',wpWheel,{passive:false});
+  el.phView.addEventListener('pointerdown',wpDown);
+  el.phView.addEventListener('pointermove',wpMove);
+  el.phView.addEventListener('pointerup',wpUp);
+  el.phView.addEventListener('pointercancel',wpUp);
+  el.phView.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse') wpTip(null);});
+  el.phView.addEventListener('contextmenu',function(e){e.preventDefault();});
+  el.phView.addEventListener('dblclick',function(e){
+    e.preventDefault();
+    var r=el.phView.getBoundingClientRect();
+    if(WP.T>=WP.sMax*0.97) wpFit();
+    else if(wpInShelf(e.clientX,e.clientY)) wpGoShelf();
+    else wpZoomAt(WP.T*2.2,e.clientX-r.left,e.clientY-r.top);
+  });
+  el.phHud.addEventListener('click',function(e){
+    var b=e.target.closest?e.target.closest('[data-open]'):null;
+    if(b) wpOpenShelf(b.getAttribute('data-open'));
+  });
+  el.phIn.addEventListener('click',function(){wpZoomAt(WP.T*1.6,WP.vw/2,WP.vh/2);});
+  el.phOut.addEventListener('click',function(){wpZoomAt(WP.T/1.6,WP.vw/2,WP.vh/2);});
+  el.phShelf.addEventListener('click',wpGoShelf);
+  el.phFit.addEventListener('click',wpFit);
+  if(window.ResizeObserver) new ResizeObserver(function(){
+    if(PAGE!=='wall') return;
+    var k=WP.sMin?WP.s/WP.sMin:1;
+    wpPlace();wpMeasure();
+    WP.s=WP.T=Math.max(WP.sMin,Math.min(WP.sMax,WP.sMin*k));
+    wpClamp();wpApply();
+  }).observe(el.phView);
+  window.addEventListener('resize',function(){if(PAGE==='wall') wpPlace();});
+  if(window.ResizeObserver) new ResizeObserver(function(){if(PAGE==='wall') wpPlace();}).observe(el.menubar);
+}
+function wallStart(){
+  var want='shelf';
+  try{if(/(^|[#&])shkaf\b/.test(location.hash)||localStorage.getItem(PAGE_KEY)==='wall') want='wall';}catch(_){}
+  if(/^#(polka|shelf)\b/.test(location.hash)) want='shelf';
+  return want;
+}
+
 function init(){
   initEls();
   loadCfg();
@@ -6552,6 +6963,7 @@ function init(){
   loadRacks();
   loadMoves();
   loadGsSession();
+  ensureBuiltin();
   applyBig();
   applyLog();
   initMenus();
@@ -6574,6 +6986,8 @@ function init(){
   initMove();
   initTabsDialog();
   initDrive();
+  initWall();
+  if(wallStart()==='wall') showPage('wall');
 
   el.undo.addEventListener('click',doUndo);
   el.clear.addEventListener('click',doClear);
@@ -6601,6 +7015,11 @@ function init(){
     if(k==='Escape'&&popIsOpen()){popClose();return;}
     if(k==='Escape'&&OV.open){e.preventDefault();closeOverview();return;}
     if(tag==='input'||tag==='select'||tag==='textarea') return;
+    if(PAGE==='wall'){
+      if(ctrl&&k===','){e.preventDefault();openSettings();return;}
+      if(!ctrl&&!e.altKey) wpKey(e);
+      return;
+    }
     if(ctrl&&(k==='z'||k==='Z'||k==='я'||k==='Я')){e.preventDefault();doUndo();return;}
     if(ctrl&&k===','){e.preventDefault();openSettings();return;}
     if(ctrl&&(k==='r'||k==='R'||k==='к'||k==='К')&&gsConfigured()){e.preventDefault();gsRefreshAll({});return;}
@@ -6672,6 +7091,7 @@ function init(){
       NAV.real[r.id]=r.raw;
       if(CFG.gs.last&&r.raw.sheet===CFG.gs.last) startRaw=r.raw;
     });
+    ensureBuiltin();
     if(startRaw) loadDataset(startRaw,{sync:true});
     else loadDataset({
       sheet:'Демо · '+SEED.sheet,
@@ -6683,6 +7103,7 @@ function init(){
     el.scroller.scrollLeft=0;
     syncViewbar();
     updateSource();
+    if(PAGE==='wall') wpRender();
     gsTimer();
     if(gsConfigured()&&(CFG.gs.mode==='public'||tokenOk())) setTimeout(function(){gsRefresh({silent:true});},300);
     return ready;
