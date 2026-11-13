@@ -947,7 +947,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.11.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.11.1</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1431,7 +1431,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.11.0'};
+var APP={name:'Геометрия Полки',version:'1.11.1'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -7809,7 +7809,7 @@ function bkBack(b){
 }
 
 /* ----- настоящие книги с oldbook.kz (1.8.0) -----
-   Десять книг лежат в файле books3d/oldbook.js (название, описание, размеры, цена и три фото: обложка, корешок, задняя сторона).
+   Десять книг лежат в файле books3d/books100.js (название, описание, размеры, цена и три фото: обложка, корешок, задняя сторона).
    Файл подгружается отдельно и только когда открыта страница «Стеллажи». Если файла нет, на средней полке стоят учебные книги, как раньше. */
 var OB={list:null,state:0,img:{},cbs:[],ROW:[2,3]};
 /* картинка книги: путь к файлу (books3d/img/…) или готовые данные */
@@ -7820,12 +7820,12 @@ function obLoad(cb){
   OB.state=1;
   var done=function(ok){
     if(OB.state!==1) return;
-    OB.list=ok&&window.OLDBOOKS&&window.OLDBOOKS.length?window.OLDBOOKS:null;
+    OB.list=ok&&window.OLDBOOKS&&window.OLDBOOKS.length&&window.OLDBOOKS[0].k!==undefined?window.OLDBOOKS:null;
     OB.state=OB.list?2:3;
     var q=OB.cbs;OB.cbs=[];q.forEach(function(f){try{f();}catch(_){}});
   },sc=document.createElement('script');
   sc.async=true;sc.onload=function(){done(true);};sc.onerror=function(){done(false);};
-  sc.src='books3d/oldbook.js';
+  sc.src='books3d/books100.js?v='+APP.version;
   document.head.appendChild(sc);
   setTimeout(function(){if(OB.state===1) done(false);},9000);
 }
@@ -7843,7 +7843,7 @@ function obImg(o,k,cb){
 }
 /* десять книг на полку: настоящие размеры (мм → пиксели картинки), стоят вплотную, посередине полки */
 /* 1.11.0: 100 настоящих книг с oldbook.kz на центральном стеллаже. Где стоит каждая книга (полка, место, стоя или лёжа), посчитано заранее
-   и лежит в books3d/oldbook.js: lx — от левой стенки до книги, ly — для лежащих, на сколько книга выше доски (в точках картинки, 1 точка = 2,2 мм). */
+   и лежит в books3d/books100.js: lx — от левой стенки до книги, ly — для лежащих, на сколько книга выше доски (в точках картинки, 1 точка = 2,2 мм). */
 function wbCentral(r,k){
   var out=[];
   (OB.list||[]).forEach(function(o,ix){
@@ -8081,6 +8081,9 @@ function glBuild(){
   G.ready=true;
   wgInvalidate();
   glPaintSpines(function(){
+    /* 1.11.1: картинку атласа освобождаем только когда и корешки, и дерево уже нарисованы (раньше при пустых полках дерево не успевало) */
+    var cv=G.atlas;
+    if(cv&&G.woodImg&&!G.woodImg.complete){G.woodImg.addEventListener('load',function(){setTimeout(function(){if(G.atlas===cv){G.atlas.width=1;G.atlas.height=1;G.atlas=null;G.ctx=null;wgInvalidate();}},0);});return;}
     if(G.atlas){
       /* память под плоскую картинку атласа больше не нужна, она уже в видеопамяти */
       G.atlas.width=1;G.atlas.height=1;G.atlas=null;G.ctx=null;

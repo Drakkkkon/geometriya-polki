@@ -13,7 +13,7 @@
 5. На открывшейся странице нажмите ссылку **uploading an existing file**.
 6. Перетащите в окно браузера всё содержимое распакованной папки: `index.html`, `README.txt`, `GITHUB.md`,
    `GOOGLE_SHEETS.md`, `GOOGLE_DRIVE.md`, `sw.js` и папки `vendor`, `covers`, `spines`, `books3d`, `tools` целиком. Проверьте, что в списке есть
-   `vendor/jszip.min.js`, `vendor/three.min.js` (около 0,5 МБ), файлы `covers/*.jpg` (32 штуки) и `spines/*.jpg` (20 штук, всего около 0,8 МБ) и `books3d/oldbook.js` (около 1,9 МБ).
+   `vendor/jszip.min.js`, `vendor/three.min.js` (около 0,5 МБ), файлы `covers/*.jpg` (32 штуки) и `spines/*.jpg` (20 штук, всего около 0,8 МБ) и `books3d/books100.js` (около 1,9 МБ).
 7. Внизу в поле Commit напишите `Геометрия Полки 1.9.0` и нажмите **Commit changes**.
 8. Откройте **Settings**, слева **Pages**. В блоке *Build and deployment*: Source **Deploy from a branch**,
    Branch **main**, папка **/ (root)**, нажмите **Save**.
@@ -54,7 +54,7 @@ git push -u origin main
 - Сайт показывает 404: проверьте, что `index.html` лежит в корне репозитория, а не в подпапке, и что в
   Pages выбран branch `main`, папка `/ (root)`.
 - Кнопки Excel пишут про библиотеку: на GitHub нет папки `vendor`, загрузите её (шаг 6).
-- На странице «Стеллажи» на средней полке стоят придуманные книги, а не настоящие: на GitHub нет папки `books3d` (файл `books3d/oldbook.js`).
+- На странице «Стеллажи» на средней полке стоят придуманные книги, а не настоящие: на GitHub нет папки `books3d` (файл `books3d/books100.js`).
 - Страница «Стеллажи» пишет «Не удалось включить 3D» и под этим «Причина: …»: если причина «не загрузился движок», на GitHub нет файла `vendor/three.min.js`;
   если «не удалось включить WebGL 2», откройте сайт в современном браузере или включите аппаратное ускорение в его настройках.
 - Страница «Стеллажи» тормозит: добавьте в конец адреса `?soft=1` (экономный режим), например `https://drakkkkon.github.io/geometriya-polki/?soft=1#shkaf`.
