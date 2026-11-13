@@ -883,7 +883,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.8.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.8.1</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1355,7 +1355,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.8.0'};
+var APP={name:'Геометрия Полки',version:'1.8.1'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -7229,6 +7229,14 @@ var PGL=(function(){
     gl.useProgram(this.pr);
     gl.uniformMatrix4fv(this.u.uVP,false,vp);
   };
+  /* прогрев: один раз рисуем крошечной картинкой, чтобы драйвер заранее собрал шейдер показа и буфер для рисования в картинку */
+  Renderer.prototype.warm=function(){
+    var a=this.target(4,4,null),b=a&&this.target(4,4,null);
+    if(!a||!b){this.freeTarget(a);this.freeTarget(b);return;}
+    this.beginTarget(a,new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]),[0,0,0]);this.endTarget();
+    this.beginTarget(b,new Float32Array([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]),[0,0,0]);this.blit(a,1);this.endTarget();
+    this.freeTarget(a);this.freeTarget(b);
+  };
   Renderer.prototype.endTarget=function(){this.gl.bindFramebuffer(this.gl.FRAMEBUFFER,null);};
   /* k — затемнение (то же, что dim у draw) */
   Renderer.prototype.blit=function(t,k){
@@ -7661,6 +7669,8 @@ function glBuild(){
   WBL.forEach(function(b){b.uv=null;});
   G.tiles.forEach(function(q){q.b.uv=uvRect(q.ix,q.iy,q.iw,q.ih,0);});
   glGeom();
+  /* второй шейдер (показ готовой картинки) собирается драйвером при первом рисовании: делаем это сейчас, а не при первом доставании книги */
+  if(G.rd.warm) G.rd.warm();
   G.ready=true;
   wgInvalidate();
   glPaintSpines(function(){
@@ -7684,6 +7694,9 @@ function glBoot(){
   el.phGL.addEventListener('webglcontextlost',function(ev){ev.preventDefault();G.lost=true;G.ready=false;});
   el.phGL.addEventListener('webglcontextrestored',function(){
     G.lost=false;G.rd=null;G.tex=null;G.bgT=null;G.bgKey='';
+    /* заготовки книг лежали в старом контексте: выбрасываем их, видеопамять там уже пуста */
+    if(BK.prep){BK.prep.dead=true;BK.prep.tex=null;BK.prep.cv.width=1;BK.prep=null;}
+    if(BK.pend){BK.pend.dead=true;BK.pend.tex=null;BK.pend=null;}
     try{G.rd=new PGL.Renderer(el.phGL);}catch(e){return;}
     if(BK.on) bkEnd();
     glBuild();
@@ -7700,7 +7713,7 @@ function glBoot(){
 /* ----- камера: плавное приближение, сдвиг, наклон, переход к соседнему стеллажу ----- */
 var CAM={x:0,y:0,d:2000,yaw:0,pitch:0,gx:0,gy:0,gd:2000,gyaw:0,gpitch:0,anc:null,fov:40*Math.PI/180,tY:Math.tan(20*Math.PI/180),tX:1,
   vw:0,vh:0,dpr:1,dMin:500,dMax:6000,dHome:2000,frame:0,last:0,dirty:true,hover:0,dim:1,
-  pts:{},drag:null,pinch:null,orbit:false,idle:0,dotKey:'',seen:false,hintT:0,lastX:0,lastY:0,YAW0:0.1,PIT0:0.1,tipI:-1,rs:1,dtE:16,rsN:0,rsT:0,lvl:null};
+  pts:{},drag:null,pinch:null,orbit:false,idle:0,dotKey:'',seen:false,hintT:0,lastX:0,lastY:0,YAW0:0.1,PIT0:0.1,tipI:-1,tickNow:-1,rs:1,dtE:16,rsN:0,rsT:0,rsAt:0,lvl:null};
 var CAMTAU=115;
 
 function camMeasure(){
@@ -7870,26 +7883,45 @@ function wgInvalidate(){
   if(!CAM.frame&&PAGE==='wall') CAM.frame=requestAnimationFrame(wgFrame);
 }
 function wgFrame(now){
-  CAM.frame=0;
-  if(PAGE!=='wall') return;
+  /* Пока кадр рисуется, CAM.frame = -1: любые wgInvalidate внутри кадра (их зовут bkApply и другие) не ставят в очередь ещё один кадр.
+     Раньше здесь был 0, и каждый кадр полёта ставил в очередь два следующих: число перерисовок удваивалось с каждым кадром и всё зависало. */
+  if(now===CAM.tickNow) return;
+  CAM.tickNow=now;
+  CAM.frame=-1;
+  var busy=false;
+  try{
+    if(PAGE==='wall') busy=wgWork(now);
+  }finally{
+    CAM.frame=0;
+    if(PAGE==='wall'&&(busy||BK.anim)) CAM.frame=requestAnimationFrame(wgFrame);
+    else if(PAGE==='wall'){
+      CAM.last=0;
+      if(CAM.rs<1&&!CAM.rsT) CAM.rsT=setTimeout(function(){
+        CAM.rsT=0;
+        if(BK.on||PAGE!=='wall') return;
+        CAM.rs=1;CAM.dtE=16;CAM.rsN=0;CAM.rsAt=performance.now();wgInvalidate();
+      },700);
+    }
+  }
+}
+function wgWork(now){
   var cont=CAM.last>0,raw=cont?now-CAM.last:16,dt=Math.min(50,Math.max(1,now-(CAM.last||now-16)));
   CAM.last=now;
   var busy=false;
   busy=camStepAnim(dt)||busy;
   if(BK.on&&bkStep(now,dt)) busy=true;
-  /* слабая видеокарта: пока что-то движется, а кадры идут медленнее 40 в секунду, рисуем в меньшем разрешении; когда всё остановилось, вернём чёткость */
-  if(cont&&busy){
-    CAM.dtE+=(Math.min(raw,100)-CAM.dtE)*0.22;CAM.rsN++;
-    if(CAM.dtE>25&&CAM.rsN>=5&&CAM.rs>0.6){CAM.rs=Math.max(0.6,CAM.rs*0.82);CAM.rsN=0;}
+  /* Слабая видеокарта: пока двигается сама сцена (не книга в руках) и кадры идут медленнее 30 в секунду, рисуем с меньшим числом точек.
+     Ступени 100% → 75% → 60%, не чаще раза в 1,5 с. Размер холста при книге в руках не трогаем: смена размера пересоздаёт буферы и даёт рывок. */
+  if(cont&&busy&&!BK.on){
+    CAM.dtE+=(Math.min(raw,100)-CAM.dtE)*0.2;CAM.rsN++;
+    if(CAM.dtE>33&&CAM.rsN>=10&&CAM.rs>0.6&&now-CAM.rsAt>1500){CAM.rs=CAM.rs>0.8?0.75:0.6;CAM.rsN=0;CAM.rsAt=now;}
   }
   if(G.rd&&!G.lost) wgDraw();
+  /* часы полёта книги начинаются после первого нарисованного кадра: тяжёлый первый кадр не съедает начало движения */
+  if(BK.anim&&BK.anim.t0<0) BK.anim.t0=performance.now();
   camLvl();
   CAM.dirty=false;
-  if(busy){CAM.frame=requestAnimationFrame(wgFrame);}
-  else{
-    CAM.last=0;
-    if(CAM.rs<1&&!CAM.rsT) CAM.rsT=setTimeout(function(){CAM.rsT=0;CAM.rs=1;CAM.dtE=16;CAM.rsN=0;wgInvalidate();},260);
-  }
+  return busy;
 }
 /* сцена целиком: непрозрачные коробки и мягкие тени */
 function wgScene(rd,dim){
@@ -7900,7 +7932,7 @@ function wgScene(rd,dim){
 function wgDraw(){
   var rd=G.rd,k=CAM.dpr*CAM.rs,w=Math.max(2,Math.round(CAM.vw*k)),h=Math.max(2,Math.round(CAM.vh*k)),c=BK.on?BK.cam:CAM,
     q=camVP(c),bg=[0.91,0.882,0.835],cache=false;
-  if(G.ready&&G.tex&&BK.on&&BK.tau>=0.3&&BK.cam){
+  if(G.ready&&G.tex&&BK.on&&BK.cam&&(BK.tau>=0.3||BK.d1<=BK.d0*1.0001)){
     /* книга в руках: камера уже стоит на месте, а сцена за книгой не меняется. Рисуем её один раз в текстуру, дальше каждый кадр только растягиваем текстуру и рисуем книгу.
        Книга всегда перед стеллажами (глубина), поэтому ей не нужен буфер глубины сцены. */
     var key=w+'|'+h+'|'+c.x+'|'+c.y+'|'+c.d+'|'+c.yaw+'|'+c.pitch+'|'+BK.idx+'|'+G.texV+'|'+CAM.hover;
@@ -7988,7 +8020,7 @@ function wpDown(e){
   camStop();
   var n=Object.keys(CAM.pts).length,r=el.phView.getBoundingClientRect();
   CAM.pageR=null;
-  if(e.pointerType!=='mouse'&&n===1){var pi=wgPick(e.clientX-r.left,e.clientY-r.top);if(pi>=0) bkPrep(pi);}
+  if(n===1){var pi=wgPick(e.clientX-r.left,e.clientY-r.top);if(pi>=0) bkPrep(pi);}
   if(n===1){
     var turn=(e.pointerType==='mouse'&&(e.button===2||e.button===1||e.shiftKey))||CAM.orbit;
     CAM.drag={id:e.pointerId,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,moved:false,type:e.pointerType,turn:!!turn};
@@ -8048,7 +8080,7 @@ function setHover(i){
   CAM.hover=i;wgInvalidate();
   /* пока курсор стоит на книге, заранее готовим её картинки: к щелчку всё уже нарисовано */
   clearTimeout(BK.prepT);
-  if(i>0) BK.prepT=setTimeout(function(){bkPrep(i-1);},110);
+  if(i>0) BK.prepT=setTimeout(function(){bkPrep(i-1);},160);
   el.phView.style.cursor=i?'pointer':'';
 }
 function wpHover(e){
@@ -8104,7 +8136,7 @@ function wpRender(){
    Поэтому она не может пройти сквозь полку, и поэтому для неё заранее считается расстояние от камеры, при котором шар вокруг книги
    целиком помещается в свободную часть экрана (без кнопок и подписей): края экрана не обрезают книгу ни в каком положении. */
 var BK={on:false,closing:false,idx:0,b:null,g:null,cam:null,Ru:[1,0,0,0,1,0,0,0,1],tau:0,anim:null,turn:null,L:300,kz:1,kzg:1,rad:90,near:5,d0:0,d1:0,fpx:1,
-  ui:{cx:0,cy:0,rho:100},pts:{},drag:null,pinch:null,vel:{x:0,y:0},roll:0,lastMove:0,t0:0,last:0,mesh:null,tex:null,rec:null,prep:null,prepT:0,tok:0,hintT:0,pose:null,Lw:[0,0,1],ax:null,axK:''};
+  ui:{cx:0,cy:0,rho:100},pts:{},drag:null,pinch:null,vel:{x:0,y:0},roll:0,lastMove:0,t0:0,last:0,mesh:null,tex:null,rec:null,prep:null,prepT:0,pend:null,tok:0,hintT:0,pose:null,Lw:[0,0,1],ax:null,axK:''};
 var m3=PGL.m3,rX=PGL.rX,rY=PGL.rY,rZ=PGL.rZ;
 function bkPoseR(n){
   if(n==='spine') return m3(rX(0.3),rY(Math.PI/2-0.3));
@@ -8137,8 +8169,9 @@ function bkAtlasNew(b){
   c.fillStyle=pl;for(i=0;i<t.h;i+=3.2) c.fillRect(t.x,Math.round(t.y+i),t.w,1);
   c.fillStyle=cc;c.fillRect(t.x-2,t.y-2,t.w+4,e+2);c.fillRect(t.x-2,t.y+t.h-e,t.w+4,e+2);c.fillRect(t.x-2,t.y-2,e*1.6+2,t.h+4);
   function uv(q,i){i=i||0;return [(q.x+i)/AW,(q.y+i)/AH,(q.x+q.w-i)/AW,(q.y+q.h-i)/AH];}
-  rec={id:b.id,cv:cv,ready:false,dead:false,cbs:[],
+  rec={id:b.id,cv:cv,ready:false,dead:false,cbs:[],tex:null,rd:null,
     U:{cover:uv(T.cover),back:uv(T.back),spine:uv(T.spine),fore:uv(T.fore,0.5),top:uv(T.top,0.5),white:uv(T.white,6)}};
+  rec.cbs.push(function(){bkUpload(rec);});
   var left=3;
   function fin(){
     if(--left!==0||rec.dead) return;
@@ -8163,9 +8196,18 @@ function bkAtlasNew(b){
   else{load('cover',bkCover(b),b.w,b.h);load('back',bkBack(b),b.w,b.h);load('spine',bkSpine(b),b.d,b.h);}
   return rec;
 }
+/* текстура книги уходит в видеокарту сразу, как только картинки готовы, то есть пока курсор ещё стоит на книге, а не в момент щелчка */
+function bkUpload(rec){
+  if(rec.dead||rec.tex||!G.rd||G.lost) return;
+  rec.rd=G.rd;
+  rec.tex=G.rd.texture(rec.cv,null);
+  rec.cv.width=1;rec.cv.height=1;
+}
 function bkAtlasFree(rec){
   if(!rec) return;
   rec.dead=true;rec.cbs=[];
+  if(rec.tex&&rec.rd&&rec.rd===G.rd&&!G.lost) rec.rd.freeTexture(rec.tex);
+  rec.tex=null;
   rec.cv.width=1;rec.cv.height=1;
 }
 /* заранее готовим картинки книги (курсор на ней или палец коснулся) */
@@ -8269,7 +8311,7 @@ function bkRender(rd){
 function bkStep(now,dt){
   var busy=false,a=BK.anim;
   if(a){
-    var k=Math.min(1,(now-a.t0)/a.d);
+    var k=a.t0<0?0:Math.max(0,Math.min(1,(now-a.t0)/a.d));
     BK.tau=a.from+(a.to-a.from)*k;
     bkApply();
     if(k>=1){BK.anim=null;BK.tau=a.to;bkApply();if(a.done) a.done();}else busy=true;
@@ -8297,7 +8339,7 @@ function bkStep(now,dt){
   return busy;
 }
 function bkFly(from,to,dur,done){
-  BK.anim={t0:performance.now(),from:from,to:to,d:Math.max(1,dur),done:done};
+  BK.anim={t0:-1,from:from,to:to,d:Math.max(1,dur),done:done};
   if(reduce||dur<=0){BK.anim=null;BK.tau=to;bkApply();if(done) done();return;}
   wgInvalidate();
 }
@@ -8329,10 +8371,31 @@ function bkCardHtml(b){
     '<small class="src"><b class="price">'+Number(o.price).toLocaleString('ru-RU')+' ₸</b> · <a href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">oldbook.kz</a>'+
     '<span class="credit">Фото и описание с сайта магазина oldbook.kz</span></small>';
 }
+/* Достать книгу. Всё тяжёлое (картинки, текстура в видеокарте) должно быть готово до начала полёта: обычно оно уже готово, пока курсор стоял на книге.
+   Если щёлкнули сразу (на телефоне или быстро), ждём готовности (доли секунды), а не рисуем полёт с рывками. */
 function bkOpen(i){
   var g=G.bk[i];
-  if(!g||BK.on||!G.ready) return;
-  var b=g.b;
+  if(!g||BK.on||BK.pend||!G.ready) return;
+  var b=g.b,rec=(BK.prep&&BK.prep.id===b.id&&!BK.prep.dead)?BK.prep:bkAtlasNew(b);
+  BK.prep=null;
+  if(rec.tex){bkGo(i,rec);return;}
+  BK.pend=rec;
+  var go=function(){
+    if(BK.pend!==rec) return;
+    BK.pend=null;
+    if(!rec.tex) bkUpload(rec);
+    if(rec.tex) bkGo(i,rec);else bkAtlasFree(rec);
+  };
+  rec.cbs.push(go);
+  if(rec.ready){go();return;}
+  setTimeout(function(){if(BK.pend===rec&&!rec.ready){rec.ready=true;go();}},1500);
+}
+function bkCancelPend(){
+  if(!BK.pend) return;
+  var r=BK.pend;BK.pend=null;bkAtlasFree(r);
+}
+function bkGo(i,rec){
+  var g=G.bk[i],b=g.b;
   wpTip(-1);setHover(0);camStop();
   BK.tok++;
   BK.on=true;BK.closing=false;BK.idx=i;BK.g=g;BK.b=b;BK.t0=performance.now();BK.vel={x:0,y:0};BK.roll=0;BK.pts={};BK.drag=null;BK.pinch=null;BK.turn=null;
@@ -8351,14 +8414,7 @@ function bkOpen(i){
   BK.d0=CAM.d;
   BK.cam={x:CAM.x,y:CAM.y,d:CAM.d,yaw:CAM.yaw,pitch:CAM.pitch};
   bkLayout();
-  /* картинки книги: обычно уже готовы (их готовили, пока курсор стоял на книге), тогда текстура создаётся один раз */
-  var rec=(BK.prep&&BK.prep.id===b.id&&!BK.prep.dead)?BK.prep:bkAtlasNew(b);
-  BK.prep=null;BK.rec=rec;
-  BK.tex=G.rd.texture(rec.cv,null);
-  if(!rec.ready) rec.cbs.push(function(){
-    if(!BK.on||BK.rec!==rec||!G.rd) return;
-    BK.tex=G.rd.texture(rec.cv,BK.tex);wgInvalidate();
-  });
+  BK.rec=rec;BK.tex=rec.tex;rec.tex=null;
   BK.mesh=bkMakeMesh(b,rec.U);
   bkApply();
   bkFly(0,1,950,null);
@@ -8579,10 +8635,12 @@ function showPage(p,quiet){
     if(el.phView.focus) el.phView.focus({preventScroll:true});
   }else{
     if(BK.on) bkClose(true);
+    bkCancelPend();
     PAGE='shelf';
     camStop();wpTip(-1);setHover(0);
     bkAtlasFree(BK.prep);BK.prep=null;
-    if(CAM.frame){cancelAnimationFrame(CAM.frame);CAM.frame=0;}
+    if(CAM.frame>0){cancelAnimationFrame(CAM.frame);}
+    CAM.frame=0;
     document.body.classList.remove('pgwall');
     el.phPage.hidden=true;
     window.scrollTo(0,0);
