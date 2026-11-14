@@ -37,7 +37,7 @@
     var PERIOD = 60000;
 
     var cfg = null, fbApp = null, user = null, ready = false;
-    var running = false, again = false, timer = null, startedAt = Date.now();
+    var running = false, again = false, timer = null, startedAt = Date.now(), paused = false;
     var status = { state: 'off', text: '' }, mode = 'login', firstSyncDone = false;
     var readyResolve, readyPromise = new Promise(function (r) { readyResolve = r; });
 
@@ -358,7 +358,7 @@
     // =================================================================================================
     function setStatus(state, text) { status = { state: state, text: text || '' }; render(); if (cfg && cfg.onStatus) { try { cfg.onStatus(status); } catch (e) {} } }
     function sync(manual) {
-        if (!user || !cfg) return Promise.resolve(false);
+        if (!user || !cfg || paused) return Promise.resolve(false);
         if (running) { again = true; return Promise.resolve(false); }
         if (!navigator.onLine) { setStatus('offline', 'Нет интернета — синхронизация позже'); return Promise.resolve(false); }
         running = true; setStatus('syncing', 'Синхронизация…');
@@ -402,6 +402,8 @@
         var prev = user && user.uid;
         user = userFrom(u);
         if (user) lsSet(USER_KEY, JSON.stringify({ email: user.email })); else lsDel(USER_KEY);
+        // My Money (4.13+) помнит вход в своём ключе: ставим и его — тогда вход общий и с My Money
+        if (user) lsSet('finance_acct_user', JSON.stringify(user)); else lsDel('finance_acct_user');
         ready = true; render();
         if (user && user.uid !== prev) { firstSyncDone = false; sync(false).then(function () { readyResolve(); }); }
         else { if (!user) setStatus('off', ''); readyResolve(); }
@@ -498,7 +500,7 @@
         '.mma-msg{margin:0;color:#d93025;font-size:.9em}.mma-msg.is-ok{color:inherit;opacity:.8}.mma-links{display:flex;justify-content:space-between;gap:10px;font-size:.92em}.mma-links a{color:#1a73e8}.mma-row{display:flex;gap:8px;flex-wrap:wrap}.mma-row button{flex:1 1 auto}' +
         '.mma-fab{position:fixed;z-index:2147483000;left:10px;bottom:10px;width:40px;height:40px;border-radius:50%;border:1px solid rgba(255,255,255,.6);background:rgba(0,0,0,.45);color:#fff;font-size:20px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;backdrop-filter:blur(4px)}' +
         '.mma-fab.is-in{background:rgba(26,115,232,.85)}.mma-fab.is-err::after{content:"";position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;background:#d93025}' +
-        '.mma-pop{position:fixed;inset:0;z-index:2147483001;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}.mma-pop>.mma-card{background:#fff;color:#111;border-radius:14px;padding:18px;width:min(380px,100%);box-shadow:0 12px 40px rgba(0,0,0,.35);max-height:90vh;overflow:auto}' +
+        '.mma-pop{position:fixed;inset:0;z-index:2147483001;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px}.mma-pop>.mma-card{font:15px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;background:#fff;color:#111;border-radius:14px;padding:18px;width:min(380px,100%);box-shadow:0 12px 40px rgba(0,0,0,.35);max-height:90vh;overflow:auto}' +
         '.mma-x{position:absolute;top:10px;right:14px;font-size:28px;background:none;border:none;color:#fff;cursor:pointer}' +
         '.mma-toast{position:fixed;left:50%;bottom:70px;transform:translateX(-50%);z-index:2147483002;background:rgba(32,33,36,.95);color:#fff;padding:10px 16px;border-radius:10px;font:14px/1.35 system-ui,sans-serif;max-width:90vw;transition:opacity .4s}.mma-toast.is-out{opacity:0}' +
         '.mma-banner{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:2147483002;background:#1a73e8;color:#fff;padding:8px 10px 8px 14px;border-radius:10px;display:flex;gap:10px;align-items:center;font:14px/1.3 system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3)}.mma-banner button{font:inherit;border:none;border-radius:8px;padding:6px 10px;background:#fff;color:#1a73e8;cursor:pointer}';
@@ -549,6 +551,9 @@
         changed: function () { schedule(); },
         sync: function () { return sync(true); },
         open: openPop,
+        banner: showBanner,
+        // Остановить синхронизацию до перезагрузки страницы (игра: пришло чужое сохранение — своё старое не отправлять)
+        pause: function () { paused = true; },   // полоса «Пришли изменения с другого устройства — Обновить»
         // Промис: вход проверен и первая синхронизация закончилась (или её не будет). Для игр — ждать перед запуском
         whenReady: function (ms) { return Promise.race([readyPromise, new Promise(function (r) { setTimeout(r, ms || 5000); })]); },
         user: function () { return user; },
