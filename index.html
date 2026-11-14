@@ -975,7 +975,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.13.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.14.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1247,6 +1247,7 @@ body.pgwall main.app{display:none}
       <label class="chk"><input type="checkbox" id="sCovers"><span>Показывать фото обложек (папка covers)</span></label>
       <label class="chk"><input type="checkbox" id="sSpines"><span>Показывать фото корешков на книгах (папка spines)</span></label>
       <label class="chk"><input type="checkbox" id="sLog"><span>Журнал полки справа от полки</span></label>
+      <label class="fld"><span>Корешки на 3D-стеллажах (энергосбережение)</span><select id="sSpq"><option value="auto">Издалека мелко, чётко при приближении (по умолчанию)</option><option value="color">Издалека только цвет, чётко при приближении (меньше всего трафика)</option><option value="sharp">Всегда чётко (больше трафика и памяти)</option></select></label>
       <label class="fld"><span>Номера полок растут</span><select id="sShDir"><option value="down">вниз: 227 сверху, 229 снизу</option><option value="up">вверх: 229 сверху, 227 снизу</option></select></label>
       <label class="fld"><span>Полок в стеллаже при раскладке по номерам (от 2 до 6)</span><select id="sRack"><option value="6">6</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option></select></label>
       <label class="fld"><span>Крупный интерфейс</span><select id="sBig"><option value="auto">Автоматически: на телефоне</option><option value="on">Всегда</option><option value="off">Выключен</option></select></label>
@@ -1459,7 +1460,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.13.0'};
+var APP={name:'Геометрия Полки',version:'1.14.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -1497,7 +1498,7 @@ var RAW227={"sheet":"227","columns":[{"label":"Код книги","origin":"shee
 
 /* ===== Настройки (хранятся в браузере) ===== */
 var CFG_KEY='gp.settings.v1';
-function defaultCfg(){return {falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,spines:true,shDir:'down',zoom:0,phWorker:'',rack:6,
+function defaultCfg(){return {falls:true,thin:15,lean:8,covers:true,log:true,big:'auto',step:10,spines:true,shDir:'down',zoom:0,phWorker:'',rack:6,spq:'auto',
   gs:{mode:'public',url:'',tabs:'',gen:'Генеральная',cid:'',auto:0,email:'',key:'',known:[]},
   dr:{url:'',mode:'oauth',key:'',eng:'coco',gkey:'',gmodel:'gemini-2.5-flash',sub:true,redo:false}};}
 var CFG=defaultCfg();
@@ -3691,7 +3692,11 @@ function buildMenuDefs(){
       {l:'Фото обложек',a:function(){CFG.covers=!CFG.covers;saveCfg();renderInfo();},chk:function(){return CFG.covers;}},
       {l:'Фото корешков',a:function(){CFG.spines=CFG.spines===false;saveCfg();renderAll();},chk:function(){return CFG.spines!==false;}},
       {l:'Журнал полки справа',a:function(){CFG.log=!CFG.log;saveCfg();applyLog();renderLog();},chk:function(){return CFG.log;}},
-      {l:'Крупный интерфейс',a:function(){CFG.big=isBig()?'off':'on';saveCfg();applyBig();},chk:function(){return isBig();}}
+      {l:'Крупный интерфейс',a:function(){CFG.big=isBig()?'off':'on';saveCfg();applyBig();},chk:function(){return isBig();}},
+      {sep:1},
+      {l:'Корешки 3D: всегда чётко',keep:1,a:function(){spqSet('sharp');},chk:function(){return CFG.spq==='sharp';}},
+      {l:'Корешки 3D: чётко при приближении',keep:1,a:function(){spqSet('auto');},chk:function(){return CFG.spq!=='sharp'&&CFG.spq!=='color';}},
+      {l:'Корешки 3D: издалека цветом (экономно)',keep:1,a:function(){spqSet('color');},chk:function(){return CFG.spq==='color';}}
     ]},
     {id:'photos',label:'Фото',items:[
       {l:'Подключить папку с компьютера…',a:openPhotos},
@@ -3897,6 +3902,7 @@ function initSettings(){
   el.sShDir.addEventListener('change',function(){CFG.shDir=el.sShDir.value;saveCfg();updateShelfNav();drawPlate();});
   el.sRack.addEventListener('change',function(){CFG.rack=+el.sRack.value||RACK_MAX;saveCfg();updateShelfNav();drawPlate();ovRedraw();});
   el.sLog.addEventListener('change',function(){CFG.log=el.sLog.checked;saveCfg();applyLog();renderLog();});
+  el.sSpq=document.getElementById('sSpq');if(el.sSpq){el.sSpq.value=CFG.spq||'auto';el.sSpq.addEventListener('change',function(){spqSet(el.sSpq.value);});}
   el.sBig.addEventListener('change',function(){CFG.big=el.sBig.value;saveCfg();applyBig();});
   el.sStep.addEventListener('change',function(){CFG.step=+el.sStep.value||10;saveCfg();});
   el.gUrl.addEventListener('change',function(){CFG.gs.url=el.gUrl.value.trim();saveCfg();updateSource();});
@@ -7863,16 +7869,20 @@ function obLoad(cb){
   setTimeout(function(){if(OB.state===1) done(false);},9000);
 }
 /* картинка книги (front, back, spine), загруженная один раз; cb получает готовый Image или null */
+/* 1.14.0: откуда брать фото книг. Пусто — с этого же сайта (GitHub); иначе адрес хранилища Cloudflare R2 с теми же папками books3d/… */
+var IMG_BASE='';
+function imgUrl(p){return !p||/^(data:|https?:)/.test(p)?p:IMG_BASE+p;}
+function imgNew(){var im=new Image();if(IMG_BASE) im.crossOrigin='anonymous';return im;}
 function obImg(o,k,cb){
-  var key=o.sku+k,c=OB.img[key];
+  var key=String(o[k]||o.sku+k),c=OB.img[key];
   if(c&&c.ok){cb(c.im);return;}
   if(c&&c.fail){cb(null);return;}
   if(c){c.cbs.push(cb);return;}
-  var im=new Image(),r={im:im,ok:false,fail:false,cbs:[cb]};
+  var im=imgNew(),r={im:im,ok:false,fail:false,cbs:[cb]};
   OB.img[key]=r;
   im.onload=function(){r.ok=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(im);});};
   im.onerror=function(){r.fail=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(null);});};
-  im.src=o[k];
+  im.src=imgUrl(o[k]);
 }
 /* десять книг на полку: настоящие размеры (мм → пиксели картинки), стоят вплотную, посередине полки */
 /* 1.11.0: 100 настоящих книг с oldbook.kz на центральном стеллаже. Где стоит каждая книга (полка, место, стоя или лёжа), посчитано заранее
@@ -7901,10 +7911,19 @@ function sc3(c,k){return [c[0]*k,c[1]*k,c[2]*k];}
 function uvRect(x,y,w,h,inset){var i=inset||0;return [(x+i)/G.AW,(y+i)/G.AH,(x+w-i)/G.AW,(y+h-i)/G.AH];}
 
 /* раскладка плиток корешков: полки по высоте, слева направо. Возвращает false, если не влезло. */
+/* 1.14.0: качество корешков (энергосбережение). sharp — все корешки сразу чёткие; auto — издалека мелкие, вблизи чёткие;
+   color — издалека только цвет, вблизи чёткие. Для auto и color нижняя половина атласа — место для чётких корешков ближайших полок. */
+function lodOn(){return CFG.spq!=='sharp';}
+function spqSet(v){
+  if(CFG.spq===v) return;
+  CFG.spq=v;saveCfg();
+  if(el.sSpq) el.sSpq.value=v;
+  if(G.rd&&!G.lost&&!G.failed&&WBL.length){if(BK.on) bkEnd();glFree();glBuild();}
+}
 function glPack(sc){
-  var P=G.pad,AW=G.AW,AH=G.AH,t=[],i,x=0,y=G.hdrH,rh=0;
+  var P=G.pad,AW=G.AW,AH=lodOn()?Math.floor(G.AH/2):G.AH,t=[],i,x=0,y=G.hdrH,rh=0;
   WBL.forEach(function(b,ix){
-    var m=sc*(b.q||1),iw=Math.ceil(b.d*m),ih=Math.ceil(b.h*m);
+    var m=sc*(lodOn()&&b.ob&&b.ob.sh?1:(b.q||1)),iw=Math.ceil(b.d*m),ih=Math.ceil(b.h*m);
     t.push({i:ix,b:b,iw:iw,ih:ih,cw:iw+2*P+1,ch:ih+2*P+1});
   });
   t.sort(function(a,b){return b.ch-a.ch||a.i-b.i;});
@@ -8001,6 +8020,26 @@ function glPutPhoto(c,im,x,y,w,h,P){
   c.drawImage(im,0,0,1,1,x-P,y-P,P,P);c.drawImage(im,iw-1,0,1,1,x+w,y-P,P,P);
   c.drawImage(im,0,ih-1,1,1,x-P,y+h,P,P);c.drawImage(im,iw-1,ih-1,1,1,x+w,y+h,P,P);
 }
+/* листы корешков полок: один файл на полку, -lo (издалека) и -hi (вблизи) */
+var SHC={};
+function shImg(id,lv,cb){
+  var S=window.BOOKSHEETS&&BOOKSHEETS[id],key=id+'-'+lv,c=SHC[key];
+  if(!S){cb(null);return;}
+  if(c&&c.ok){cb(c.im,S,lv);return;}
+  if(c&&c.fail){cb(null);return;}
+  if(c){c.cbs.push(cb);return;}
+  var im=imgNew(),r={im:im,ok:false,fail:false,cbs:[cb]};SHC[key]=r;
+  im.onload=function(){r.ok=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(im,S,lv);});};
+  im.onerror=function(){r.fail=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(null);});};
+  im.src=imgUrl('books3d/sheets/'+key+'.webp');
+}
+function shRect(o,S,lv){var k=lv==='hi'?1:S.lw/S.w;return [o.sh[1]*k,Math.max(1,o.sh[2]*k),lv==='hi'?S.h:S.lh];}
+function glPutSub(c,im,sx,sy,sw,sh,x,y,w,h,P){
+  c.imageSmoothingEnabled=true;try{c.imageSmoothingQuality='high';}catch(_){}
+  c.drawImage(im,sx,sy,sw,sh,x,y,w,h);
+  c.drawImage(im,sx,sy,1,sh,x-P,y,P,h);c.drawImage(im,sx+sw-1,sy,1,sh,x+w,y,P,h);
+  c.drawImage(im,sx,sy,sw,1,x,y-P,w,P);c.drawImage(im,sx,sy+sh-1,sw,1,x,y+h,w,P);
+}
 /* корешки рисуем векторно (SVG), пачками по полосам атласа, чтобы не держать 929 отдельных картинок; корешки настоящих книг — их фотографии */
 function glPaintSpines(done){
   var c=G.ctx,cv=G.atlas,P=G.pad,tok=G.tok,chunks=[],cur=null,i;
@@ -8010,13 +8049,22 @@ function glPaintSpines(done){
   });
   glUpload();
   /* полосы по ~300 пикселей высоты */
-  var real=G.tiles.filter(function(q){return !!(q.b.ob&&q.b.ob.spine);});
+  var sheets={},nsheet=0;
+  if(CFG.spq!=='color') G.tiles.forEach(function(q){var o=q.b.ob;if(o&&o.sh){var id=o.sh[0];if(!sheets[id]){sheets[id]=[];nsheet++;}sheets[id].push(q);}});
+  var real=G.tiles.filter(function(q){return !!(q.b.ob&&q.b.ob.spine&&!q.b.ob.sh);});
   G.tiles.filter(function(q){return !(q.b.ob&&q.b.ob.spine);}).sort(function(a,b){return a.y-b.y||a.x-b.x;}).forEach(function(q){
     if(!cur||q.y+q.ch-cur.y0>300){cur={y0:q.y,y1:q.y+q.ch,tiles:[]};chunks.push(cur);}
     cur.tiles.push(q);if(q.y+q.ch>cur.y1) cur.y1=q.y+q.ch;
   });
-  var left=chunks.length+real.length;
+  var left=chunks.length+real.length+nsheet;
   if(!left){done();return;}
+  Object.keys(sheets).forEach(function(id){
+    shImg(id,CFG.spq==='sharp'?'hi':'lo',function(im,S,lv){
+      if(tok!==G.tok||G.atlas!==cv) return;
+      if(im) sheets[id].forEach(function(q){var r=shRect(q.b.ob,S,lv);glPutSub(c,im,r[0],0,r[1],r[2],q.ix,q.iy,q.iw,q.ih,P);});
+      if(--left===0){glUpload();done();}
+    });
+  });
   real.forEach(function(q){
     obImg(q.b.ob,'spine',function(im){
       if(tok!==G.tok||G.atlas!==cv) return;
@@ -8139,21 +8187,93 @@ function glFree(){
   G.mSolid=null;G.mShade=null;G.tex=null;
 }
 /* строим плитки и сцену; вызывается один раз и ещё раз, если видеокарта потеряла контекст */
+/* ----- 1.14.0: чёткие корешки только у ближайших полок -----
+   Когда камера остановилась близко к полкам, берём видимые полки, грузим их лист -hi (один файл на полку), рисуем корешки
+   в нижнюю половину атласа и перестраиваем сцену с новыми координатами текстур. Остальные полки остаются мелкими (или цветом). */
+var LOD={t:0,key:'',tok:0};
+function lodSoon(){clearTimeout(LOD.t);LOD.t=setTimeout(lodCheck,140);}
+function lodShelves(){
+  if(!lodOn()||!G.ready||!G.lodReady||!G.atlas||BK.on||PAGE!=='wall'||CAM.d>CAM.dShelf*1.8) return null;
+  var c={x:CAM.x,y:CAM.y,d:CAM.d,yaw:CAM.yaw,pitch:CAM.pitch},b=camBox(c),X0=c.x+b.x0,X1=c.x+b.x1,Y0=c.y+b.y0,Y1=c.y+b.y1,out=[],r,k;
+  for(r=0;r<WR.n;r++)for(k=0;k<WR.k;k++){
+    var L=WSH[r+'.'+k];
+    if(!L||!L.some(function(x){return x.ob&&x.ob.sh;})) continue;
+    var x0=r*WR.cw+WR.xa,x1=r*WR.cw+WR.xb,y0=wrY(WR.lip[k]),y1=wrY(wrCeil(k));
+    var ov=Math.max(0,Math.min(X1,x1)-Math.max(X0,x0))*Math.max(0,Math.min(Y1,y1)-Math.max(Y0,y0));
+    if(ov>0) out.push({key:r+'.'+k,ov:ov,books:L});
+  }
+  out.sort(function(a,b){return b.ov-a.ov;});
+  return out;
+}
+function lodCheck(){
+  var sh=lodShelves();
+  if(!sh||!sh.length) return;
+  /* раскладка в нижней половине атласа: полка за полкой, пока помещается */
+  var P=G.pad,AW=G.AW,y0=Math.floor(G.AH/2),AH=G.AH,scH=(G.AW>=4096?5.1:3.2),x=0,y=y0,rh=0,tiles=[],keys=[],ok=true;
+  sh.forEach(function(S){
+    if(!ok) return;
+    var add=[],xx=x,yy=y,rr=rh,fit=true;
+    S.books.forEach(function(b){
+      if(!fit||!(b.ob&&b.ob.sh)) return;
+      var sc1=Math.min(scH,(BOOKSHEETS[b.ob.sh[0]].h)/b.h),iw=Math.ceil(b.d*sc1),ih=Math.ceil(b.h*sc1),cw=iw+2*P+1,ch=ih+2*P+1;
+      if(xx+cw>AW){xx=0;yy+=rr;rr=0;}
+      if(ch>rr) rr=ch;
+      if(yy+rr>AH){fit=false;return;}
+      add.push({b:b,ix:xx+P,iy:yy+P,iw:iw,ih:ih});xx+=cw;
+    });
+    if(!fit){ok=false;return;}
+    tiles=tiles.concat(add);keys.push(S.key);x=xx;y=yy;rh=rr;
+  });
+  var key=keys.sort().join(',');
+  if(!keys.length||key===LOD.key) return;
+  var tok=++LOD.tok,need={},left=0,gtok=G.tok;
+  tiles.forEach(function(q){need[q.b.ob.sh[0]]=1;});
+  var ids=Object.keys(need);left=ids.length;
+  ids.forEach(function(id){shImg(id,'hi',function(){if(--left===0) draw();});});
+  function draw(){
+    if(tok!==LOD.tok||gtok!==G.tok||!G.atlas||BK.on) return;
+    var c=G.ctx;
+    c.fillStyle='#46280f';c.fillRect(0,y0,AW,AH-y0);
+    WBL.forEach(function(b){b.uv=b.uvLo;});
+    tiles.forEach(function(q){
+      var o=q.b.ob,r=SHC[o.sh[0]+'-hi'];
+      if(!r||!r.ok) return;
+      var R=shRect(o,BOOKSHEETS[o.sh[0]],'hi');
+      glPutSub(c,r.im,R[0],0,R[1],R[2],q.ix,q.iy,q.iw,q.ih,P);
+      q.b.uv=uvRect(q.ix,q.iy,q.iw,q.ih,0);
+    });
+    LOD.key=key;
+    lodRegeom();
+  }
+}
+/* та же сцена с новыми координатами текстур: геометрия пересобирается (несколько миллисекунд), текстура загружается заново */
+function lodRegeom(){
+  if(!G.rd||G.lost) return;
+  G.rd.freeTarget();
+  if(G.mSolid) G.rd.freeMesh(G.mSolid);
+  if(G.mShade) G.rd.freeMesh(G.mShade);
+  G.mSolid=null;G.mShade=null;
+  glGeom();
+  glUpload();
+  wgInvalidate();
+}
 function glBuild(){
   var sc=1.7;
-  G.tok++;G.ready=false;
+  G.tok++;G.ready=false;G.lodReady=false;LOD.key='';LOD.tok++;
   if(!WBL.length||G.shelvesOB!==!!OB.list||G.scene!==SCENE) wbAll();
   G.AW=Math.min(4096,G.rd.maxTex);G.AH=G.AW>=4096?2048:Math.min(2048,G.rd.maxTex);
   if(G.AW<4096) sc=1.1;
   while(!glPack(sc)&&sc>0.5) sc*=0.94;
   glInitAtlas();
   WBL.forEach(function(b){b.uv=null;});
-  G.tiles.forEach(function(q){q.b.uv=uvRect(q.ix,q.iy,q.iw,q.ih,0);});
+  G.tiles.forEach(function(q){q.b.uv=q.b.uvLo=uvRect(q.ix,q.iy,q.iw,q.ih,0);});
+  G.det=null;
   glFree();
   glGeom();
   G.ready=true;
   wgInvalidate();
   glPaintSpines(function(){
+    if(lodOn()){G.lodReady=true;wgInvalidate();lodSoon();return;}
     /* 1.11.1: картинку атласа освобождаем только когда и корешки, и дерево уже нарисованы (раньше при пустых полках дерево не успевало) */
     var cv=G.atlas;
     if(cv&&G.woodImg&&!G.woodImg.complete){G.woodImg.addEventListener('load',function(){setTimeout(function(){if(G.atlas===cv){G.atlas.width=1;G.atlas.height=1;G.atlas=null;G.ctx=null;wgInvalidate();}},0);});return;}
@@ -8430,6 +8550,7 @@ function wgFrame(now){
     if(busy||BK.anim) CAM.frame=requestAnimationFrame(wgFrame);
     else{
       CAM.last=0;
+      lodSoon();
       /* всё остановилось: через 0,7 секунды возвращаем полную чёткость */
       if(CAM.rs<CAM.rs0&&!CAM.rsT) CAM.rsT=setTimeout(function(){
         CAM.rsT=0;
@@ -9169,7 +9290,7 @@ function initBook(){
 var RD={on:false,busy:false,flip:false,cur:0,leaves:[],b:null,o:null,pw:0,ph:0,W:0,H:0,top:0,r0:null,sx:0,sy:0,pid:null,tok:0};
 function rdN(o){return o?(o.pg===undefined?5:o.pg):0;}
 function rdHas(b){return !!(b&&b.ob&&b.ob.sku&&(rdN(b.ob)>0||b.ob.account||b.ob.vol));}
-function rdSrc(o,n){return 'books3d/pages/'+o.sku+'-'+n+'.webp';}
+function rdSrc(o,n){return imgUrl('books3d/pages/'+o.sku+'-'+n+'.webp');}
 function rdDur(ms){return reduce?1:ms;}
 /* точка книги (в её собственных осях) → пиксель на странице */
 function bkProj(vp,P){
@@ -9270,7 +9391,7 @@ function rdBuild(){
   /* лист «Рекомендуем» стоит рядом со страницей с ценой: на внутренней стороне задней обложки или на обороте последнего листа */
   if(seq.length%2){seq.push(rdFace('rec',accGet().rec===false?'':rdRecHtml(o)));base.appendChild(rdFace('r endp',''));}
   else base.appendChild(rdFace('r rec',accGet().rec===false?'':rdRecHtml(o)));
-  var faces=[[rdFace('r cover',rdImg(o.front)),rdFace('l endp','<div class="lb"><b>'+esc(o.title)+'</b>'+esc(o.author)+'<br>'+esc(o.publisher)+', '+esc(o.year)+'</div>')]];
+  var faces=[[rdFace('r cover',rdImg(imgUrl(o.front))),rdFace('l endp','<div class="lb"><b>'+esc(o.title)+'</b>'+esc(o.author)+'<br>'+esc(o.publisher)+', '+esc(o.year)+'</div>')]];
   for(q=0;q<seq.length;q+=2){seq[q].classList.add('r');seq[q+1].classList.add('l');faces.push([seq[q],seq[q+1]]);}
   RD.leaves=[];
   for(i=0;i<faces.length;i++){
@@ -9288,7 +9409,7 @@ function rdRecHtml(o){
   var L=o.rec||[];
   if(!L.length) return '';
   return '<div class="rdrec"><h4>Рекомендуем</h4><p class="sub">Новинки oldbook.kz к этой книге</p>'+L.map(function(r){
-    return '<a class="ri" href="'+esc(r.u)+'" target="_blank" rel="noopener noreferrer"><img alt="" draggable="false" loading="lazy" src="books3d/rec/'+esc(r.s)+'.webp">'+
+    return '<a class="ri" href="'+esc(r.u)+'" target="_blank" rel="noopener noreferrer"><img alt="" draggable="false" loading="lazy" src="'+esc(imgUrl('books3d/rec/'+r.s+'.webp'))+'">'+
       '<span><b>'+esc(r.t)+'</b>'+(r.a?'<i>'+esc(r.a)+'</i>':'')+'<em>'+Number(r.p).toLocaleString('ru-RU')+' ₸</em></span></a>';
   }).join('')+'</div>';
 }
@@ -9370,7 +9491,7 @@ function accAct(act){
   }
 }
 function rdPreload(o){
-  var L=[o.front],i;
+  var L=[imgUrl(o.front)],i;
   for(i=1;i<=rdN(o);i++) L.push(rdSrc(o,i));
   return Promise.race([Promise.all(L.map(function(u){
     return new Promise(function(r){var im=new Image();im.onload=im.onerror=function(){r();};im.src=u;});
