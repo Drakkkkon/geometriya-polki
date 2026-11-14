@@ -975,7 +975,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.14.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.15.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1460,7 +1460,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.14.0'};
+var APP={name:'Геометрия Полки',version:'1.15.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -7870,9 +7870,16 @@ function obLoad(cb){
 }
 /* картинка книги (front, back, spine), загруженная один раз; cb получает готовый Image или null */
 /* 1.14.0: откуда брать фото книг. Пусто — с этого же сайта (GitHub); иначе адрес хранилища Cloudflare R2 с теми же папками books3d/… */
-var IMG_BASE='';
+var IMG_BASE='https://pub-545f232eb9f9416e8af6463b90ab3988.r2.dev/';
 function imgUrl(p){return !p||/^(data:|https?:)/.test(p)?p:IMG_BASE+p;}
 function imgNew(){var im=new Image();if(IMG_BASE) im.crossOrigin='anonymous';return im;}
+/* картинка из R2; если хранилище не ответило — та же картинка с GitHub */
+function imgLoad(im,p,ok,bad){
+  var tried=false;
+  im.onload=ok;
+  im.onerror=function(){if(!tried&&IMG_BASE&&!/^(data:|https?:)/.test(p)){tried=true;im.crossOrigin=null;im.src=p;}else bad();};
+  im.src=imgUrl(p);
+}
 function obImg(o,k,cb){
   var key=String(o[k]||o.sku+k),c=OB.img[key];
   if(c&&c.ok){cb(c.im);return;}
@@ -7880,9 +7887,8 @@ function obImg(o,k,cb){
   if(c){c.cbs.push(cb);return;}
   var im=imgNew(),r={im:im,ok:false,fail:false,cbs:[cb]};
   OB.img[key]=r;
-  im.onload=function(){r.ok=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(im);});};
-  im.onerror=function(){r.fail=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(null);});};
-  im.src=imgUrl(o[k]);
+  imgLoad(im,o[k],function(){r.ok=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(im);});},
+    function(){r.fail=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(null);});});
 }
 /* десять книг на полку: настоящие размеры (мм → пиксели картинки), стоят вплотную, посередине полки */
 /* 1.11.0: 100 настоящих книг с oldbook.kz на центральном стеллаже. Где стоит каждая книга (полка, место, стоя или лёжа), посчитано заранее
@@ -8029,9 +8035,8 @@ function shImg(id,lv,cb){
   if(c&&c.fail){cb(null);return;}
   if(c){c.cbs.push(cb);return;}
   var im=imgNew(),r={im:im,ok:false,fail:false,cbs:[cb]};SHC[key]=r;
-  im.onload=function(){r.ok=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(im,S,lv);});};
-  im.onerror=function(){r.fail=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(null);});};
-  im.src=imgUrl('books3d/sheets/'+key+'.webp');
+  imgLoad(im,'books3d/sheets/'+key+'.webp',function(){r.ok=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(im,S,lv);});},
+    function(){r.fail=true;var q=r.cbs;r.cbs=[];q.forEach(function(f){f(null);});});
 }
 function shRect(o,S,lv){var k=lv==='hi'?1:S.lw/S.w;return [o.sh[1]*k,Math.max(1,o.sh[2]*k),lv==='hi'?S.h:S.lh];}
 function glPutSub(c,im,sx,sy,sw,sh,x,y,w,h,P){
@@ -9371,7 +9376,7 @@ function rdFace(cls,inner){
   f.innerHTML=inner+'<i class="sh"></i>';
   return f;
 }
-function rdImg(src){return '<img alt="" draggable="false" src="'+esc(src)+'">';}
+function rdImg(src){var loc=IMG_BASE&&src.indexOf(IMG_BASE)===0?src.slice(IMG_BASE.length):'';return '<img alt="" draggable="false" src="'+esc(src)+'"'+(loc?' onerror="this.onerror=null;this.src=\''+esc(loc)+'\'"':'')+'>';}
 function rdBuild(){
   var b=RD.b,o=RD.o,bk=el.rdBook,i,endp=bkMix(b.c,'#3a2a1a',0.25);
   bk.textContent='';
