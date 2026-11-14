@@ -827,6 +827,18 @@ body.pgwall main.app{display:none}
 /* --- книга в руках: сама книга рисуется в 3D-сцене, здесь только надписи и кнопки поверх --- */
 /* пока книга в руках, кнопки страницы прячутся, чтобы ничего не лежало поверх книги */
 .phpage.bkon .phleft,.phpage.bkon .phnav,.phpage.bkon .phtools,.phpage.bkon .phzoom,.phpage.bkon .phhint{opacity:0;visibility:hidden;pointer-events:none}
+.pkbar{position:absolute;left:50%;bottom:86px;transform:translateX(-50%);z-index:7;display:flex;align-items:center;gap:6px;max-width:calc(100% - 24px);
+  padding:6px;border-radius:14px;background:rgba(255,255,255,.96);box-shadow:0 6px 22px rgba(0,0,0,.35);font:13px/1.3 var(--font-ui);color:var(--ink)}
+.pkbar[hidden]{display:none}
+.pkbar button{flex:none;min-width:44px;min-height:44px;border-radius:10px;border:1px solid var(--rule);background:#fff;color:var(--ink);font:600 20px var(--font-ui);cursor:pointer}
+.pkbar button:hover{background:var(--ink);color:#fff}
+.pkbar .pkopen{font-size:14px;padding:0 12px}
+.pkbar #pkX{font-size:15px;min-width:40px}
+.pktxt{min-width:0;max-width:300px;padding:0 4px}
+.pktxt b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pktxt span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phpage.bkon .pkbar{display:none}
+@media (max-width:560px){.pkbar{bottom:auto;top:10px}.pktxt{max-width:150px}}
 .bkstage{position:absolute;inset:0;z-index:8;overflow:hidden;touch-action:none;cursor:grab;outline:none;user-select:none;-webkit-user-select:none}
 .bkstage[hidden]{display:none}
 .bkstage.drag{cursor:grabbing}
@@ -975,7 +987,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.15.1</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.16.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1180,6 +1192,13 @@ body.pgwall main.app{display:none}
     <button type="button" id="phFit" aria-label="Общий вид" title="Общий вид ( 0 )"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h5v16H3zM9.5 4h5v16h-5zM16 4h5v16h-5z"/></svg></button>
   </div>
   <div class="phtip" id="phTip" hidden></div>
+  <div class="pkbar" id="pkBar" hidden role="group" aria-label="Книга с полки">
+    <button type="button" id="pkPrev" aria-label="Книга левее">‹</button>
+    <div class="pktxt" id="pkTxt"></div>
+    <button type="button" id="pkNext" aria-label="Книга правее">›</button>
+    <button type="button" id="pkOpen" class="pkopen">Открыть</button>
+    <button type="button" id="pkX" aria-label="Поставить на место">✕</button>
+  </div>
   <div class="bkstage" id="bkStage" hidden tabindex="-1" role="dialog" aria-modal="true" aria-label="Книга в руках">
     <div class="bkcard bkui" id="bkCard"></div>
     <button type="button" class="bkclose bkui" id="bkClose" title="Esc">Поставить на место</button>
@@ -1460,7 +1479,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.15.1'};
+var APP={name:'Геометрия Полки',version:'1.16.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -8264,6 +8283,7 @@ function lodRegeom(){
 }
 function glBuild(){
   var sc=1.7;
+  if(typeof pkFree==='function'){pkFree();PK.idx=-1;if(el.pkBar) el.pkBar.hidden=true;}
   G.tok++;G.ready=false;G.lodReady=false;LOD.key='';LOD.tok++;
   if(!WBL.length||G.shelvesOB!==!!OB.list||G.scene!==SCENE) wbAll();
   G.AW=Math.min(4096,G.rd.maxTex);G.AH=G.AW>=4096?2048:Math.min(2048,G.rd.maxTex);
@@ -8552,7 +8572,7 @@ function wgFrame(now){
   }
   CAM.frame=0;
   if(PAGE==='wall'){
-    if(busy||BK.anim) CAM.frame=requestAnimationFrame(wgFrame);
+    if(busy||BK.anim||PK.anim) CAM.frame=requestAnimationFrame(wgFrame);
     else{
       CAM.last=0;
       lodSoon();
@@ -8575,6 +8595,7 @@ function wgWork(now){
   CAM.last=now;
   busy=camStepAnim(dt)||busy;
   if(BK.on&&bkStep(now,dt)) busy=true;
+  if(pkStep(now)) busy=true;
   if(!BK.on){
     var b0=camBaseScale();
     if(b0!==CAM.rs0){CAM.rs0=b0;CAM.rs=Math.min(CAM.rs,b0);if(CAM.rs<b0&&!busy) CAM.rs=b0;}
@@ -8595,7 +8616,7 @@ function wgWork(now){
 /* кадр: значения для шейдеров, камера и один вызов Three.js */
 function wgDraw(){
   var rd=G.rd,k=CAM.dpr*CAM.rs,w=Math.max(2,Math.round(CAM.vw*k)),h=Math.max(2,Math.round(CAM.vh*k)),c=BK.on?BK.cam:CAM,
-    hide=BK.on?BK.idx+1:0,show=!!(G.ready&&G.tex&&G.mSolid),cache='',opt=null;
+    hide=BK.on?BK.idx+1:(PK.idx>=0&&PK.mesh?PK.idx+1:0),show=!!(G.ready&&G.tex&&G.mSolid),cache='',opt=null;
   if(show&&BK.on&&BK.cam&&BK.mesh&&BK.pose&&(BK.tau>=0.3||BK.d1<=BK.d0*1.0001)){
     /* книга в руках: камера уже стоит на месте, а сцена за книгой не меняется. Рисуем её один раз в картинку, дальше каждый кадр только выводим картинку
        и рисуем книгу. Картинка рисуется заново, только если изменилось что-то видимое. */
@@ -8605,6 +8626,11 @@ function wgDraw(){
     /* при кеше сцена рисуется без затемнения, затемнение накладывается при выводе картинки */
     rd.set(G.mSolid,{visible:show,dim:cache?1:CAM.dim,hover:CAM.hover,hide:hide,ao:G.ao});
     rd.set(G.mShade,{visible:show,dim:1,hover:CAM.hover,hide:hide});
+  }
+  if(PK.mesh){
+    var pp=!BK.on&&show&&PK.idx>=0?pkPoseAt(PK.idx,PK.tau):null;
+    if(pp){rd.place(PK.mesh,PGL.fromRT(pp.R,pp.P));rd.set(PK.mesh,{light:PK.Lw});}
+    PK.mesh.visible=!!pp;
   }
   if(BK.mesh){
     var on=!!(BK.on&&BK.pose&&show&&!BK.rdHide);
@@ -8692,6 +8718,8 @@ function wpDown(e){
   if(n===1){
     var turn=(e.pointerType==='mouse'&&(e.button===2||e.button===1||e.shiftKey))||CAM.orbit;
     CAM.drag={id:e.pointerId,x0:e.clientX,y0:e.clientY,lx:e.clientX,ly:e.clientY,moved:false,type:e.pointerType,turn:!!turn};
+    /* мышь, левая кнопка на книге: книга выглядывает сразу, а ведение с зажатой кнопкой листает книги на полке */
+    if(e.pointerType==='mouse'&&e.button===0&&!turn&&pi>=0){CAM.drag.scrub=pi;pkShow(pi);}
   }else if(n===2){
     var p=wpTwo(),w=camPlane(CAM,p.x-r.left,p.y-r.top);
     CAM.drag=null;
@@ -8713,6 +8741,11 @@ function wpMove(e){
   }else if(CAM.drag&&CAM.drag.id===e.pointerId){
     var d=CAM.drag,dx=e.clientX-d.lx,dy=e.clientY-d.ly;
     if(!d.moved&&Math.hypot(e.clientX-d.x0,e.clientY-d.y0)>5){d.moved=true;el.phView.classList.add('drag');}
+    if(d.scrub!==undefined){
+      var si=wgPick(e.clientX-r.left,e.clientY-r.top),g0=G.bk[d.scrub];
+      if(si>=0&&g0&&G.bk[si].b.r===g0.b.r&&G.bk[si].b.k===g0.b.k&&si!==PK.idx) pkShow(si);
+      d.lx=e.clientX;d.ly=e.clientY;return;
+    }
     if(d.moved){
       if(d.turn){
         CAM.yaw=CAM.gyaw=Math.max(-0.62,Math.min(0.62,CAM.yaw-dx*0.006));
@@ -8737,9 +8770,16 @@ function wpUp(e){
   if(CAM.pinch&&Object.keys(CAM.pts).length<2) CAM.pinch=null;
   if(d&&d.id===e.pointerId&&had){
     CAM.drag=null;el.phView.classList.remove('drag');
+    if(d.scrub!==undefined) return;
     if(!d.moved&&e.type==='pointerup'&&(e.pointerType!=='mouse'||e.button===0)){
-      var r=el.phView.getBoundingClientRect(),i=wgPick(e.clientX-r.left,e.clientY-r.top);
-      if(i>=0) bkOpen(i);
+      var r=el.phView.getBoundingClientRect(),i=wgPick(e.clientX-r.left,e.clientY-r.top),now=performance.now();
+      if(i<0){pkHide();return;}
+      if(e.pointerType!=='mouse'){
+        /* касание: первое — книга выглядывает, второе быстрое по той же книге — полный просмотр */
+        if(i===PK.lastI&&now-PK.lastTap<380){PK.lastTap=0;PK.lastI=-1;pkHide(true);bkOpen(i);return;}
+        PK.lastTap=now;PK.lastI=i;
+      }
+      pkShow(i,e.pointerType!=='mouse');
     }
   }
 }
@@ -8777,6 +8817,11 @@ function camOrbitToggle(v){
 }
 function wpKey(e){
   if(BK.on){bkKey(e);return;}
+  if(PK.idx>=0){
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();pkNext(e.key==='ArrowRight'?1:-1);return;}
+    if(e.key==='Enter'){e.preventDefault();var i=PK.idx;pkHide(true);bkOpen(i);return;}
+    if(e.key==='Escape'){e.preventDefault();pkHide();return;}
+  }
   var k=e.key,r=CAM.vw/2,b=CAM.vh/2,st=e.shiftKey?220:80;
   if(k==='+'||k==='='){e.preventDefault();camZoomAt(1.5,r,b);}
   else if(k==='-'||k==='_'||k==='−'){e.preventDefault();camZoomAt(1/1.5,r,b);}
@@ -9070,6 +9115,7 @@ function bkCancelPend(){
 }
 function bkGo(i,rec){
   var g=G.bk[i],b=g.b;
+  if(PK.idx>=0) pkHide(true);
   wpTip(-1);setHover(0);camStop();
   BK.tok++;
   BK.on=true;BK.closing=false;BK.idx=i;BK.g=g;BK.b=b;BK.t0=performance.now();BK.vel={x:0,y:0};BK.roll=0;BK.pts={};BK.drag=null;BK.pinch=null;BK.turn=null;
@@ -9655,6 +9701,104 @@ function initReader(){
   window.addEventListener('resize',function(){if(RD.on&&!RD.busy){rdFit();}});
 }
 
+
+/* ===== 1.16.0: книга «выглядывает» с полки =====
+   Щелчок (касание) по корешку: книга выдвигается вперёд и поворачивается обложкой к вам, сцена не затемняется.
+   Мышь: не отпуская кнопку, ведите по полке — выглядывает книга под курсором. Двойной щелчок (двойное касание) — полный 3D-просмотр.
+   Сенсорный экран: внизу панель с названием и кнопками ‹ › — соседние книги на той же полке. */
+var PK={idx:-1,mesh:null,tex:null,rec:null,tau:0,anim:null,pend:null,tok:0,Lw:[0,0,1],lastTap:0,lastI:-1};
+function pkPoseAt(i,tau){
+  var g=G.bk[i];if(!g) return null;
+  var R0=g.Rw,n=[R0[2],R0[5],R0[8]],phi=-Math.atan2(n[0],n[2])-CAM.yaw*0.8,R1=m3(rY(phi),R0),
+    r=0.5*Math.hypot(g.w,g.d),z1=Math.max(r-6,g.d/2+8),P0=[g.cx,g.cy,g.cz],P1=[g.cx,g.cy+Math.min(6,g.h*0.04),z1],u,e,P,R;
+  if(tau<=0.45){u=bkEase(tau/0.45);P=[P0[0],P0[1]+(P1[1]-P0[1])*u,P0[2]+(P1[2]-P0[2])*u];R=R0;}
+  else{e=bkEase((tau-0.45)/0.55);P=P1;R=PGL.mFromQ(PGL.slerp(PGL.qFromM(R0),PGL.qFromM(R1),e));}
+  return {P:P,R:R};
+}
+function pkLight(){
+  var lc=[-0.36,0.5,0.79],Rc=bkRcam({x:CAM.x,y:CAM.y,d:CAM.d,yaw:CAM.yaw,pitch:CAM.pitch});
+  PK.Lw=[Rc[0]*lc[0]+Rc[1]*lc[1]+Rc[2]*lc[2],Rc[3]*lc[0]+Rc[4]*lc[1]+Rc[5]*lc[2],Rc[6]*lc[0]+Rc[7]*lc[1]+Rc[8]*lc[2]];
+}
+function pkFree(){
+  if(G.rd&&!G.lost){if(PK.mesh) G.rd.freeMesh(PK.mesh);if(PK.tex) G.rd.freeTexture(PK.tex);}
+  if(PK.rec) bkAtlasFree(PK.rec);
+  if(PK.pend){bkAtlasFree(PK.pend);PK.pend=null;}
+  PK.mesh=null;PK.tex=null;PK.rec=null;PK.anim=null;PK.tau=0;
+}
+function pkHide(instant){
+  if(PK.idx<0) return;
+  PK.tok++;
+  if(instant||reduce||!PK.mesh){pkFree();PK.idx=-1;pkPanel();wgInvalidate();return;}
+  var tok=PK.tok;
+  PK.anim={t0:-1,from:PK.tau,to:0,d:Math.max(120,300*PK.tau),done:function(){if(tok===PK.tok){pkFree();PK.idx=-1;wgInvalidate();}}};
+  PK.idx2=-1;pkPanel(true);wgInvalidate();
+}
+function pkShow(i,follow){
+  var g=G.bk[i];
+  if(!g||BK.on||!G.ready) return;
+  /* касание и кнопки ‹ ›: камера подлетает к полке и держит книгу в кадре */
+  if(follow){
+    var sh=camShelfAt(g.cx,g.cy,1e3),cy=sh?sh.cy:g.cy;
+    if(CAM.gd>CAM.dShelf*1.15) camFly(CAM.dShelf,g.cx,cy);
+    else{var bx=camBox({x:CAM.gx,y:CAM.gy,d:CAM.gd,yaw:CAM.gyaw,pitch:CAM.gpitch}),hw=(bx.x1-bx.x0)/2;
+      if(Math.abs(g.cx-CAM.gx)>hw*0.6) camFly(CAM.gd,g.cx,CAM.gy);}
+  }
+  if(i===PK.idx&&!(PK.anim&&PK.anim.to===0)) return;
+  pkFree();PK.tok++;PK.idx=i;
+  var tok=PK.tok,b=g.b,rec=(BK.prep&&BK.prep.id===b.id&&!BK.prep.dead)?BK.prep:bkAtlasNew(b);
+  if(rec===BK.prep) BK.prep=null;
+  PK.pend=rec;pkPanel();
+  var go=function(){
+    if(tok!==PK.tok||PK.pend!==rec) return;
+    PK.pend=null;
+    if(!rec.tex) bkUpload(rec);
+    if(!rec.tex){bkAtlasFree(rec);return;}
+    PK.rec=rec;PK.tex=rec.tex;rec.tex=null;
+    PK.mesh=bkMakeMesh(b,rec.U,PK.tex);
+    pkLight();
+    PK.tau=0;PK.anim={t0:-1,from:0,to:1,d:reduce?1:380};
+    wgInvalidate();
+  };
+  rec.cbs.push(go);
+  if(rec.ready) go();
+  else setTimeout(function(){if(PK.pend===rec&&!rec.ready){rec.ready=true;go();}},1500);
+}
+function pkStep(now){
+  var a=PK.anim;
+  if(!a) return false;
+  if(a.t0<0) a.t0=now;
+  var k=Math.max(0,Math.min(1,(now-a.t0)/a.d));
+  PK.tau=a.from+(a.to-a.from)*k;
+  if(k>=1){PK.anim=null;PK.tau=a.to;if(a.done) a.done();return false;}
+  return true;
+}
+/* соседняя книга на той же полке */
+function pkNext(dir){
+  if(PK.idx<0) return;
+  var g=G.bk[PK.idx],L=[],i;
+  for(i=0;i<G.bk.length;i++){var q=G.bk[i];if(q.b.r===g.b.r&&q.b.k===g.b.k&&!q.b.lie) L.push(i);}
+  L.sort(function(a,b){return G.bk[a].tx-G.bk[b].tx;});
+  var j=L.indexOf(PK.idx);
+  if(j<0) return;
+  j+=dir;
+  if(j<0||j>=L.length) return;
+  pkShow(L[j],true);
+}
+function pkPanel(hide){
+  var n=el.pkBar;if(!n) return;
+  if(hide||PK.idx<0){n.hidden=true;return;}
+  var b=G.bk[PK.idx].b,o=b.ob;
+  el.pkTxt.innerHTML='<b>'+esc(b.title)+'</b><span>'+esc(b.author||'')+(o&&o.price?' · '+Number(o.price).toLocaleString('ru-RU')+' ₸':'')+'</span>';
+  n.hidden=false;
+}
+function pkInit(){
+  el.pkBar=document.getElementById('pkBar');el.pkTxt=document.getElementById('pkTxt');
+  document.getElementById('pkPrev').addEventListener('click',function(e){e.stopPropagation();pkNext(-1);});
+  document.getElementById('pkNext').addEventListener('click',function(e){e.stopPropagation();pkNext(1);});
+  document.getElementById('pkOpen').addEventListener('click',function(e){e.stopPropagation();var i=PK.idx;if(i>=0){pkHide(true);bkOpen(i);}});
+  document.getElementById('pkX').addEventListener('click',function(e){e.stopPropagation();pkHide();});
+  ['pointerdown','pointerup','dblclick','wheel'].forEach(function(t){el.pkBar.addEventListener(t,function(e){e.stopPropagation();});});
+}
 /* ----- переключение страниц ----- */
 function wpPlace(){
   var r=el.menubar.getBoundingClientRect();
@@ -9723,6 +9867,7 @@ function initWall(){
   el.phPrev=document.getElementById('phPrev');el.phNext=document.getElementById('phNext');
   el.phLevel=document.getElementById('phLevel');
   initBook();
+  pkInit();
   el.phView.addEventListener('wheel',wpWheel,{passive:false});
   el.phView.addEventListener('pointerdown',wpDown);
   el.phView.addEventListener('pointermove',wpMove);
@@ -9733,6 +9878,8 @@ function initWall(){
   el.phView.addEventListener('dblclick',function(e){
     e.preventDefault();
     if(BK.on) return;
+    var r0=el.phView.getBoundingClientRect(),di=wgPick(e.clientX-r0.left,e.clientY-r0.top);
+    if(di>=0){pkHide(true);bkOpen(di);return;}
     var r=el.phView.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,
       p=camPlane({x:CAM.gx,y:CAM.gy,d:CAM.gd,yaw:CAM.gyaw,pitch:CAM.gpitch},x,y),h=camShelfAt(p[0],p[1],0);
     if(CAM.gd<=CAM.dShelf*1.04) camFit();
