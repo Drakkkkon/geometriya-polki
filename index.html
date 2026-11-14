@@ -987,7 +987,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.16.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.17.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1476,10 +1476,20 @@ body.pgwall main.app{display:none}
 </dialog>
 
 <script src="vendor/jszip.min.js"></script>
+<script src="mm-account.js"></script>
+<script>
+/* 1.17.0: общий аккаунт для всех моих сайтов (почта и пароль, Firebase money99774, ветка users/<аккаунт>/apps/polka).
+   В облако идут полки (раскладка, журнал, правки, перемещения, стеллажи, подписи), настройки, профиль «Моего аккаунта»
+   и загруженные листы таблиц. Фото книг остаются в Cloudflare R2 и на устройстве; вход в Google — у каждого устройства свой. */
+MMAccount.setup({app:'polka',title:'Геометрия Полки',
+  ls:['gp.layout.*','gp.log.*','gp.edit.*','gp.moves.v1','gp.racks.v1','gp.settings.v1','gp.shelfmeta.v1',{key:'gp.account.v1',keepLocal:['pw','salt']}],
+  idb:[{db:'gp-data',store:'ds',maxBytes:4000000}],
+  note:'Фото книг в аккаунт не идут — они на сайте и в Cloudflare R2.'});
+</script>
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.16.0'};
+var APP={name:'Геометрия Полки',version:'1.17.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -3670,6 +3680,7 @@ function buildMenuDefs(){
       {l:'О программе',a:aboutDlg,keep:1},
       {sep:1},
       {l:'Настройки…',k:'Ctrl+,',a:openSettings,keep:1},
+      {l:'Аккаунт…',a:function(){if(window.MMAccount) MMAccount.open();},keep:1},
       {l:'Журнал изменений полки',sh:1,a:function(){CFG.log=true;saveCfg();applyLog();renderLog();if(el.chlog.scrollIntoView) el.chlog.scrollIntoView({block:'nearest'});}}
     ]},
     {id:'pages',label:'Страницы',items:[
@@ -9464,7 +9475,8 @@ function rdRecHtml(o){
       '<span><b>'+esc(r.t)+'</b>'+(r.a?'<i>'+esc(r.a)+'</i>':'')+'<em>'+Number(r.p).toLocaleString('ru-RU')+' ₸</em></span></a>';
   }).join('')+'</div>';
 }
-/* ----- 1.12.0: зелёная книга «Мой аккаунт»: данные аккаунта. Сервера нет, всё хранится только в этом браузере (localStorage), пароль — только в виде отпечатка SHA-256 ----- */
+/* ----- 1.12.0: зелёная книга «Мой аккаунт»: данные аккаунта в этом браузере (localStorage).
+   1.17.0: страница «Пароль» заменена общим облачным аккаунтом (почта и пароль, Firebase, mm-account.js); старый местный пароль больше не нужен ----- */
 var ACC_KEY='gp.account.v1';
 function accGet(){try{return JSON.parse(localStorage.getItem(ACC_KEY)||'{}')||{};}catch(_){return {};}}
 function accPut(A){try{localStorage.setItem(ACC_KEY,JSON.stringify(A));return true;}catch(_){return false;}}
@@ -9484,15 +9496,14 @@ function rdAccount(bk,base){
       '<p class="note">'+(made?'Аккаунт создан '+esc(made)+'.':'Новый аккаунт: заполните данные и нажмите «Сохранить».')+'</p></div>';
   var pContact='<div class="rdform"><h4>Контакты</h4>'+accField('acMail','Почта',A.email,'email','name@mail.kz','email')+accField('acPhone','Телефон',A.phone,'tel','+7 7__ ___ __ __','tel')+
       '<button type="button" class="fb" data-acc="save">Сохранить</button><p class="msg" id="acMsg1"></p></div>';
-  var pPass='<div class="rdform"><h4>Пароль</h4>'+(A.pw?accField('acOld','Текущий пароль','','password','','current-password'):'<p class="note">Пароль ещё не задан.</p>')+
-      accField('acNew','Новый пароль','','password','не короче 6 знаков','new-password')+accField('acNew2','Повторите пароль','','password','','new-password')+
-      '<button type="button" class="fb" data-acc="pass">'+(A.pw?'Сменить пароль':'Задать пароль')+'</button><p class="msg" id="acMsg2"></p></div>';
+  /* 1.17.0: вместо пароля «только в этом браузере» — общий облачный аккаунт для всех моих сайтов (mm-account.js) */
+  var pPass='<div class="rdform"><h4>Облачный аккаунт</h4><div id="mmaBox"></div></div>';
   var pSet='<div class="rdform"><h4>Настройки</h4>'+
       '<label class="ck"><input type="checkbox" id="acNews"'+(A.news?' checked':'')+'><span>Сообщать о новинках oldbook.kz на почту</span></label>'+
       '<label class="ck"><input type="checkbox" id="acRec"'+(A.rec===false?'':' checked')+'><span>Показывать лист «Рекомендуем» в книгах</span></label>'+
       '<button type="button" class="fb" data-acc="save">Сохранить</button>'+
       '<button type="button" class="fb danger" data-acc="wipe">Удалить данные аккаунта</button><p class="msg" id="acMsg3"></p>'+
-      '<p class="note">Данные хранятся только в этом браузере, на сервер не отправляются.</p></div>';
+      '<p class="note">Данные хранятся в этом браузере, а после входа в облачный аккаунт — и в облаке, вместе с полками.</p></div>';
   base.appendChild(rdFace('r',pSet));
   var faces=[[rdFace('r cover',rdImg(RD.o.front)),rdFace('l',pProfile)],[rdFace('r',pContact),rdFace('l',pPass)]];
   RD.leaves=[];
@@ -9502,7 +9513,8 @@ function rdAccount(bk,base){
     lf.style.zIndex=String(100-i);lf.style.transform='rotateY(0deg)';
     bk.appendChild(lf);RD.leaves.push(lf);
   });
-  el.rdCap.innerHTML='Мой аккаунт<small>Личный кабинет · имя, почта, пароль</small>';
+  el.rdCap.innerHTML='Мой аккаунт<small>Личный кабинет · имя, почта, облачный аккаунт</small>';
+  if(window.MMAccount) MMAccount.mount(bk.querySelector('#mmaBox')||document.getElementById('mmaBox'));
 }
 function accMsg(id,t,ok){var n=document.getElementById(id);if(n){n.textContent=t;n.className='msg '+(ok?'ok':'bad');}}
 function accAct(act){

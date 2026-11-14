@@ -1,8 +1,8 @@
-/* Геометрия Полки 1.16.0: сервис-воркер.
+/* Геометрия Полки 1.17.0: сервис-воркер.
    Сохраняет программу и картинки на устройстве: полка открывается сразу и без интернета.
    При новой версии программы меняйте VER, тогда кеш обновится. */
-var VER = 'gp-1.16.0';
-var CORE = ['./', 'index.html', 'vendor/jszip.min.js', 'vendor/three.min.js', 'books3d/books100.js'];
+var VER = 'gp-1.17.0';
+var CORE = ['./', 'index.html', 'mm-account.js', 'vendor/jszip.min.js', 'vendor/three.min.js', 'books3d/books100.js'];
 var IMGS = ["covers/10065.jpg", "covers/10670.jpg", "covers/10737.jpg", "covers/10838.jpg", "covers/10937.jpg", "covers/10938.jpg", "covers/11036.jpg", "covers/11064.jpg", "covers/11068.jpg", "covers/11069.jpg", "covers/11070.jpg", "covers/11139.jpg", "covers/11155.jpg", "covers/11240.jpg", "covers/12034.jpg", "covers/12139.jpg", "covers/12641.jpg", "covers/13527.jpg", "covers/14113.jpg", "covers/1993.jpg", "covers/2644.jpg", "covers/2716.jpg", "covers/4065.jpg", "covers/4167.jpg", "covers/4909.jpg", "covers/5958.jpg", "covers/6744.jpg", "covers/7527.jpg", "covers/8953.jpg", "covers/9073.jpg", "covers/9233.jpg", "covers/9236.jpg", "spines/10737.jpg", "spines/10937.jpg", "spines/11064.jpg", "spines/11070.jpg", "spines/11139.jpg", "spines/11155.jpg", "spines/11240.jpg", "spines/12034.jpg", "spines/12139.jpg", "spines/13527.jpg", "spines/14113.jpg", "spines/1993.jpg", "spines/2716.jpg", "spines/4909.jpg", "spines/5958.jpg", "spines/6744.jpg", "spines/7527.jpg", "spines/8953.jpg", "spines/9073.jpg", "spines/9233.jpg"];
 
 self.addEventListener('install', function (e) {
@@ -18,7 +18,8 @@ self.addEventListener('install', function (e) {
 self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (keys) {
-      return Promise.all(keys.filter(function (k) { return k !== VER; }).map(function (k) { return caches.delete(k); }));
+      /* 1.17.0: удаляем только свои старые кеши (gp-…): на адресе drakkkkon.github.io лежат и другие мои сайты со своими кешами */
+      return Promise.all(keys.filter(function (k) { return k.indexOf('gp-') === 0 && k !== VER; }).map(function (k) { return caches.delete(k); }));
     }).then(function () { return self.clients.claim(); })
   );
 });
