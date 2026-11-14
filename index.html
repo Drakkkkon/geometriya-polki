@@ -975,7 +975,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.15.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.15.1</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1460,7 +1460,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.15.0'};
+var APP={name:'Геометрия Полки',version:'1.15.1'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -7871,14 +7871,14 @@ function obLoad(cb){
 /* картинка книги (front, back, spine), загруженная один раз; cb получает готовый Image или null */
 /* 1.14.0: откуда брать фото книг. Пусто — с этого же сайта (GitHub); иначе адрес хранилища Cloudflare R2 с теми же папками books3d/… */
 var IMG_BASE='https://pub-545f232eb9f9416e8af6463b90ab3988.r2.dev/';
-function imgUrl(p){return !p||/^(data:|https?:)/.test(p)?p:IMG_BASE+p;}
+function obUrl(p){return !p||/^(data:|https?:)/.test(p)?p:IMG_BASE+p;}
 function imgNew(){var im=new Image();if(IMG_BASE) im.crossOrigin='anonymous';return im;}
 /* картинка из R2; если хранилище не ответило — та же картинка с GitHub */
 function imgLoad(im,p,ok,bad){
   var tried=false;
   im.onload=ok;
   im.onerror=function(){if(!tried&&IMG_BASE&&!/^(data:|https?:)/.test(p)){tried=true;im.crossOrigin=null;im.src=p;}else bad();};
-  im.src=imgUrl(p);
+  im.src=obUrl(p);
 }
 function obImg(o,k,cb){
   var key=String(o[k]||o.sku+k),c=OB.img[key];
@@ -9295,7 +9295,7 @@ function initBook(){
 var RD={on:false,busy:false,flip:false,cur:0,leaves:[],b:null,o:null,pw:0,ph:0,W:0,H:0,top:0,r0:null,sx:0,sy:0,pid:null,tok:0};
 function rdN(o){return o?(o.pg===undefined?5:o.pg):0;}
 function rdHas(b){return !!(b&&b.ob&&b.ob.sku&&(rdN(b.ob)>0||b.ob.account||b.ob.vol));}
-function rdSrc(o,n){return imgUrl('books3d/pages/'+o.sku+'-'+n+'.webp');}
+function rdSrc(o,n){return obUrl('books3d/pages/'+o.sku+'-'+n+'.webp');}
 function rdDur(ms){return reduce?1:ms;}
 /* точка книги (в её собственных осях) → пиксель на странице */
 function bkProj(vp,P){
@@ -9396,7 +9396,7 @@ function rdBuild(){
   /* лист «Рекомендуем» стоит рядом со страницей с ценой: на внутренней стороне задней обложки или на обороте последнего листа */
   if(seq.length%2){seq.push(rdFace('rec',accGet().rec===false?'':rdRecHtml(o)));base.appendChild(rdFace('r endp',''));}
   else base.appendChild(rdFace('r rec',accGet().rec===false?'':rdRecHtml(o)));
-  var faces=[[rdFace('r cover',rdImg(imgUrl(o.front))),rdFace('l endp','<div class="lb"><b>'+esc(o.title)+'</b>'+esc(o.author)+'<br>'+esc(o.publisher)+', '+esc(o.year)+'</div>')]];
+  var faces=[[rdFace('r cover',rdImg(obUrl(o.front))),rdFace('l endp','<div class="lb"><b>'+esc(o.title)+'</b>'+esc(o.author)+'<br>'+esc(o.publisher)+', '+esc(o.year)+'</div>')]];
   for(q=0;q<seq.length;q+=2){seq[q].classList.add('r');seq[q+1].classList.add('l');faces.push([seq[q],seq[q+1]]);}
   RD.leaves=[];
   for(i=0;i<faces.length;i++){
@@ -9414,7 +9414,7 @@ function rdRecHtml(o){
   var L=o.rec||[];
   if(!L.length) return '';
   return '<div class="rdrec"><h4>Рекомендуем</h4><p class="sub">Новинки oldbook.kz к этой книге</p>'+L.map(function(r){
-    return '<a class="ri" href="'+esc(r.u)+'" target="_blank" rel="noopener noreferrer"><img alt="" draggable="false" loading="lazy" src="'+esc(imgUrl('books3d/rec/'+r.s+'.webp'))+'">'+
+    return '<a class="ri" href="'+esc(r.u)+'" target="_blank" rel="noopener noreferrer"><img alt="" draggable="false" loading="lazy" src="'+esc(obUrl('books3d/rec/'+r.s+'.webp'))+'">'+
       '<span><b>'+esc(r.t)+'</b>'+(r.a?'<i>'+esc(r.a)+'</i>':'')+'<em>'+Number(r.p).toLocaleString('ru-RU')+' ₸</em></span></a>';
   }).join('')+'</div>';
 }
@@ -9496,7 +9496,7 @@ function accAct(act){
   }
 }
 function rdPreload(o){
-  var L=[imgUrl(o.front)],i;
+  var L=[obUrl(o.front)],i;
   for(i=1;i<=rdN(o);i++) L.push(rdSrc(o,i));
   return Promise.race([Promise.all(L.map(function(u){
     return new Promise(function(r){var im=new Image();im.onload=im.onerror=function(){r();};im.src=u;});
