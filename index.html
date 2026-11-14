@@ -975,7 +975,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.12.0</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.13.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1459,7 +1459,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.12.0'};
+var APP={name:'Геометрия Полки',version:'1.13.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -7881,7 +7881,7 @@ function wbCentral(r,k,list){
   var out=[];
   (list||OB.list||[]).forEach(function(o,ix){
     if(o.k!==k) return;
-    var d=bkR(o.t/WR.mm),h=bkR(o.h/WR.mm),b={x:bkR(WR.xa+o.lx),d:d,h:h,c:o.c||'#7a6a55',st:0,cs:0,tilt:o.tilt||0,ob:o,q:1.6};
+    var d=bkR(o.t/WR.mm),h=bkR(o.h/WR.mm),b={x:bkR(WR.xa+o.lx),d:d,h:h,c:o.c||'#7a6a55',st:0,cs:0,tilt:o.tilt||0,ob:o,q:3};
     b.w=bkR(o.w/WR.mm);
     b.id=r+'.'+k+'.'+ix;b.r=r;b.k=k;b.lie=!!o.lie;
     if(b.lie) b.y=bkR(wrBase(k)-(o.ly||0));
@@ -8241,9 +8241,18 @@ function camMeasure(){
   var shelfW=626,shelfH=184,
     dW=shelfW/2/(0.96*CAM.tX),dH=shelfH/2/(0.9*CAM.tY),
     dFitH=(WR.Ht+190)/2/CAM.tY,d3=(3*WR.cw+12)/2/CAM.tX;
-  CAM.dMin=Math.max(dW,dH);
-  CAM.dMax=Math.max(dFitH,d3,CAM.dMin*1.5);
+  /* 1.13.0: «к полке» — вся полка по ширине экрана; приближать можно ещё в 3 раза, чтобы читались корешки */
+  CAM.dShelf=Math.max(dW,dH);
+  CAM.dMin=CAM.dShelf/3;
+  CAM.dMax=Math.max(dFitH,d3,CAM.dShelf*1.5);
   var hw=CAM.vw>=CAM.vh*0.9?3.6:1.1;
+  /* телефон: дальше всего — один стеллаж по ширине (стоя) или три стеллажа (лёжа), не меньше */
+  CAM.phone=Math.min(CAM.vw,CAM.vh)<600;
+  if(CAM.phone){
+    var land=CAM.vw>CAM.vh;
+    CAM.dMax=Math.max(CAM.dShelf*1.2,land?(3*WR.cw+12)/2/(0.98*CAM.tX):(WR.cw+12)/2/(0.98*CAM.tX));
+    hw=1e9;
+  }
   CAM.dHome=Math.max(CAM.dMin,Math.min(CAM.dMax,hw*WR.cw/2/CAM.tX));
 }
 /* положение глаза и оси камеры */
@@ -8366,13 +8375,13 @@ function camShelfAt(wx,wy,tol){
 }
 function camSettle(){
   CAM.idle=0;
-  if(CAM.drag||Object.keys(CAM.pts).length||BK.on||CAM.gd>CAM.dMin*1.04) return;
+  if(CAM.drag||Object.keys(CAM.pts).length||BK.on||CAM.gd>CAM.dShelf*1.04||CAM.gd<CAM.dShelf*0.96) return;
   var p=camPlane({x:CAM.gx,y:CAM.gy,d:CAM.gd,yaw:CAM.gyaw,pitch:CAM.gpitch},CAM.lastX,CAM.lastY),h=camShelfAt(p[0],p[1],0.45);
-  if(h) camFly(CAM.dMin,h.cx,h.cy);
+  if(h) camFly(CAM.dShelf,h.cx,h.cy);
 }
 function camGoShelf(){
   var h=camShelfAt(CAM.gx,CAM.gy,1e3);
-  if(h) camFly(CAM.dMin,h.cx,h.cy);
+  if(h) camFly(CAM.dShelf,h.cx,h.cy);
 }
 function camFit(){
   var r=Math.max(0,Math.min(WR.n-1,Math.round(CAM.gx/WR.cw-0.5)));
@@ -9159,7 +9168,7 @@ function initBook(){
    а в начале и в конце бумажная книга ровно ложится на её обложку, поэтому переход не заметен. ===== */
 var RD={on:false,busy:false,flip:false,cur:0,leaves:[],b:null,o:null,pw:0,ph:0,W:0,H:0,top:0,r0:null,sx:0,sy:0,pid:null,tok:0};
 function rdN(o){return o?(o.pg===undefined?5:o.pg):0;}
-function rdHas(b){return !!(b&&b.ob&&b.ob.sku&&(rdN(b.ob)>0||b.ob.account));}
+function rdHas(b){return !!(b&&b.ob&&b.ob.sku&&(rdN(b.ob)>0||b.ob.account||b.ob.vol));}
 function rdSrc(o,n){return 'books3d/pages/'+o.sku+'-'+n+'.webp';}
 function rdDur(ms){return reduce?1:ms;}
 /* точка книги (в её собственных осях) → пиксель на странице */
@@ -9600,8 +9609,8 @@ function initWall(){
     if(BK.on) return;
     var r=el.phView.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,
       p=camPlane({x:CAM.gx,y:CAM.gy,d:CAM.gd,yaw:CAM.gyaw,pitch:CAM.gpitch},x,y),h=camShelfAt(p[0],p[1],0);
-    if(CAM.gd<=CAM.dMin*1.04) camFit();
-    else if(h) camFly(CAM.dMin,h.cx,h.cy);
+    if(CAM.gd<=CAM.dShelf*1.04) camFit();
+    else if(h) camFly(CAM.dShelf,h.cx,h.cy);
     else camZoomAt(2.2,x,y);
   });
   el.phIn.addEventListener('click',function(){camZoomAt(1.6,CAM.vw/2,CAM.vh/2);});
