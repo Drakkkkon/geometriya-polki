@@ -918,6 +918,34 @@ body.pgwall main.app{display:none}
 .rdcap small{display:block;font:400 12.5px var(--font-ui);opacity:.85}
 .rd.ui .rdcap{opacity:1}
 @media (max-width:560px){.rdcap{padding:0 14px;top:70px}}
+
+/* 1.12.0: лист «Рекомендуем», страницы аккаунта, значок новинки */
+.rdface.rec{background:#f6efdf}
+.rdrec{position:absolute;inset:6% 8% 5%;display:flex;flex-direction:column;gap:.45em;color:#2c2014;font-family:var(--font-ui);overflow:hidden}
+.rdrec h4{margin:0;font:700 1.35em/1.2 Georgia,"Times New Roman",serif;text-align:center;letter-spacing:.02em}
+.rdrec .sub{margin:0 0 .3em;text-align:center;font-size:.78em;color:#7a6a55}
+.rdrec .ri{display:flex;gap:.6em;align-items:center;flex:1 1 0;min-height:0;padding:.3em;border-radius:6px;background:rgba(255,255,255,.55);border:1px solid rgba(120,90,50,.18);color:inherit;text-decoration:none}
+.rdrec .ri:hover{background:#fff;border-color:#c9a24c}
+.rdrec .ri img{position:static;inset:auto;pointer-events:none;width:3.6em;height:100%;max-height:5.4em;object-fit:contain;object-position:center;flex:0 0 3.6em;filter:drop-shadow(0 1px 2px rgba(0,0,0,.35))}
+.rdrec .ri span{display:flex;flex-direction:column;min-width:0;flex:1 1 auto;font-size:.82em;line-height:1.25}
+.rdrec .ri b{font-weight:600;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.rdrec .ri i{font-style:normal;color:#6f604c;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rdrec .ri em{font-style:normal;font-weight:600;color:#1d4f8a}
+.rdform{position:absolute;inset:7% 9% 6%;display:flex;flex-direction:column;gap:.55em;color:#24301f;font-family:var(--font-ui);font-size:1em;overflow:auto}
+.rdform h4{margin:0 0 .2em;font:700 1.4em/1.2 Georgia,"Times New Roman",serif;color:#1f5a2e;border-bottom:2px solid #c9a24c;padding-bottom:.25em}
+.rdform .fl{display:flex;flex-direction:column;gap:.15em;font-size:.85em;color:#55634c}
+.rdform input[type=text],.rdform input[type=email],.rdform input[type=tel],.rdform input[type=password]{font:1.05em var(--font-ui);padding:.4em .5em;border:1px solid #b9b49f;border-radius:5px;background:#fffdf6;color:#1c2630;min-height:2.2em;width:100%;box-sizing:border-box}
+.rdform input:focus{outline:2px solid #2f7a3a;outline-offset:1px}
+.rdform .ck{display:flex;gap:.5em;align-items:flex-start;font-size:.88em;line-height:1.3}
+.rdform .ck input{width:1.2em;height:1.2em;margin-top:.05em;flex:none}
+.rdform .fb{min-height:2.4em;padding:.4em .8em;border-radius:6px;border:1px solid #1f5a2e;background:#2f7a3a;color:#fff;font:600 .95em var(--font-ui);cursor:pointer}
+.rdform .fb:hover{background:#1f5a2e}
+.rdform .fb.danger{background:#fff;color:#a33;border-color:#c99}
+.rdform .msg{margin:0;min-height:1.2em;font-size:.82em}
+.rdform .msg.ok{color:#1f6a35}.rdform .msg.bad{color:#b02a2a}
+.rdform .note{margin:0;font-size:.78em;color:#6c735f}
+.rdform .ava{align-self:center;width:3.2em;height:3.2em;border-radius:50%;background:#2f7a3a;color:#f3e2a0;display:flex;align-items:center;justify-content:center;font:700 1.6em Georgia,serif;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.bkcard .novb{display:inline-block;margin:0 0 4px;padding:2px 8px;border-radius:4px;background:linear-gradient(#3a80d6,#2860be);color:#e8c45c;font:700 11px var(--font-ui);letter-spacing:.08em}
 .rdload{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);padding:8px 14px;border-radius:999px;background:rgba(20,14,9,.75);color:#f1e6cf;font:13px var(--font-ui)}
 
 @media (max-width:760px),(max-height:560px){
@@ -947,7 +975,7 @@ body.pgwall main.app{display:none}
 
 <nav class="menubar" id="menubar" aria-label="Главное меню">
   <button type="button" class="mb-burger" id="mbBurger" aria-label="Открыть меню" aria-expanded="false">≡</button>
-  <span class="mb-brand">Геометрия Полки <span class="ver">1.11.1</span></span>
+  <span class="mb-brand">Геометрия Полки <span class="ver">1.12.0</span></span>
   <div class="mb-items" id="mbItems" role="menubar"></div>
   <span class="mb-sp"></span>
   <button type="button" class="mb-status" id="mbStatus" title="Источник данных и Google"><i></i><span class="stx" id="mbStx">Демо-данные</span></button>
@@ -1431,7 +1459,7 @@ body.pgwall main.app{display:none}
 <script>
 (function(){
 'use strict';
-var APP={name:'Геометрия Полки',version:'1.11.1'};
+var APP={name:'Геометрия Полки',version:'1.12.0'};
 
 /* ===== Размеры (мм) =====
    Стандартная полка 100*260*240: первое число принято как 100 см = 1000 мм (длина), затем высота 260 и глубина 240.
@@ -3626,7 +3654,8 @@ function buildMenuDefs(){
     ]},
     {id:'pages',label:'Страницы',items:[
       {l:'Полка — конструктор',a:function(){showPage('shelf');},chk:function(){return PAGE==='shelf';}},
-      {l:'Стеллажи — 3D-книги',a:function(){showPage('wall');},chk:function(){return PAGE==='wall';}}
+      {l:'Стеллажи — 3D-книги',a:function(){showPage('wall');},chk:function(){return PAGE==='wall'&&SCENE!=='lk';}},
+      {l:'Личный кабинет',a:function(){showPage('lk');},chk:function(){return PAGE==='wall'&&SCENE==='lk';}}
     ]},
     {id:'file',label:'Файл',items:[
       {l:'Загрузить лист из Excel…',a:function(){el.file.click();}},
@@ -7670,6 +7699,9 @@ var PGL=(function(){
    картинки (дерево с картинки встроено в программу, отдельный файл не нужен). Книги придуманные (заглушки): тоже коробки, на корешке рисунок.
    Книга по щелчку вытаскивается из полки и висит перед камерой: это тот же объект в той же сцене, поэтому она не может уйти за край экрана и не проходит сквозь полки. */
 var PAGE='shelf',PAGE_KEY='gp.page.v1';
+/* 1.12.0: одна 3D-страница показывает одну из двух сцен: «Стеллажи» (5 стеллажей) или «Личный кабинет» (3 стеллажа: Корзина, Ваши книги, Новинки) */
+var SCENE='shelves',SCENES={shelves:{n:5,name:'Стеллажи'},lk:{n:3,name:'Личный кабинет',titles:['Корзина','Ваши книги','Новинки']}};
+function sceneApply(){WR.n=SCENES[SCENE].n;WR.W=WR.n*WR.cw;}
 function ensureBuiltin(){if(!NAV.real[RAW227.sheet]) NAV.real[RAW227.sheet]=RAW227;}
 
 /* размеры стеллажа в пикселях картинки (y вниз): lip — верх передней кромки доски, bot — низ кромки; в мире 1 пиксель = 1 единица, y вверх, пол y=0 */
@@ -7821,6 +7853,7 @@ function obLoad(cb){
   var done=function(ok){
     if(OB.state!==1) return;
     OB.list=ok&&window.OLDBOOKS&&window.OLDBOOKS.length&&window.OLDBOOKS[0].k!==undefined?window.OLDBOOKS:null;
+    OB.nov=OB.list&&window.NEWBOOKS||[];OB.acct=OB.list&&window.ACCOUNTBOOK||null;
     OB.state=OB.list?2:3;
     var q=OB.cbs;OB.cbs=[];q.forEach(function(f){try{f();}catch(_){}});
   },sc=document.createElement('script');
@@ -7844,9 +7877,9 @@ function obImg(o,k,cb){
 /* десять книг на полку: настоящие размеры (мм → пиксели картинки), стоят вплотную, посередине полки */
 /* 1.11.0: 100 настоящих книг с oldbook.kz на центральном стеллаже. Где стоит каждая книга (полка, место, стоя или лёжа), посчитано заранее
    и лежит в books3d/books100.js: lx — от левой стенки до книги, ly — для лежащих, на сколько книга выше доски (в точках картинки, 1 точка = 2,2 мм). */
-function wbCentral(r,k){
+function wbCentral(r,k,list){
   var out=[];
-  (OB.list||[]).forEach(function(o,ix){
+  (list||OB.list||[]).forEach(function(o,ix){
     if(o.k!==k) return;
     var d=bkR(o.t/WR.mm),h=bkR(o.h/WR.mm),b={x:bkR(WR.xa+o.lx),d:d,h:h,c:o.c||'#7a6a55',st:0,cs:0,tilt:o.tilt||0,ob:o,q:1.6};
     b.w=bkR(o.w/WR.mm);
@@ -7903,6 +7936,10 @@ function glInitAtlas(){
   c.fillStyle=g;c.fillRect(1540,8,64,64);
   G.atlas=cv;G.ctx=c;
   var R=WOOD_R,u=G.uv;
+  /* вывески над стеллажами и таблички у полок (личный кабинет): места в атласе над корешками */
+  LBL.sign.forEach(function(q,i){u['sign'+i]=uvRect(q[0],q[1],q[2],q[3],1);});
+  LBL.plq.forEach(function(q,i){u['plq'+i]=uvRect(q[0],q[1],q[2],q[3],1);});
+  glLabels(c);
   u.bt=uvRect(R.bt[0],R.bt[1],R.bt[2],R.bt[3],0.5);
   u.bf=uvRect(R.bf[0],R.bf[1],R.bf[2],R.bf[3],0.5);
   u.rail=uvRect(R.rail[0],R.rail[1],R.rail[2],R.rail[3],0.5);
@@ -7916,9 +7953,33 @@ function glInitAtlas(){
   G.woodImg.onload=function(){
     if(G.atlas!==cv) return;
     c.drawImage(G.woodImg,0,0);
+    glLabels(c);
     glUpload();
   };
   G.woodImg.src=WOOD_URL;
+}
+var LBL={sign:[[1640,4,400,76],[1640,84,400,76],[1640,164,400,76]],plq:[[1192,96,200,56],[1192,160,200,56]]};
+function glLabels(c){
+  if(SCENE!=='lk') return;
+  var T=SCENES.lk.titles,i,q,g;
+  for(i=0;i<3;i++){
+    q=LBL.sign[i];
+    /* табличка: тёмное дерево, золотая рамка, золотые буквы */
+    g=c.createLinearGradient(0,q[1],0,q[1]+q[3]);g.addColorStop(0,'#3a2412');g.addColorStop(1,'#24160a');
+    c.fillStyle=g;c.fillRect(q[0],q[1],q[2],q[3]);
+    c.strokeStyle='#d9b45a';c.lineWidth=3;c.strokeRect(q[0]+5,q[1]+5,q[2]-10,q[3]-10);
+    c.fillStyle='#e8c766';c.font='700 40px Georgia,"Times New Roman",serif';c.textAlign='center';c.textBaseline='middle';
+    c.fillText(T[i],q[0]+q[2]/2,q[1]+q[3]/2+2);
+  }
+  ['Новинки','Ваш запрос'].forEach(function(t,j){
+    q=LBL.plq[j];
+    /* латунная табличка */
+    g=c.createLinearGradient(0,q[1],0,q[1]+q[3]);g.addColorStop(0,'#f0d68a');g.addColorStop(0.5,'#c9a24c');g.addColorStop(1,'#a8822e');
+    c.fillStyle=g;c.fillRect(q[0],q[1],q[2],q[3]);
+    c.strokeStyle='#7a5a1c';c.lineWidth=2;c.strokeRect(q[0]+3,q[1]+3,q[2]-6,q[3]-6);
+    c.fillStyle='#3b2a0e';c.font='700 30px Georgia,"Times New Roman",serif';c.textAlign='center';c.textBaseline='middle';
+    c.fillText(t,q[0]+q[2]/2,q[1]+q[3]/2+1);
+  });
 }
 function glUpload(){
   if(!G.rd||G.lost||!G.atlas) return;
@@ -8013,6 +8074,17 @@ function glGeom(){
     /* карниз: верхняя планка и основание */
     B.box(ox+4,wrY(22),-D-4,ox+704,wrY(6),12,{pz:{uv:U.rail,flip:fl},py:{uv:U.bt,col:dk(0.85),flip:fl},ny:{uv:U.bf,col:dk(0.45)},nx:{uv:U.bf,col:dk(0.62)},px:{uv:U.bf,col:dk(0.62)}},0,0);
     B.box(ox+18,wrY(94),-D,ox+689,wrY(22),4,{pz:{uv:U.body,flip:fl},ny:{uv:U.bf,col:dk(0.4)},nx:{uv:U.bf,col:dk(0.62)},px:{uv:U.bf,col:dk(0.62)}},0,0);
+    if(SCENE==='lk'){
+      /* вывеска на карнизе (по центру) */
+      B.face([ox+354-150,wrY(88),4.6],[300,0,0],[0,57,0],U['sign'+r],[1,1,1],0,0);
+      /* стеллаж «Новинки»: табличка «Новинки» слева на доске над полкой с новинками, «Ваш запрос» — на доске ниже (над пустой полкой) */
+      if(r===2){
+        [[2,0],[3,1]].forEach(function(p){
+          var yb=wrY(WR.bot[p[0]]),yt=wrY(WR.lip[p[0]]);
+          B.face([ox+62,yb+2,0.6],[78,0,0],[0,yt-yb-4,0],U['plq'+p[1]],[1,1,1],0,0);
+        });
+      }
+    }
     /* тень на полу под стеллажом */
     S.unlit=true;
     S.face([ox-6,0.35,60],[WR.cw+12,0,0],[0,0,-(D+95)],U.shadow,[0,0,0,0.6],0,0);
@@ -8050,10 +8122,11 @@ function wbAll(){
   WBL.length=0;Object.keys(WB).forEach(function(i){delete WB[i];});
   for(r=0;r<WR.n;r++)for(k=0;k<WR.k;k++){
     /* учебные (придуманные) книги убраны: остальные стеллажи пустые */
-    a=(OB.list&&r===OB.ROW[0])?wbCentral(r,k):[];
+    if(SCENE==='lk') a=!OB.list?[]:r===0?wbCentral(r,k,OB.acct?[OB.acct]:[]):r===1?wbCentral(r,k,OB.list):wbCentral(r,k,OB.nov);
+    else a=(OB.list&&r===OB.ROW[0])?wbCentral(r,k):[];
     WSH[r+'.'+k]=a;a.forEach(function(b){WBL.push(b);});
   }
-  G.shelvesOB=!!OB.list;
+  G.shelvesOB=!!OB.list;G.scene=SCENE;
 }
 /* убрать с видеокарты прежнюю сцену (при повторной сборке и после потери видеокарты) */
 function glFree(){
@@ -8069,7 +8142,7 @@ function glFree(){
 function glBuild(){
   var sc=1.7;
   G.tok++;G.ready=false;
-  if(!WBL.length||G.shelvesOB!==!!OB.list) wbAll();
+  if(!WBL.length||G.shelvesOB!==!!OB.list||G.scene!==SCENE) wbAll();
   G.AW=Math.min(4096,G.rd.maxTex);G.AH=G.AW>=4096?2048:Math.min(2048,G.rd.maxTex);
   if(G.AW<4096) sc=1.1;
   while(!glPack(sc)&&sc>0.5) sc*=0.94;
@@ -8429,10 +8502,12 @@ function camDots(){
   var d=el.phHud.querySelectorAll('.phdots i'),f=-1,l=-1;
   for(i=0;i<WR.n;i++){if(d[i]) d[i].className=on[i]?'on':'';if(on[i]){if(f<0) f=i;l=i;}}
   var t=el.phHud.querySelector('b');
-  if(t) t.textContent=f<0?'Стеллажи':(f===l?'Стеллаж '+(f+1)+' из '+WR.n:'Стеллажи '+(f+1)+'–'+(l+1)+' из '+WR.n);
+  if(t&&SCENE==='lk'){var T=SCENES.lk.titles;t.textContent=f<0?'Личный кабинет':(f===l?T[f]:'Личный кабинет: '+T.slice(f,l+1).join(', '));}
+  else if(t) t.textContent=f<0?'Стеллажи':(f===l?'Стеллаж '+(f+1)+' из '+WR.n:'Стеллажи '+(f+1)+'–'+(l+1)+' из '+WR.n);
 }
 function wpHud(){
-  var h='<b>Стеллажи</b><div class="sub">На центральном стеллаже 100 настоящих книг с oldbook.kz. Нажмите на книгу: она выедет из полки, её можно покрутить в 3D и открыть.</div><div class="phdots" aria-hidden="true">',i;
+  var h=SCENE==='lk'?'<b>Личный кабинет</b><div class="sub">Корзина — зелёная книга «Мой аккаунт» (имя, почта, пароль). Ваши книги — 100 книг. Новинки — 10 новых книг с oldbook.kz. Нажмите на книгу и «Открыть».</div><div class="phdots" aria-hidden="true">':
+    '<b>Стеллажи</b><div class="sub">На центральном стеллаже 100 настоящих книг с oldbook.kz. Нажмите на книгу: она выедет из полки, её можно покрутить в 3D и открыть.</div><div class="phdots" aria-hidden="true">',i;
   for(i=0;i<WR.n;i++) h+='<i></i>';
   el.phHud.innerHTML=h+'</div>';
   CAM.dotKey='';
@@ -8553,7 +8628,7 @@ function wpTip(i,x,y,W){
   /* текст и ширину считаем только когда курсор перешёл на другую книгу; при движении по той же книге двигаем подсказку transform'ом, без пересчёта вёрстки */
   if(CAM.tipI!==i||el.phTip.hidden){
     var b=G.bk[i].b;
-    el.phTip.innerHTML='<b>'+esc(b.title)+'</b><br>'+esc(b.author)+'<small>Стеллаж '+(b.r+1)+' · полка '+(b.k+1)+(b.ob?' · настоящая книга с oldbook.kz':' · учебная книга')+'. Нажмите, чтобы вытащить.</small>';
+    el.phTip.innerHTML='<b>'+esc(b.title)+'</b><br>'+esc(b.author)+'<small>'+(SCENE==='lk'?SCENES.lk.titles[b.r]:'Стеллаж '+(b.r+1))+' · полка '+(b.k+1)+(b.ob&&b.ob.account?' · ваш аккаунт':b.ob&&b.ob.nov?' · новинка oldbook.kz':b.ob?' · настоящая книга с oldbook.kz':' · учебная книга')+'. Нажмите, чтобы вытащить.</small>';
     el.phTip.hidden=false;CAM.tipI=i;CAM.tipW=el.phTip.offsetWidth;
   }
   var w=CAM.tipW||240;
@@ -8819,10 +8894,16 @@ function bkCardHtml(b){
       '<small>'+mm(b.h)+' × '+mm(b.w)+' × '+mm(b.d)+' мм · '+b.pages+' стр.</small>'+
       '<small class="more">Стеллаж '+(b.r+1)+', полка '+(b.k+1)+'. Учебная книга: придумана для показа, не из вашей таблицы.</small>';
   }
+  if(b.ob.account){
+    var A=accGet();
+    return '<b>Мой аккаунт</b><span>Личный кабинет</span>'+
+      '<p class="desc">'+(A.name?'Здравствуйте, '+esc(A.name)+'! ':'')+'Внутри книги — данные вашего аккаунта: имя, почта, телефон, смена пароля и настройки. Нажмите «Открыть».</p>'+
+      '<small class="dim">Данные хранятся только в этом браузере.</small>';
+  }
   var o=b.ob,bind=/^тв/i.test(o.binding)?'твёрдый переплёт':/^мя/i.test(o.binding)?'мягкая обложка':String(o.binding||'').toLowerCase(),
     cond=String(o.cond||'');
   cond=cond.charAt(0).toLowerCase()+cond.slice(1);
-  return '<b>'+esc(o.title)+'</b><span>'+esc(o.author)+'</span>'+
+  return (o.nov?'<small class="novb">НОВИНКА</small>':'')+'<b>'+esc(o.title)+'</b><span>'+esc(o.author)+'</span>'+
     '<small class="pub">'+esc(o.publisher)+' · '+esc(o.year)+' · '+esc(bind)+' · '+o.pages+' стр.</small>'+
     '<p class="desc">'+esc(o.desc)+'</p>'+
     '<small class="dim">'+o.h+' × '+o.w+' × '+o.t+' мм · состояние: '+esc(cond)+'</small>'+
@@ -9078,7 +9159,7 @@ function initBook(){
    а в начале и в конце бумажная книга ровно ложится на её обложку, поэтому переход не заметен. ===== */
 var RD={on:false,busy:false,flip:false,cur:0,leaves:[],b:null,o:null,pw:0,ph:0,W:0,H:0,top:0,r0:null,sx:0,sy:0,pid:null,tok:0};
 function rdN(o){return o?(o.pg===undefined?5:o.pg):0;}
-function rdHas(b){return !!(b&&b.ob&&b.ob.sku&&rdN(b.ob)>0);}
+function rdHas(b){return !!(b&&b.ob&&b.ob.sku&&(rdN(b.ob)>0||b.ob.account));}
 function rdSrc(o,n){return 'books3d/pages/'+o.sku+'-'+n+'.webp';}
 function rdDur(ms){return reduce?1:ms;}
 /* точка книги (в её собственных осях) → пиксель на странице */
@@ -9145,7 +9226,7 @@ function rdFit(){
   RD.W=W;RD.H=H;RD.pw=pw;RD.ph=ph;RD.top=top+((H-top-bot)-ph)/2;
   var bk=el.rdBook;
   bk.style.left=(W/2)+'px';bk.style.top=RD.top+'px';bk.style.width=pw+'px';bk.style.height=ph+'px';
-  bk.style.perspective=Math.round(pw*4.2)+'px';bk.style.perspectiveOrigin='0 50%';
+  bk.style.perspective=Math.round(pw*4.2)+'px';bk.style.fontSize=Math.max(9,Math.min(16,pw/24)).toFixed(1)+'px';bk.style.perspectiveOrigin='0 50%';
   el.rdScene.style.width=W+'px';el.rdScene.style.height=H+'px';
 }
 function rdT(state){
@@ -9169,14 +9250,17 @@ function rdBuild(){
   var ed=document.createElement('div');ed.className='rdedge';bk.appendChild(ed);
   /* под всеми листами: внутренняя сторона задней обложки */
   var base=document.createElement('div');base.className='rdbase';
-  base.appendChild(rdFace('r endp',''));bk.appendChild(base);
+  bk.appendChild(base);
+  if(o.account){rdAccount(bk,base);return;}
   var bind=/^тв/i.test(o.binding)?'твёрдый переплёт':/^мя/i.test(o.binding)?'мягкая обложка':String(o.binding||'').toLowerCase();
   /* листы: обложка (с форзацем на обороте), затем фото страниц парами, на обороте последнего — цена и ссылка; страниц у книг разное число */
   var seq=[],n=rdN(o),q;
   for(q=1;q<=n;q++) seq.push(rdFace('',rdImg(rdSrc(o,q))));
   seq.push(rdFace('endp','<div class="lb"><b>Дальше — в самой книге</b>'+o.pages+' стр. · '+esc(bind)+
       '<span class="pr">'+Number(o.price).toLocaleString('ru-RU')+' ₸</span><a href="'+esc(o.url)+'" target="_blank" rel="noopener noreferrer">oldbook.kz</a><br><small>Фото страниц с сайта магазина</small></div>'));
-  if(seq.length%2) seq.push(rdFace('endp',''));
+  /* лист «Рекомендуем» стоит рядом со страницей с ценой: на внутренней стороне задней обложки или на обороте последнего листа */
+  if(seq.length%2){seq.push(rdFace('rec',accGet().rec===false?'':rdRecHtml(o)));base.appendChild(rdFace('r endp',''));}
+  else base.appendChild(rdFace('r rec',accGet().rec===false?'':rdRecHtml(o)));
   var faces=[[rdFace('r cover',rdImg(o.front)),rdFace('l endp','<div class="lb"><b>'+esc(o.title)+'</b>'+esc(o.author)+'<br>'+esc(o.publisher)+', '+esc(o.year)+'</div>')]];
   for(q=0;q<seq.length;q+=2){seq[q].classList.add('r');seq[q+1].classList.add('l');faces.push([seq[q],seq[q+1]]);}
   RD.leaves=[];
@@ -9190,6 +9274,92 @@ function rdBuild(){
   el.rdCap.innerHTML=esc(o.title)+'<small>'+esc(o.author)+'</small>';
 }
 /* картинки страниц грузим заранее (пока книга поворачивается обложкой к нам), не дольше 5 секунд */
+/* 1.12.0: лист «Рекомендуем» — новинки oldbook.kz, похожие на эту книгу (тот же автор, жанр или раздел каталога); картинки и ссылки на магазин */
+function rdRecHtml(o){
+  var L=o.rec||[];
+  if(!L.length) return '';
+  return '<div class="rdrec"><h4>Рекомендуем</h4><p class="sub">Новинки oldbook.kz к этой книге</p>'+L.map(function(r){
+    return '<a class="ri" href="'+esc(r.u)+'" target="_blank" rel="noopener noreferrer"><img alt="" draggable="false" loading="lazy" src="books3d/rec/'+esc(r.s)+'.webp">'+
+      '<span><b>'+esc(r.t)+'</b>'+(r.a?'<i>'+esc(r.a)+'</i>':'')+'<em>'+Number(r.p).toLocaleString('ru-RU')+' ₸</em></span></a>';
+  }).join('')+'</div>';
+}
+/* ----- 1.12.0: зелёная книга «Мой аккаунт»: данные аккаунта. Сервера нет, всё хранится только в этом браузере (localStorage), пароль — только в виде отпечатка SHA-256 ----- */
+var ACC_KEY='gp.account.v1';
+function accGet(){try{return JSON.parse(localStorage.getItem(ACC_KEY)||'{}')||{};}catch(_){return {};}}
+function accPut(A){try{localStorage.setItem(ACC_KEY,JSON.stringify(A));return true;}catch(_){return false;}}
+function accHash(pw,salt){
+  if(!(window.crypto&&crypto.subtle&&window.TextEncoder)) return Promise.reject(new Error('nocrypto'));
+  return crypto.subtle.digest('SHA-256',new TextEncoder().encode(salt+':'+pw)).then(function(b){
+    return Array.prototype.map.call(new Uint8Array(b),function(x){return (x<16?'0':'')+x.toString(16);}).join('');
+  });
+}
+function accField(id,label,val,type,ph,extra){
+  return '<label class="fl"><span>'+label+'</span><input id="'+id+'" type="'+(type||'text')+'" value="'+esc(val||'')+'" placeholder="'+esc(ph||'')+'" autocomplete="'+(extra||'off')+'"></label>';
+}
+function rdAccount(bk,base){
+  var A=accGet(),ini=(A.name||'?').trim().charAt(0).toUpperCase()||'?',made=A.created?new Date(A.created).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}):'';
+  var pProfile='<div class="rdform"><h4>Профиль</h4><div class="ava">'+esc(ini)+'</div>'+
+      accField('acName','Имя',A.name,'text','Как к вам обращаться','name')+accField('acCity','Город',A.city,'text','Например, Алматы','address-level2')+
+      '<p class="note">'+(made?'Аккаунт создан '+esc(made)+'.':'Новый аккаунт: заполните данные и нажмите «Сохранить».')+'</p></div>';
+  var pContact='<div class="rdform"><h4>Контакты</h4>'+accField('acMail','Почта',A.email,'email','name@mail.kz','email')+accField('acPhone','Телефон',A.phone,'tel','+7 7__ ___ __ __','tel')+
+      '<button type="button" class="fb" data-acc="save">Сохранить</button><p class="msg" id="acMsg1"></p></div>';
+  var pPass='<div class="rdform"><h4>Пароль</h4>'+(A.pw?accField('acOld','Текущий пароль','','password','','current-password'):'<p class="note">Пароль ещё не задан.</p>')+
+      accField('acNew','Новый пароль','','password','не короче 6 знаков','new-password')+accField('acNew2','Повторите пароль','','password','','new-password')+
+      '<button type="button" class="fb" data-acc="pass">'+(A.pw?'Сменить пароль':'Задать пароль')+'</button><p class="msg" id="acMsg2"></p></div>';
+  var pSet='<div class="rdform"><h4>Настройки</h4>'+
+      '<label class="ck"><input type="checkbox" id="acNews"'+(A.news?' checked':'')+'><span>Сообщать о новинках oldbook.kz на почту</span></label>'+
+      '<label class="ck"><input type="checkbox" id="acRec"'+(A.rec===false?'':' checked')+'><span>Показывать лист «Рекомендуем» в книгах</span></label>'+
+      '<button type="button" class="fb" data-acc="save">Сохранить</button>'+
+      '<button type="button" class="fb danger" data-acc="wipe">Удалить данные аккаунта</button><p class="msg" id="acMsg3"></p>'+
+      '<p class="note">Данные хранятся только в этом браузере, на сервер не отправляются.</p></div>';
+  base.appendChild(rdFace('r',pSet));
+  var faces=[[rdFace('r cover',rdImg(RD.o.front)),rdFace('l',pProfile)],[rdFace('r',pContact),rdFace('l',pPass)]];
+  RD.leaves=[];
+  faces.forEach(function(f,i){
+    var lf=document.createElement('div');lf.className='rdleaf';
+    f[1].classList.add('back');lf.appendChild(f[0]);lf.appendChild(f[1]);
+    lf.style.zIndex=String(100-i);lf.style.transform='rotateY(0deg)';
+    bk.appendChild(lf);RD.leaves.push(lf);
+  });
+  el.rdCap.innerHTML='Мой аккаунт<small>Личный кабинет · имя, почта, пароль</small>';
+}
+function accMsg(id,t,ok){var n=document.getElementById(id);if(n){n.textContent=t;n.className='msg '+(ok?'ok':'bad');}}
+function accAct(act){
+  var A=accGet(),v=function(id){var n=document.getElementById(id);return n?n.value.trim():'';};
+  if(act==='save'){
+    var mail=v('acMail');
+    if(mail&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(mail)){accMsg('acMsg1','Почта записана с ошибкой.',false);return;}
+    A.name=v('acName');A.city=v('acCity');A.email=mail;A.phone=v('acPhone');
+    var nw=document.getElementById('acNews'),rc=document.getElementById('acRec');
+    if(nw) A.news=nw.checked;if(rc) A.rec=rc.checked;
+    if(!A.created) A.created=Date.now();
+    var ok=accPut(A);
+    accMsg('acMsg1',ok?'Сохранено.':'Не удалось сохранить.',ok);accMsg('acMsg3',ok?'Сохранено.':'Не удалось сохранить.',ok);
+    var av=el.rdBook.querySelector('.ava');if(av) av.textContent=(A.name||'?').charAt(0).toUpperCase()||'?';
+  }else if(act==='pass'){
+    var o=v('acOld'),n1=document.getElementById('acNew'),n2=document.getElementById('acNew2'),p1=n1?n1.value:'',p2=n2?n2.value:'';
+    if(p1.length<6){accMsg('acMsg2','Пароль должен быть не короче 6 знаков.',false);return;}
+    if(p1!==p2){accMsg('acMsg2','Пароли не совпадают.',false);return;}
+    var check=A.pw?accHash(o,A.salt):Promise.resolve(null);
+    check.then(function(h){
+      if(A.pw&&h!==A.pw) throw new Error('old');
+      A.salt=Math.random().toString(36).slice(2)+Date.now().toString(36);
+      return accHash(p1,A.salt);
+    }).then(function(h){
+      A.pw=h;if(!A.created) A.created=Date.now();accPut(A);
+      ['acOld','acNew','acNew2'].forEach(function(id){var n=document.getElementById(id);if(n) n.value='';});
+      accMsg('acMsg2','Пароль сохранён.',true);
+    }).catch(function(e){
+      accMsg('acMsg2',e&&e.message==='old'?'Текущий пароль неверный.':'Пароль можно сменить только на сайте по https.',false);
+    });
+  }else if(act==='wipe'){
+    var b=el.rdBook.querySelector('[data-acc="wipe"]');
+    if(b&&!b.dataset.sure){b.dataset.sure='1';b.textContent='Точно удалить? Нажмите ещё раз';return;}
+    try{localStorage.removeItem(ACC_KEY);}catch(_){}
+    ['acName','acCity','acMail','acPhone'].forEach(function(id){var n=document.getElementById(id);if(n) n.value='';});
+    accMsg('acMsg3','Данные аккаунта удалены.',true);if(b){b.textContent='Удалить данные аккаунта';delete b.dataset.sure;}
+  }
+}
 function rdPreload(o){
   var L=[o.front],i;
   for(i=1;i<=rdN(o);i++) L.push(rdSrc(o,i));
@@ -9310,7 +9480,7 @@ function rdKill(){
   wgInvalidate();
 }
 function rdKey(e){
-  var k=e.key,onBtn=e.target&&e.target.closest&&e.target.closest('button,a');
+  var k=e.key,onBtn=e.target&&e.target.closest&&e.target.closest('button,a,input,label');
   if(k==='Tab') return;
   if(onBtn&&(k==='Enter'||k===' ')) return;
   e.preventDefault();
@@ -9325,18 +9495,19 @@ function initReader(){
   el.bkOpenB.addEventListener('click',function(e){e.stopPropagation();rdOpen();});
   el.bkOpenB.addEventListener('pointerdown',function(e){e.stopPropagation();});
   document.getElementById('rdClose').addEventListener('click',function(){rdClose();});
-  el.rdPrev.addEventListener('click',rdPrev);el.rdNext.addEventListener('click',rdNext);
+  el.rdPrev.addEventListener('click',rdPrev);
+  el.rdBook.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-acc]');if(b){e.stopPropagation();accAct(b.getAttribute('data-acc'));}});el.rdNext.addEventListener('click',rdNext);
   /* щелчок по правой странице — дальше, по левой — назад, мимо книги — закрыть; провести пальцем — листать */
   el.rd.addEventListener('pointerdown',function(e){
     e.stopPropagation();
-    if(e.target.closest('button,a')) return;
+    if(e.target.closest('button,a,input,label,.rdform')) return;
     RD.pid=e.pointerId;RD.sx=e.clientX;RD.sy=e.clientY;
   });
   el.rd.addEventListener('pointerup',function(e){
     e.stopPropagation();
     if(RD.pid!==e.pointerId) return;
     RD.pid=null;
-    if(!RD.on||RD.busy||e.target.closest('button,a')) return;
+    if(!RD.on||RD.busy||e.target.closest('button,a,input,label,.rdform')) return;
     var dx=e.clientX-RD.sx,dy=e.clientY-RD.sy;
     if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)){if(dx<0) rdNext();else rdPrev();return;}
     if(Math.hypot(dx,dy)>8) return;
@@ -9355,9 +9526,29 @@ function wpPlace(){
   el.phPage.style.setProperty('--phtop',Math.max(0,Math.round(r.bottom))+'px');
 }
 function showPage(p,quiet){
+  var sc=p==='lk'?'lk':'shelves';
+  if(p==='lk') p='wall';
   if(p!=='wall') p='shelf';
-  if(p===PAGE) return;
+  if(p===PAGE&&(p!=='wall'||sc===SCENE)) return;
+  if(p==='wall'&&PAGE==='wall'){
+    /* переход между «Стеллажами» и «Личным кабинетом»: та же 3D-страница, другая сцена */
+    if(typeof rdKill==='function'&&RD.on) rdKill();
+    if(BK.on) bkEnd();
+    bkCancelPend();bkAtlasFree(BK.prep);BK.prep=null;wpTip(-1);setHover(0);camStop();
+    SCENE=sc;sceneApply();camMeasure();
+    CAM.seenS=CAM.seenS||{};
+    camHome();CAM.seenS[SCENE]=true;
+    if(G.rd&&!G.lost&&!G.failed) glBuild();
+    wpHud();camHud();wgInvalidate();
+    try{localStorage.setItem(PAGE_KEY,SCENE==='lk'?'lk':'wall');}catch(_){}
+    try{if(history.replaceState) history.replaceState(null,'',SCENE==='lk'?'#kabinet':'#shkaf');}catch(_){}
+    closeMenus();setMobileMenu(false);
+    return;
+  }
   if(p==='wall'){
+    if(sc!==SCENE){SCENE=sc;sceneApply();if(G.rd&&G.ready) G.ready=false,glBuild();}
+    CAM.seenS=CAM.seenS||{};
+    if(!CAM.seenS[SCENE]){CAM.seen=false;CAM.seenS[SCENE]=true;}
     if(OV.open) closeOverview();
     popClose();
     if(arm) disarm(true);
@@ -9385,8 +9576,8 @@ function showPage(p,quiet){
     window.scrollTo(0,0);
     if(DS){renderAll();updateShelfNav();}
   }
-  try{localStorage.setItem(PAGE_KEY,PAGE);}catch(_){}
-  try{if(history.replaceState) history.replaceState(null,'',PAGE==='wall'?'#shkaf':location.pathname+location.search);}catch(_){}
+  try{localStorage.setItem(PAGE_KEY,PAGE==='wall'&&SCENE==='lk'?'lk':PAGE);}catch(_){}
+  try{if(history.replaceState) history.replaceState(null,'',PAGE==='wall'?(SCENE==='lk'?'#kabinet':'#shkaf'):location.pathname+location.search);}catch(_){}
   closeMenus();setMobileMenu(false);
 }
 function initWall(){
@@ -9436,6 +9627,7 @@ function initWall(){
 function wallStart(){
   var want='shelf';
   try{if(/(^|[#&])shkaf\b/.test(location.hash)||localStorage.getItem(PAGE_KEY)==='wall') want='wall';}catch(_){}
+  try{if(/(^|[#&])kabinet\b/.test(location.hash)||(!/shkaf/.test(location.hash)&&localStorage.getItem(PAGE_KEY)==='lk')) want='lk';}catch(_){}
   if(/^#(polka|shelf)\b/.test(location.hash)) want='shelf';
   return want;
 }
@@ -9471,7 +9663,7 @@ function init(){
   initTabsDialog();
   initDrive();
   initWall();
-  if(wallStart()==='wall') showPage('wall');
+  var ws=wallStart();if(ws!=='shelf') showPage(ws);
 
   el.undo.addEventListener('click',doUndo);
   el.clear.addEventListener('click',doClear);
